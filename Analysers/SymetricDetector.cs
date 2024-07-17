@@ -19,7 +19,7 @@
             return true;
         }
 
-        public static bool AreSymetric(bool[,] matrix1, bool[,] matrix2)
+        public static bool AreSimilar(bool[,] matrix1, bool[,] matrix2)
         {
             if (AreSame(matrix1, matrix2))
             {
@@ -56,13 +56,13 @@
                 return true;
             }
 
-            var matrix1h = MirrorMatrixD2(matrix1);
+            var matrix1h = MirrorMatrixH(matrix1);
             if (AreSame(matrix1h, matrix2))
             {
                 return true;
             }
 
-            var matrix1v = MirrorMatrixD2(matrix1);
+            var matrix1v = MirrorMatrixV(matrix1);
             if (AreSame(matrix1v, matrix2))
             {
                 return true;

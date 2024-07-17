@@ -5,6 +5,7 @@
         public static void Write(bool[,] matrix)
         {
             var size = matrix.GetLength(0);
+
             for (var i = 0; i < size; i++)
             {
                 for (var j = 0; j < size; j++)

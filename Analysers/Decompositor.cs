@@ -1,6 +1,6 @@
 ﻿namespace MatrixAlg.Analysers
 {
-    internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<bool[,]>> OutputDecompose)
+    internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<bool[,]>> OutputDecompose) : IDisposable
     {
         private readonly int Size = Input.GetLength(0);
         private readonly List<int[]> InputElementIndexesPerLine = [];
@@ -125,6 +125,13 @@
             var length = $"{elements.Count}".Length;
             var lines = elements.Select(_ => string.Join(string.Empty, _.Select(__ => $"{__}".PadLeft(length, '0'))));
             return string.Join(string.Empty, lines.Order());
+        }
+
+        public void Dispose()
+        {
+            InputElementIndexesPerLine.Clear();
+            ElementIndexesForAllTransversals.Clear();
+            GeneratedHashes.Clear();
         }
     }
 }

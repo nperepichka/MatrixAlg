@@ -13,13 +13,6 @@ internal class Program
         Console.WriteLine("Input matrix:");
         ConsoleWriter.Write(input);
 
-        var size = input.GetLength(0);
-        if (size < 2)
-        {
-            Console.WriteLine("Input matrix should be at least 2x2.");
-            return;
-        }
-
         var isInputSymetric = SymetricDetector.IsSymetric(input);
         if (isInputSymetric)
         {
@@ -43,7 +36,7 @@ internal class Program
 
         Console.WriteLine();
 
-        var decompositor = new Decompositor(input, transversal, WriteOutput);
+        using var decompositor = new Decompositor(input, transversal, WriteOutput);
         decompositor.Decompose();
 
         Console.WriteLine();
@@ -60,7 +53,7 @@ internal class Program
 
     private static void WriteOutput(IEnumerable<bool[,]> res)
     {
-        List<bool[,]> notSymetricMatrixes = [];
+        var notSymetricMatrixes = new List<bool[,]>();
 
         foreach (var matrix in res)
         {
@@ -82,7 +75,8 @@ internal class Program
             ConsoleWriter.Write(matrix);
             Console.WriteLine("Matrix is not symetric.");
 
-            if (list.Any(_ => _.i != i && SymetricDetector.AreSymetric(matrix, _.matrix)))
+            var similarExists = list.Any(_ => _.i != i && SymetricDetector.AreSimilar(matrix, _.matrix));
+            if (similarExists)
             {
                 Console.WriteLine("Matrix is similar to other not symetric matrix.");
             }
