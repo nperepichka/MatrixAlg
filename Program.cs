@@ -61,12 +61,38 @@ internal class Program
 
     private static void WriteOutput(IEnumerable<bool[,]> res)
     {
+        List<bool[,]> notSymetricMatrixes = [];
+
         foreach (var matrix in res)
         {
-            ConsoleWriter.Write(matrix);
             var isSymetric = SymetricDetector.IsSymetric(matrix);
-            Console.WriteLine(isSymetric ? "Matrix is symetric." : "Matrix not symetric.");
+            if (isSymetric)
+            {
+                ConsoleWriter.Write(matrix);
+                Console.WriteLine("Matrix is symetric.");
+            }
+            else
+            {
+                notSymetricMatrixes.Add(matrix);
+            }
         }
+
+        var list = notSymetricMatrixes.Select((matrix, i) => (matrix, i));
+        foreach (var (matrix, i) in list)
+        {
+            ConsoleWriter.Write(matrix);
+            Console.WriteLine("Matrix is not symetric.");
+
+            if (list.Any(_ => _.i != i && SymetricDetector.AreSymetric(matrix, _.matrix)))
+            {
+                Console.WriteLine("Matrix is similar to other not symetric matrix.");
+            }
+            else
+            {
+                Console.WriteLine("Matrix is not similar to other not symetric matrix.");
+            }
+        }
+
         Console.WriteLine();
     }
 }
