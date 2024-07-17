@@ -28,7 +28,6 @@ internal class Program
         else
         {
             Console.WriteLine("Input matrix is not symetric.");
-            return;
         }
 
         var transversal = TransversalDetector.FindTransversal(input);
