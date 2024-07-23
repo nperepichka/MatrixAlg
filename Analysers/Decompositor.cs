@@ -85,20 +85,9 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<b
             return;
         }
 
-        bool canUse;
         foreach (var index in InputElementIndexesPerLine[line])
         {
-            canUse = true;
-            for (var i = 0; i < line; i++)
-            {
-                if (current[i] == index)
-                {
-                    canUse = false;
-                    break;
-                }
-            }
-
-            if (canUse)
+            if (!current.Take(line).Contains(index))
             {
                 var next = current.ToArray();
                 next[line] = index;
@@ -123,7 +112,7 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<b
     private static string CalculateHash(List<int[]> elements)
     {
         var length = $"{elements.Count}".Length;
-        var lines = elements.Select(_ => string.Join(string.Empty, _.Select(__ => $"{__}".PadLeft(length, '0'))));
+        var lines = elements.Select(line => string.Join(string.Empty, line.Select(index => index.ToString().PadLeft(length, '0'))));
         return string.Join(string.Empty, lines.Order());
     }
 
