@@ -1,17 +1,22 @@
-﻿namespace MatrixAlg.Analysers;
+﻿using MatrixAlg.Helpers;
 
-internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<bool[,]>> OutputDecompose) : IDisposable
+namespace MatrixAlg.Analysers;
+
+internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<int[]>> OutputDecompose) : IDisposable
 {
     private readonly int Size = Input.GetLength(0);
     private readonly List<int[]> InputElementIndexesPerLine = [];
     private readonly List<int[]> ElementIndexesForAllTransversals = [];
-    private readonly List<string> GeneratedHashes = [];
+    private readonly ConcurrentHashSet<string> GeneratedHashes = new();
 
-    public void Decompose()
+    private static int ParallelsCount = 0;
+    private static readonly int ParallelsLimit = Environment.ProcessorCount / 4;
+
+    public async Task Decompose()
     {
         GenerateInputElementIndexesPerLine();
         GenerateElementIndexesForAllTransversals(0, new int[Size]);
-        GenerateDecompositions(0, []);
+        await GenerateDecompositions(0, []);
     }
 
     private void GenerateInputElementIndexesPerLine()
@@ -38,27 +43,15 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<b
         }
     }
 
-    private void GenerateDecompositions(int n, List<int[]> current)
+    private async Task GenerateDecompositions(int n, List<int[]> current)
     {
-        if (n == Transversal)
-        {
-            var hash = CalculateHash(current);
-            if (GeneratedHashes.Contains(hash))
-            {
-                return;
-            }
-
-            GeneratedHashes.Add(hash);
-            OutputDecompose(current.Select(BuildMatrix));
-
-            return;
-        }
-
+        var i = 0;
+        var j = 0;
         var variants = ElementIndexesForAllTransversals.Where(indexes =>
         {
-            for (var i = 0; i < n; i++)
+            for (i = 0; i < n; i++)
             {
-                for (var j = 0; j < Size; j++)
+                for (j = 0; j < Size; j++)
                 {
                     if (current[i][j] == indexes[j])
                     {
@@ -69,12 +62,69 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<b
             return true;
         });
 
-        foreach (var variant in variants)
+        if (ParallelsCount < ParallelsLimit)
         {
-            var next = current.ToList();
-            next.Add(variant);
-            GenerateDecompositions(n + 1, next);
+            await Parallel.ForEachAsync(variants, async (variant, _) =>
+            {
+                Interlocked.Increment(ref ParallelsCount);
+
+                var next = current.ToList();
+                next.Add(variant);
+                if (n < Transversal - 2)
+                {
+                    await GenerateDecompositions(n + 1, next);
+                }
+                else
+                {
+                    GenerateLastDecomposition(next);
+                }
+
+                Interlocked.Decrement(ref ParallelsCount);
+            });
         }
+        else
+        {
+            foreach (var variant in variants)
+            {
+                var next = current.ToList();
+                next.Add(variant);
+                if (n < Transversal - 2)
+                {
+                    await GenerateDecompositions(n + 1, next);
+                }
+                else
+                {
+                    GenerateLastDecomposition(next);
+                }
+            }
+        }
+    }
+
+    private void GenerateLastDecomposition(List<int[]> current)
+    {
+        var i = 0;
+        var j = 0;
+        var variant = ElementIndexesForAllTransversals.First(indexes =>
+        {
+            for (i = 0; i < Transversal - 1; i++)
+            {
+                for (j = 0; j < Size; j++)
+                {
+                    if (current[i][j] == indexes[j])
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+
+        current.Add(variant);
+        var hash = CalculateHash(current);
+        GeneratedHashes.Add(hash, () =>
+        {
+            OutputDecompose(current);
+        });
     }
 
     private void GenerateElementIndexesForAllTransversals(int line, int[] current)
@@ -96,30 +146,17 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<b
         }
     }
 
-    private bool[,] BuildMatrix(int[] indexes)
+    private string CalculateHash(List<int[]> elements)
     {
-        var res = new bool[Size, Size];
-        for (var i = 0; i < Size; i++)
-        {
-            for (var j = 0; j < Size; j++)
-            {
-                res[i, j] = indexes[i] == j;
-            }
-        }
-        return res;
-    }
-
-    private static string CalculateHash(List<int[]> elements)
-    {
-        var length = $"{elements.Count}".Length;
-        var lines = elements.Select(line => string.Join(string.Empty, line.Select(index => index.ToString().PadLeft(length, '0'))));
-        return string.Join(string.Empty, lines.Order());
+        var length = $"{Size - 1}".Length;
+        return string.Concat(elements.Select(line => string.Concat(line.Select(index => $"{index}".PadLeft(length, '0')))).Order());
     }
 
     public void Dispose()
     {
         InputElementIndexesPerLine.Clear();
         ElementIndexesForAllTransversals.Clear();
-        GeneratedHashes.Clear();
+        GeneratedHashes.Dispose();
+        ParallelsCount = 0;
     }
 }

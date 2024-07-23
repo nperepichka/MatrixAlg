@@ -10,10 +10,25 @@ namespace MatrixAlg;
 internal class Program
 {
     /// <summary>
+    /// Decomposition counter
+    /// </summary>
+    private static int DecomposeCount = 0;
+
+    private static bool ShowOutput = false;
+
+    /// <summary>
     /// Application entry point method
     /// </summary>
-    private static void Main()
+    private static async Task Main(string[] args)
     {
+        if (args.Length > 0)
+        {
+            if (args.Contains("show"))
+            {
+                ShowOutput = true;
+            }
+        }
+
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
 
@@ -63,13 +78,16 @@ internal class Program
         // Initiate decompositor
         using var decompositor = new Decompositor(input, transversal, WriteDecomposeOutput);
         // Process input matrix decomposition on 1-transversals
-        decompositor.Decompose();
+        await decompositor.Decompose();
 
         // Write empty line to console
         Console.WriteLine();
+        // Output total decompositions count value to console
+        Console.WriteLine($"Decompositions count: {DecomposeCount}");
+
         // Stop timer
         stopwatch.Stop();
-        // Write elapsed time (milliseconds) to console
+        // Write elapsed time to console
         Console.WriteLine($"Elapsed: {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
 
         // Get current process
@@ -88,14 +106,25 @@ internal class Program
     /// <summary>
     /// Write decomposition output to console
     /// </summary>
-    /// <param name="res">List of decompositions (metrixes) on 1-transversals</param>
-    private static void WriteDecomposeOutput(IEnumerable<bool[,]> res)
+    /// <param name="res">List of decompositions on 1-transversals</param>
+    private static void WriteDecomposeOutput(IEnumerable<int[]> res)
     {
+        // Increment decomposition counter
+        Interlocked.Increment(ref DecomposeCount);
+
+        if (!ShowOutput)
+        {
+            return;
+        }
+
+        // Output decomposition counter value to console
+        Console.WriteLine($"Decomposition #{DecomposeCount}");
+
         // Define a list to store all not symetric matrixes with indexes
         var notSymetricMatrixes = new List<(bool[,] matrix, int index)>();
 
-        // Enumerate all matrixes
-        foreach (var matrix in res)
+        // Build and enumerate all matrixes
+        foreach (var matrix in res.Select(BuildMatrix))
         {
             // Check if matrix is symetric
             var isSymetric = SymetricDetector.IsSymetric(matrix);
@@ -141,5 +170,19 @@ internal class Program
 
         // Write empty line to console
         Console.WriteLine();
+    }
+
+    private static bool[,] BuildMatrix(int[] indexes)
+    {
+        var size = indexes.Length;
+        var res = new bool[size, size];
+        for (var i = 0; i < size; i++)
+        {
+            for (var j = 0; j < size; j++)
+            {
+                res[i, j] = indexes[i] == j;
+            }
+        }
+        return res;
     }
 }
