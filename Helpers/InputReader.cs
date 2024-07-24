@@ -25,7 +25,7 @@ internal static class InputReader
         // Check if input matrix size is less than 2
         if (size < 2)
         {
-            // Notify that input matrix is too small and interupt aplication execution
+            // Notify that input matrix is too small and interupt application execution
             throw new Exception($"Input matrix should be at least 2x2.");
         }
 
