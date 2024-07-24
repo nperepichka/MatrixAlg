@@ -12,14 +12,14 @@ internal class Program
     /// <summary>
     /// Decomposition counter
     /// </summary>
-    private static int DecomposeCount = 0;
+    private static long DecomposeCount = 0;
 
     private static bool ShowOutput = false;
 
     /// <summary>
     /// Application entry point method
     /// </summary>
-    private static async Task Main(string[] args)
+    private static void Main(string[] args)
     {
         if (args.Length > 0)
         {
@@ -78,7 +78,7 @@ internal class Program
         // Initiate decompositor
         using var decompositor = new Decompositor(input, transversal, WriteDecomposeOutput);
         // Process input matrix decomposition on 1-transversals
-        await decompositor.Decompose();
+        decompositor.Decompose();
 
         // Write empty line to console
         Console.WriteLine();

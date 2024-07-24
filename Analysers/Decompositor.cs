@@ -1,25 +1,19 @@
-﻿using MatrixAlg.Helpers;
-
-namespace MatrixAlg.Analysers;
+﻿namespace MatrixAlg.Analysers;
 
 internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<int[]>> OutputDecompose) : IDisposable
 {
     private readonly int Size = Input.GetLength(0);
-    private readonly List<int[]> InputElementIndexesPerLine = [];
-    private readonly List<int[]> ElementIndexesForAllTransversals = [];
-    private readonly ConcurrentHashSet<string> GeneratedHashes = new();
+    private readonly List<int[]> InputPositionsPerRow = [];
 
-    private static int ParallelsCount = 0;
-    private static readonly int ParallelsLimit = Environment.ProcessorCount / 4;
-
-    public async Task Decompose()
+    public void Decompose()
     {
-        GenerateInputElementIndexesPerLine();
-        GenerateElementIndexesForAllTransversals(0, new int[Size]);
-        await GenerateDecompositions(0, []);
+        GenerateInputPositionsPerRow();
+
+        var initialDecompositionSytate = BuildDecompositionWithFirstRow();
+        GenerateDecompositions(1, initialDecompositionSytate);
     }
 
-    private void GenerateInputElementIndexesPerLine()
+    private void GenerateInputPositionsPerRow()
     {
         for (var i = 0; i < Size; i++)
         {
@@ -31,132 +25,96 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
                     elementsForLine.Add(j);
                 }
             }
-            if (elementsForLine.Count != Transversal)
-            {
-                throw new Exception($"Invalid amount of elements in row - expected {Transversal} but found {elementsForLine.Count}.");
-            }
-            InputElementIndexesPerLine.Add([.. elementsForLine]);
-        }
-        if (InputElementIndexesPerLine.Count != Size)
-        {
-            throw new Exception($"Invalid amount of rows - expected {Size} but found {InputElementIndexesPerLine.Count}.");
+            InputPositionsPerRow.Add([.. elementsForLine]);
         }
     }
 
-    private async Task GenerateDecompositions(int n, List<int[]> current)
+    private int[][] BuildDecompositionWithFirstRow()
     {
-        var i = 0;
-        var j = 0;
-        var variants = ElementIndexesForAllTransversals.Where(indexes =>
+        var decomposition = new int[Transversal][];
+        for (var i = 0; i < Transversal; i++)
         {
-            for (i = 0; i < n; i++)
+            decomposition[i] = [InputPositionsPerRow[0][i]];
+        }
+        return decomposition;
+    }
+
+    private void GenerateDecompositions(int n, int[][] decomposition)
+    {
+        var nextRowVariants = InputPositionsPerRow[n];
+
+        var decompositions = new List<int[][]>();
+
+        // Build next row for 1st matrix
+        foreach (var nextRowVariant in nextRowVariants)
+        {
+            if (!decomposition[0].Contains(nextRowVariant))
             {
-                for (j = 0; j < Size; j++)
+                var newDecomposition = CloneDecomposition(decomposition, true);
+                newDecomposition[0][n] = nextRowVariant;
+                decompositions.Add(newDecomposition);
+            }
+        }
+
+        // Build next row for each other matrix
+        for (var i = 1; i < Transversal; i++)
+        {
+            var currentDecompositions = decompositions.ToArray();
+            decompositions.Clear();
+
+            // Take a decomposition
+            foreach (var currentDecomposition in currentDecompositions)
+            {
+                foreach (var nextRowVariant in nextRowVariants)
                 {
-                    if (current[i][j] == indexes[j])
+                    if (
+                        !currentDecomposition[i].Contains(nextRowVariant) && // current matrix of current decomposition does not contain this column
+                        currentDecomposition.All(m => m[n] != nextRowVariant) // all matrixes of current decomposition does not contain this column in this row
+                        )
                     {
-                        return false;
+                        var newDecomposition = CloneDecomposition(currentDecomposition, false);
+                        newDecomposition[i][n] = nextRowVariant;
+                        decompositions.Add(newDecomposition);
                     }
                 }
             }
-            return true;
-        });
-
-        if (ParallelsCount < ParallelsLimit)
-        {
-            await Parallel.ForEachAsync(variants, async (variant, _) =>
-            {
-                Interlocked.Increment(ref ParallelsCount);
-
-                var next = current.ToList();
-                next.Add(variant);
-                if (n < Transversal - 2)
-                {
-                    await GenerateDecompositions(n + 1, next);
-                }
-                else
-                {
-                    GenerateLastDecomposition(next);
-                }
-
-                Interlocked.Decrement(ref ParallelsCount);
-            });
         }
-        else
+
+        n++;
+        foreach (var nextDecomposition in decompositions)
         {
-            foreach (var variant in variants)
+            if (n == Size)
             {
-                var next = current.ToList();
-                next.Add(variant);
-                if (n < Transversal - 2)
-                {
-                    await GenerateDecompositions(n + 1, next);
-                }
-                else
-                {
-                    GenerateLastDecomposition(next);
-                }
+                OutputDecompose(decomposition);
+            }
+            else
+            {
+                GenerateDecompositions(n, nextDecomposition);
             }
         }
     }
 
-    private void GenerateLastDecomposition(List<int[]> current)
+    private static int[][] CloneDecomposition(int[][] original, bool addRow)
     {
-        var i = 0;
-        var j = 0;
-        var variant = ElementIndexesForAllTransversals.First(indexes =>
+        var clone = new int[original.Length][];
+        for (var i = 0; i < original.Length; i++)
         {
-            for (i = 0; i < Transversal - 1; i++)
+            var length = original[i].Length;
+            clone[i] = new int[addRow ? length + 1 : length];
+            for (var j = 0; j < length; j++)
             {
-                for (j = 0; j < Size; j++)
-                {
-                    if (current[i][j] == indexes[j])
-                    {
-                        return false;
-                    }
-                }
+                clone[i][j] = original[i][j];
             }
-            return true;
-        });
-
-        current.Add(variant);
-        var hash = CalculateHash(current);
-        GeneratedHashes.Add(hash, () =>
-        {
-            OutputDecompose(current);
-        });
-    }
-
-    private void GenerateElementIndexesForAllTransversals(int line, int[] current)
-    {
-        if (line == Size)
-        {
-            ElementIndexesForAllTransversals.Add(current);
-            return;
-        }
-
-        foreach (var index in InputElementIndexesPerLine[line])
-        {
-            if (!current.Take(line).Contains(index))
+            if (addRow)
             {
-                var next = current.ToArray();
-                next[line] = index;
-                GenerateElementIndexesForAllTransversals(line + 1, next);
+                clone[i][length] = -1;
             }
         }
-    }
-
-    private string CalculateHash(List<int[]> elements)
-    {
-        var length = $"{Size - 1}".Length;
-        return string.Concat(elements.Select(line => string.Concat(line.Select(index => $"{index}".PadLeft(length, '0')))).Order());
+        return clone;
     }
 
     public void Dispose()
     {
-        InputElementIndexesPerLine.Clear();
-        ElementIndexesForAllTransversals.Clear();
-        GeneratedHashes.Dispose();
-        ParallelsCount = 0;
+        InputPositionsPerRow.Clear();
     }
 }
