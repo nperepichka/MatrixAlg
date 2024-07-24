@@ -1,12 +1,19 @@
-﻿namespace MatrixAlg.Analysers;
+﻿using MatrixAlg.Helpers;
 
-internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<int[]>> OutputDecompose) : IDisposable
+namespace MatrixAlg.Analysers;
+
+internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput) : IDisposable
 {
     private readonly int Size = Input.GetLength(0);
     private readonly List<int[]> InputPositionsPerRow = [];
 
-    private static int ParallelsCount = 0;
-    private static readonly int ParallelsLimit = Environment.ProcessorCount / 4;
+    /// <summary>
+    /// Decomposition counter
+    /// </summary>
+    public long DecomposesCount = 0;
+
+    private int ParallelsCount = 0;
+    private readonly int ParallelsLimit = ShowOutput ? 0 : Environment.ProcessorCount / 4;
 
     public async Task Decompose()
     {
@@ -86,9 +93,17 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
         n++;
         if (n == Size)
         {
-            foreach (var nextDecomposition in decompositions)
+            if (ShowOutput)
             {
-                OutputDecompose(nextDecomposition);
+                foreach (var nextDecomposition in decompositions)
+                {
+                    Interlocked.Increment(ref DecomposesCount);
+                    ConsoleWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
+                }
+            }
+            else
+            {
+                Interlocked.Add(ref DecomposesCount, decompositions.Count);
             }
         }
         else
@@ -115,20 +130,21 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
 
     private static int[][] CloneDecomposition(int[][] original, bool addRow)
     {
+        var currentRowsCount = original[0].Length;
+        var newRowsCount = addRow ? currentRowsCount + 1 : currentRowsCount;
+
         var clone = new int[original.Length][];
+
         for (var i = 0; i < original.Length; i++)
         {
-            var length = original[i].Length;
-            clone[i] = new int[addRow ? length + 1 : length];
-            for (var j = 0; j < length; j++)
-            {
-                clone[i][j] = original[i][j];
-            }
+            clone[i] = new int[newRowsCount];
+            Array.Copy(original[i], clone[i], currentRowsCount);
             if (addRow)
             {
-                clone[i][length] = -1;
+                clone[i][currentRowsCount] = -1;
             }
         }
+
         return clone;
     }
 
