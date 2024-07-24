@@ -35,7 +35,7 @@ internal static class ConsoleWriter
     /// </summary>
     /// <param name="res">List of decompositions on 1-transversals</param>
     /// <param name="n">Number of decomposition</param>
-    public static void WriteDecomposition(int[][] res, long n)
+    public static void WriteDecomposition(byte[][] res, ulong n)
     {
         // Output decomposition counter value to console
         Console.WriteLine($"Decomposition #{n}");
@@ -92,7 +92,7 @@ internal static class ConsoleWriter
         Console.WriteLine();
     }
 
-    private static bool[,] BuildMatrix(int[] indexes)
+    private static bool[,] BuildMatrix(byte[] indexes)
     {
         var size = indexes.Length;
         var res = new bool[size, size];

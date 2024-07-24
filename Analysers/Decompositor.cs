@@ -2,17 +2,17 @@
 
 namespace MatrixAlg.Analysers;
 
-internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
+internal class Decompositor(bool[,] Input, byte Transversal, bool ShowOutput)
 {
-    private readonly int Size = Input.GetLength(0);
-    private readonly List<int[]> InputPositionsPerRow = [];
-
-    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
+    private readonly byte Size = (byte)Input.GetLength(0);
+    private readonly List<byte[]> InputPositionsPerRow = [];
+    private readonly byte ParallelOnRow = ShowOutput ? byte.MaxValue : (byte)2;
+    private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
 
     /// <summary>
     /// Decomposition counter
     /// </summary>
-    public long DecomposesCount = 0;
+    public ulong DecomposesCount = 0;
 
     public void Decompose()
     {
@@ -24,10 +24,10 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
 
     private void GenerateInputPositionsPerRow()
     {
-        for (var i = 0; i < Size; i++)
+        for (byte i = 0; i < Size; i++)
         {
-            var elementsForLine = new List<int>(Transversal);
-            for (var j = 0; j < Size; j++)
+            var elementsForLine = new List<byte>(Transversal);
+            for (byte j = 0; j < Size; j++)
             {
                 if (Input[i, j])
                 {
@@ -38,21 +38,21 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
         }
     }
 
-    private int[][] BuildDecompositionWithFirstRow()
+    private byte[][] BuildDecompositionWithFirstRow()
     {
-        var decomposition = new int[Transversal][];
-        for (var i = 0; i < Transversal; i++)
+        var decomposition = new byte[Transversal][];
+        for (byte i = 0; i < Transversal; i++)
         {
             decomposition[i] = [InputPositionsPerRow[0][i]];
         }
         return decomposition;
     }
 
-    private void GenerateDecompositions(int n, int[][] decomposition)
+    private void GenerateDecompositions(byte n, byte[][] decomposition)
     {
         var nextRowVariants = InputPositionsPerRow[n];
 
-        var decompositions = new List<int[][]>();
+        var decompositions = new List<byte[][]>();
 
         // Build next row for 1st matrix
         foreach (var nextRowVariant in nextRowVariants)
@@ -66,7 +66,7 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
         }
 
         // Build next row for each other matrix
-        for (var i = 1; i < Transversal; i++)
+        for (byte i = 1; i < Transversal; i++)
         {
             var currentDecompositions = decompositions.ToArray();
             decompositions.Clear();
@@ -102,10 +102,10 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
             }
             else
             {
-                Interlocked.Add(ref DecomposesCount, decompositions.Count);
+                Interlocked.Add(ref DecomposesCount, (ulong)decompositions.Count);
             }
         }
-        else if (n != 2 || ShowOutput)
+        else if (n != ParallelOnRow)
         {
             foreach (var nextDecomposition in decompositions)
             {
@@ -121,20 +121,20 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
         }
     }
 
-    private static int[][] CloneDecomposition(int[][] original, bool addRow)
+    private static byte[][] CloneDecomposition(byte[][] original, bool addRow)
     {
         var currentRowsCount = original[0].Length;
         var newRowsCount = addRow ? currentRowsCount + 1 : currentRowsCount;
 
-        var clone = new int[original.Length][];
+        var clone = new byte[original.Length][];
 
         for (var i = 0; i < original.Length; i++)
         {
-            clone[i] = new int[newRowsCount];
+            clone[i] = new byte[newRowsCount];
             Array.Copy(original[i], clone[i], currentRowsCount);
             if (addRow)
             {
-                clone[i][currentRowsCount] = -1;
+                clone[i][currentRowsCount] = byte.MaxValue;
             }
         }
 

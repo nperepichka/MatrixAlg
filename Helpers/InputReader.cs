@@ -10,8 +10,8 @@ internal static class InputReader
         // Read data form input.txt file
         var lines = File
             .ReadAllLines("input.txt")
-            .Select(_ => _.Trim())
-            .Where(_ => !string.IsNullOrEmpty(_))
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
             .ToArray();
 
         // Get input matrix size
@@ -27,6 +27,12 @@ internal static class InputReader
         {
             // Notify that input matrix is too small and interupt application execution
             throw new Exception($"Input matrix should be at least 2x2.");
+        }
+        // Check if input matrix size is more than 250
+        if (size > 250)
+        {
+            // Notify that input matrix is too big and interupt application execution
+            throw new Exception($"Input matrix should be less or equal to 250x250.");
         }
 
         // Define empty matrix
