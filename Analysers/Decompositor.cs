@@ -5,12 +5,15 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
     private readonly int Size = Input.GetLength(0);
     private readonly List<int[]> InputPositionsPerRow = [];
 
-    public void Decompose()
+    private static int ParallelsCount = 0;
+    private static readonly int ParallelsLimit = Environment.ProcessorCount / 4;
+
+    public async Task Decompose()
     {
         GenerateInputPositionsPerRow();
 
         var initialDecompositionSytate = BuildDecompositionWithFirstRow();
-        GenerateDecompositions(1, initialDecompositionSytate);
+        await GenerateDecompositions(1, initialDecompositionSytate);
     }
 
     private void GenerateInputPositionsPerRow()
@@ -39,7 +42,7 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
         return decomposition;
     }
 
-    private void GenerateDecompositions(int n, int[][] decomposition)
+    private async Task GenerateDecompositions(int n, int[][] decomposition)
     {
         var nextRowVariants = InputPositionsPerRow[n];
 
@@ -81,15 +84,31 @@ internal class Decompositor(bool[,] Input, int Transversal, Action<IEnumerable<i
         }
 
         n++;
-        foreach (var nextDecomposition in decompositions)
+        if (n == Size)
         {
-            if (n == Size)
+            foreach (var nextDecomposition in decompositions)
             {
-                OutputDecompose(decomposition);
+                OutputDecompose(nextDecomposition);
+            }
+        }
+        else
+        {
+            //if (n == 2)
+            if (ParallelsCount < ParallelsLimit)
+            {
+                Interlocked.Add(ref ParallelsCount, decompositions.Count);
+                await Parallel.ForEachAsync(decompositions, async (nextDecomposition, _) =>
+                {
+                    await GenerateDecompositions(n, nextDecomposition);
+                    Interlocked.Decrement(ref ParallelsCount);
+                });
             }
             else
             {
-                GenerateDecompositions(n, nextDecomposition);
+                foreach (var nextDecomposition in decompositions)
+                {
+                    await GenerateDecompositions(n, nextDecomposition);
+                }
             }
         }
     }

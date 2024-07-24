@@ -19,7 +19,7 @@ internal class Program
     /// <summary>
     /// Application entry point method
     /// </summary>
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         if (args.Length > 0)
         {
@@ -78,7 +78,7 @@ internal class Program
         // Initiate decompositor
         using var decompositor = new Decompositor(input, transversal, WriteDecomposeOutput);
         // Process input matrix decomposition on 1-transversals
-        decompositor.Decompose();
+        await decompositor.Decompose();
 
         // Write empty line to console
         Console.WriteLine();
