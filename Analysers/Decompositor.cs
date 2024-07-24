@@ -2,25 +2,24 @@
 
 namespace MatrixAlg.Analysers;
 
-internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput) : IDisposable
+internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput)
 {
     private readonly int Size = Input.GetLength(0);
     private readonly List<int[]> InputPositionsPerRow = [];
+
+    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
 
     /// <summary>
     /// Decomposition counter
     /// </summary>
     public long DecomposesCount = 0;
 
-    private int ParallelsCount = 0;
-    private readonly int ParallelsLimit = ShowOutput ? 0 : Environment.ProcessorCount / 4;
-
-    public async Task Decompose()
+    public void Decompose()
     {
         GenerateInputPositionsPerRow();
 
         var initialDecompositionSytate = BuildDecompositionWithFirstRow();
-        await GenerateDecompositions(1, initialDecompositionSytate);
+        GenerateDecompositions(1, initialDecompositionSytate);
     }
 
     private void GenerateInputPositionsPerRow()
@@ -49,7 +48,7 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput) : I
         return decomposition;
     }
 
-    private async Task GenerateDecompositions(int n, int[][] decomposition)
+    private void GenerateDecompositions(int n, int[][] decomposition)
     {
         var nextRowVariants = InputPositionsPerRow[n];
 
@@ -106,25 +105,19 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput) : I
                 Interlocked.Add(ref DecomposesCount, decompositions.Count);
             }
         }
+        else if (n != 2 || ShowOutput)
+        {
+            foreach (var nextDecomposition in decompositions)
+            {
+                GenerateDecompositions(n, nextDecomposition);
+            }
+        }
         else
         {
-            //if (n == 2)
-            if (ParallelsCount < ParallelsLimit)
+            Parallel.ForEach(decompositions, ParallelOptions, nextDecomposition =>
             {
-                Interlocked.Add(ref ParallelsCount, decompositions.Count);
-                await Parallel.ForEachAsync(decompositions, async (nextDecomposition, _) =>
-                {
-                    await GenerateDecompositions(n, nextDecomposition);
-                    Interlocked.Decrement(ref ParallelsCount);
-                });
-            }
-            else
-            {
-                foreach (var nextDecomposition in decompositions)
-                {
-                    await GenerateDecompositions(n, nextDecomposition);
-                }
-            }
+                GenerateDecompositions(n, nextDecomposition);
+            });
         }
     }
 
@@ -146,10 +139,5 @@ internal class Decompositor(bool[,] Input, int Transversal, bool ShowOutput) : I
         }
 
         return clone;
-    }
-
-    public void Dispose()
-    {
-        InputPositionsPerRow.Clear();
     }
 }

@@ -12,7 +12,7 @@ internal class Program
     /// <summary>
     /// Application entry point method
     /// </summary>
-    private static async Task Main(string[] args)
+    private static void Main(string[] args)
     {
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
@@ -64,9 +64,9 @@ internal class Program
         var showOutput = args?.Contains("show") == true;
 
         // Initiate decompositor
-        using var decompositor = new Decompositor(input, transversal, showOutput);
+        var decompositor = new Decompositor(input, transversal, showOutput);
         // Process input matrix decomposition on 1-transversals
-        await decompositor.Decompose();
+        decompositor.Decompose();
 
         // Write empty line to console
         Console.WriteLine();
