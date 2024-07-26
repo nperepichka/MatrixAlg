@@ -1,4 +1,5 @@
 ﻿using MatrixAlg.Analysers;
+using MatrixAlg.Models;
 
 namespace MatrixAlg.Helpers;
 
@@ -40,69 +41,50 @@ internal static class ConsoleWriter
         // Output decomposition counter value to console
         Console.WriteLine($"Decomposition #{n}");
 
-        // Define a list to store all not symetric matrixes with indexes
-        var notSymetricMatrixes = new List<(bool[,] matrix, int index)>();
+        // Define a list with matrixes details
+        var matrixes = res
+            .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
+            .OrderBy(matrix => matrix.Hash)
+            .ToArray();
 
-        // Build and enumerate all matrixes
-        foreach (var matrix in res.Select(BuildMatrix))
+        // Enumerate all matrixes
+        foreach (var matrix in matrixes)
         {
-            // Check if matrix is symetric
-            var isSymetric = SymetricDetector.IsSymetric(matrix);
+            // Output matrix to console
+            WriteMatrix(matrix.Matrix);
+
             // If is symetric
-            if (isSymetric)
+            if (matrix.IsSymetric)
             {
-                // Output matrix to console
-                ConsoleWriter.WriteMatrix(matrix);
                 // Write to console that matrix is symetric
                 Console.WriteLine("Matrix is symetric.");
             }
             // If is not symetric
             else
             {
-                // Add matrix to list of all not symetric matrixes
-                notSymetricMatrixes.Add((matrix, notSymetricMatrixes.Count));
+                // Write to console that matrix is not symetric
+                Console.WriteLine("Matrix is not symetric.");
+
+                // Check if has similar not symetric matrix exists
+                matrix.HasSimilar = matrixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && SymetricDetector.AreSimilar(matrix.Matrix, m.Matrix));
+                // If similar not symetric matrix exists
+                if (matrix.HasSimilar)
+                {
+                    // Write to console that matrix is similar to other not symetric matrix
+                    Console.WriteLine("Matrix is similar to other not symetric matrix.");
+                }
+                // If similar not symetric matrix not exists
+                else
+                {
+                    // Write to console that matrix is not similar to other not symetric matrix
+                    Console.WriteLine("Matrix is not similar to other not symetric matrix.");
+                }
             }
         }
 
-        // Enumerate all not symetric matrixes
-        foreach (var (matrix, index) in notSymetricMatrixes)
-        {
-            // Output matrix to console
-            ConsoleWriter.WriteMatrix(matrix);
-            // Write to console that matrix is not symetric
-            Console.WriteLine("Matrix is not symetric.");
-
-            // Check if similar not symetric matrix exists
-            var similarExists = notSymetricMatrixes.Any(m => m.index != index && SymetricDetector.AreSimilar(matrix, m.matrix));
-            // If similar not symetric matrix exists
-            if (similarExists)
-            {
-                // Write to console that matrix is similar to other not symetric matrix
-                Console.WriteLine("Matrix is similar to other not symetric matrix.");
-            }
-            // If similar not symetric matrix not exists
-            else
-            {
-                // Write to console that matrix is not similar to other not symetric matrix
-                Console.WriteLine("Matrix is not similar to other not symetric matrix.");
-            }
-        }
+        // TODO: check for qube symetric
 
         // Write empty line to console
         Console.WriteLine();
-    }
-
-    private static bool[,] BuildMatrix(byte[] indexes)
-    {
-        var size = indexes.Length;
-        var res = new bool[size, size];
-        for (var i = 0; i < size; i++)
-        {
-            for (var j = 0; j < size; j++)
-            {
-                res[i, j] = indexes[i] == j;
-            }
-        }
-        return res;
     }
 }
