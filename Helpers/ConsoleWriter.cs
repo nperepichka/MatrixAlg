@@ -24,7 +24,7 @@ internal static class ConsoleWriter
             for (var j = 0; j < size; j++)
             {
                 // Write cell value to console
-                Console.Write(matrix[i, j] ? 1 : 0);
+                Console.Write(matrix[i, j] ? " *" : " O");
             }
             // Write empty line to console
             Console.WriteLine();
@@ -34,21 +34,35 @@ internal static class ConsoleWriter
     /// <summary>
     /// Write decomposition output to console
     /// </summary>
-    /// <param name="res">List of decompositions on 1-transversals</param>
+    /// <param name="decomposition">Decompositions on 1-transversals</param>
     /// <param name="n">Number of decomposition</param>
-    public static void WriteDecomposition(byte[][] res, ulong n)
+    public static void WriteDecomposition(byte[][] decomposition, ulong n)
     {
         // Output decomposition counter value to console
         Console.WriteLine($"Decomposition #{n}");
 
         // Define a list with matrixes details
-        var matrixes = res
+        var matrixes = decomposition
             .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
-            .OrderBy(matrix => matrix.Hash)
             .ToArray();
 
+        // Check if cube of decomposition is symetric
+        var isCubeSymetric = SymetricDetector.IsCubeSymetric(matrixes, out var sortedMartixes);
+        // If cube is symetric
+        if (isCubeSymetric)
+        {
+            // Write to console that cube of decomposition is symetric
+            Console.WriteLine("Cube of decomposition is symetric.");
+        }
+        // If cube is not symetric
+        else
+        {
+            // Write to console that cube of decomposition is not symetric
+            Console.WriteLine("Cube of decomposition is not symetric.");
+        }
+
         // Enumerate all matrixes
-        foreach (var matrix in matrixes)
+        foreach (var matrix in sortedMartixes)
         {
             // Output matrix to console
             WriteMatrix(matrix.Matrix);
@@ -66,7 +80,7 @@ internal static class ConsoleWriter
                 Console.WriteLine("Matrix is not symetric.");
 
                 // Check if has similar not symetric matrix exists
-                matrix.HasSimilar = matrixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && SymetricDetector.AreSimilar(matrix.Matrix, m.Matrix));
+                matrix.HasSimilar = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && SymetricDetector.AreSimilar(matrix.Matrix, m.Matrix));
                 // If similar not symetric matrix exists
                 if (matrix.HasSimilar)
                 {
@@ -81,8 +95,6 @@ internal static class ConsoleWriter
                 }
             }
         }
-
-        // TODO: check for qube symetric
 
         // Write empty line to console
         Console.WriteLine();
