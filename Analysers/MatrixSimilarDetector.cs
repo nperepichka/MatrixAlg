@@ -171,4 +171,27 @@ internal static class MatrixSimilarDetector
 
         return true;
     }
+
+    public static bool IsSelfSimilar(bool[,] matrix)
+    {
+        var matrixr1 = RotateMatrix(matrix);
+        if (AreSame(matrixr1, matrix))
+        {
+            return true;
+        }
+
+        var matrixr2 = RotateMatrix(matrixr1);
+        if (AreSame(matrixr2, matrix))
+        {
+            return true;
+        }
+
+        var matrixr3 = RotateMatrix(matrixr2);
+        if (AreSame(matrixr3, matrix))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

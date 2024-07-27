@@ -2,12 +2,14 @@
 
 namespace MatrixAlg.Analysers;
 
-internal class Decompositor(bool[,] Input, byte Transversal, bool ShowOutput)
+internal class Decompositor(bool[,] Input, byte Transversal)
 {
     private readonly byte Size = (byte)Input.GetLength(0);
     private readonly List<byte[]> InputPositionsPerRow = [];
-    private readonly byte ParallelOnRow = ShowOutput ? byte.MaxValue : (byte)2;
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
+
+    private bool ShowOutput = true;
+    private byte ParallelOnRow = 2;
 
     /// <summary>
     /// Decomposition counter
@@ -16,6 +18,10 @@ internal class Decompositor(bool[,] Input, byte Transversal, bool ShowOutput)
 
     public void Decompose()
     {
+        // TODO:maybe rowork a bit
+        ShowOutput = Size < 6;
+        ParallelOnRow = ShowOutput ? byte.MaxValue : ParallelOnRow;
+
         GenerateInputPositionsPerRow();
 
         var initialDecompositionSytate = BuildDecompositionWithFirstRow();
@@ -97,7 +103,7 @@ internal class Decompositor(bool[,] Input, byte Transversal, bool ShowOutput)
                 foreach (var nextDecomposition in decompositions)
                 {
                     Interlocked.Increment(ref DecomposesCount);
-                    ConsoleWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
+                    OutputWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
                 }
             }
             else

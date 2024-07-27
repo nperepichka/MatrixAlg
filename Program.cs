@@ -20,24 +20,29 @@ internal class Program
         // Read input matrix
         var input = InputReader.Read();
 
-        // Write to console input matrix title
-        Console.WriteLine("Input matrix:");
-        // Output input matrix to console
-        ConsoleWriter.WriteMatrix(input);
+        // Clear output
+        OutputWriter.Clear();
+
+        // Write input matrix title
+        OutputWriter.WriteLine("Input matrix:");
+        // Write input matrix
+        OutputWriter.WriteMatrix(input);
 
         // Check if input matrix is symetric
         var isInputSymetric = MatrixSymetricDetector.IsSymetric(input);
+        // TODO: test if self similar
+        // TODO: output something if writes only to console
         // If is symetric
         if (isInputSymetric)
         {
-            // Write to console that matrix is symetric
-            Console.WriteLine("Input matrix is symetric.");
+            // Write that matrix is symetric
+            OutputWriter.WriteLine("Input matrix is symetric.");
         }
         // If is not symetric
         else
         {
-            // Write to console that matrix is symetric
-            Console.WriteLine("Input matrix is not symetric.");
+            // Write that matrix is symetric
+            OutputWriter.WriteLine("Input matrix is not symetric.");
         }
 
         // Find transversal size in input matrix
@@ -45,33 +50,30 @@ internal class Program
         // If transversal exists
         if (transversal > 0)
         {
-            // Write to console that matrix has transversal
-            Console.WriteLine($"Input matrix has transversal: {transversal}.");
+            // Write that matrix has transversal
+            OutputWriter.WriteLine($"Input matrix has transversal: {transversal}.");
         }
         // If transversal not exists
         else
         {
-            // Write to console that matrix has no transversal
-            Console.WriteLine($"Input matrix has no transversal.");
+            // Write that matrix has no transversal
+            OutputWriter.WriteLine($"Input matrix has no transversal.");
             //Exit an application
             return;
         }
 
-        // Write empty line to console
-        Console.WriteLine();
-
-        // Show output if matrix size is less than 5 or "show" param passed in console
-        var showOutput = input.GetLength(0) < 5 || args?.Contains("show") == true;
+        // Write empty line
+        OutputWriter.WriteLine();
 
         // Initiate decompositor
-        var decompositor = new Decompositor(input, transversal, showOutput);
+        var decompositor = new Decompositor(input, transversal);
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
 
-        // Write empty line to console
-        Console.WriteLine();
-        // Output total decompositions count value to console
-        Console.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
+        // Write empty line
+        OutputWriter.WriteLine();
+        // Output total decompositions count value
+        OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
 
         // Stop timer
         stopwatch.Stop();
