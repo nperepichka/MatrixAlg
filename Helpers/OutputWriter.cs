@@ -53,9 +53,10 @@ internal static class OutputWriter
         OutputQueueMonitoringEnabled = true;
         Task.Run(() =>
         {
+            var outputStringBuilder = new StringBuilder(string.Empty);
+
             while (OutputQueueMonitoringEnabled)
             {
-                var outputStringBuilder = new StringBuilder(string.Empty);
                 var outputBuilderCounter = 0;
 
                 while (OutputQueue.TryDequeue(out var s))
@@ -73,14 +74,32 @@ internal static class OutputWriter
                     }
                 }
 
-                File.AppendAllText(OutputFileName, outputStringBuilder.ToString());
+                WriteToFile(ref outputStringBuilder, true);
 
                 if (outputBuilderCounter == 0)
                 {
                     Thread.Sleep(10);
                 }
             }
+
+            WriteToFile(ref outputStringBuilder, false);
         });
+    }
+
+    private static void WriteToFile(ref StringBuilder stringBuilder, bool allowIOException)
+    {
+        try
+        {
+            File.AppendAllText(OutputFileName, stringBuilder.ToString());
+            stringBuilder.Clear();
+        }
+        catch (Exception ex)
+        {
+            if (!allowIOException || ex is not IOException)
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+            }
+        }
     }
 
     public static void StopOutputQueueMonitoring()
