@@ -8,11 +8,6 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     private readonly List<byte[]> InputPositionsPerRow = [];
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
 
-    private const bool EnableOutput = true;
-    private const bool EnableParallelProcessing = false;
-
-    private byte ParallelOnRow = EnableOutput || !EnableParallelProcessing ? byte.MaxValue : 2;
-
     /// <summary>
     /// Decomposition counter
     /// </summary>
@@ -96,20 +91,14 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         n++;
         if (n == Size)
         {
-            if (EnableOutput)
+            foreach (var nextDecomposition in decompositions)
             {
-                foreach (var nextDecomposition in decompositions)
-                {
-                    Interlocked.Increment(ref DecomposesCount);
-                    OutputWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
-                }
+                Interlocked.Increment(ref DecomposesCount);
+                DataOutputWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
             }
-            else
-            {
-                Interlocked.Add(ref DecomposesCount, (ulong)decompositions.Count);
-            }
+            //Interlocked.Add(ref DecomposesCount, (ulong)decompositions.Count);
         }
-        else if (n != ParallelOnRow)
+        else if (n != 2)
         {
             foreach (var nextDecomposition in decompositions)
             {

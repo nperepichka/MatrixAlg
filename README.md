@@ -10,6 +10,5 @@ Implemented in scope of PhD study
 
 ## Usage
 ```
-MatrixAlg [show]
+MatrixAlg
 ```
-- `show`: show decomposition in console output

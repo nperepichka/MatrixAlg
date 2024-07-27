@@ -10,32 +10,46 @@ internal static class CubeSymetricDetector
         .GetValues(typeof(CubeView))
         .OfType<CubeView>().ToArray();
 
-    private static readonly Dictionary<int, List<int[]>> Combinations = [];
+    private static readonly List<int[]> Combinations = [];
 
-    private static List<int[]> GetCombinations(int size)
+    public static void GenerateCombinations(int size)
     {
-        if (!Combinations.TryGetValue(size, out List<int[]>? combinations))
+        Combinations.Clear();
+        var indexes = new int[size];
+        for (var i = 0; i < size; i++)
         {
-            var indexes = new int[size];
-            for (var i = 0; i < size; i++)
-            {
-                indexes[i] = i;
-            }
-            combinations = [];
-            Permute(indexes, 0, combinations);
-            Combinations.Add(size, combinations);
+            indexes[i] = i;
+        }
+        Permute(indexes, 0);
+    }
+
+    private static void Permute(int[] indexes, int start)
+    {
+        if (start >= indexes.Length - 1)
+        {
+            Combinations.Add([.. indexes]);
+            return;
         }
 
-        return combinations;
+        for (int i = start; i < indexes.Length; i++)
+        {
+            // Swap elements in place
+            (indexes[start], indexes[i]) = (indexes[i], indexes[start]);
+
+            Permute(indexes, start + 1);
+
+            // Backtrack by swapping back
+            (indexes[start], indexes[i]) = (indexes[i], indexes[start]);
+        }
     }
 
     public static bool IsSymetric(DecompositionMatrixDetails[] decomposition, out DecompositionMatrixDetails[] sortedDecomposition)
     {
-        var combinations = GetCombinations(decomposition.Length);
-
-        foreach (var combination in combinations)
+        foreach (var combination in Combinations)
         {
-            var testDecomposition = combination.Select(index => decomposition.First(m => m.Index == index)).ToArray();
+            var testDecomposition = combination
+                .Select(index => decomposition.First(m => m.Index == index))
+                .ToArray();
 
             var views = CubeViews
                 .ToDictionary(view => view, view => ViewToString(testDecomposition, view));
@@ -54,29 +68,9 @@ internal static class CubeSymetricDetector
         return false;
     }
 
-    private static void Permute(int[] indexes, int start, List<int[]> result)
-    {
-        if (start >= indexes.Length - 1)
-        {
-            result.Add((int[])indexes.Clone());
-            return;
-        }
-
-        for (int i = start; i < indexes.Length; i++)
-        {
-            // Swap elements in place
-            (indexes[start], indexes[i]) = (indexes[i], indexes[start]);
-
-            Permute(indexes, start + 1, result);
-
-            // Backtrack by swapping back
-            (indexes[start], indexes[i]) = (indexes[i], indexes[start]);
-        }
-    }
-
     private static string ViewToString(DecompositionMatrixDetails[] decomposition, CubeView view)
     {
-        var sb = new StringBuilder(string.Empty);
+        var stringBuilder = new StringBuilder(string.Empty);
         var size = decomposition.Length;
 
         switch (view)
@@ -88,7 +82,7 @@ internal static class CubeSymetricDetector
                     {
                         for (var k = 0; k < size; k++)
                         {
-                            sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
                         }
                     }
                 }
@@ -100,8 +94,8 @@ internal static class CubeSymetricDetector
                     {
                         for (var k = 0; k < size; k++)
                         {
-                            // sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
-                            sb.Append(decomposition[size - k - 1].Matrix[i, j] ? "1" : "0");
+                            // stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            stringBuilder.Append(decomposition[size - k - 1].Matrix[i, j] ? "1" : "0");
                         }
                     }
                 }
@@ -113,8 +107,8 @@ internal static class CubeSymetricDetector
                     {
                         for (var i = 0; i < size; i++)
                         {
-                            sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
-                            //sb.Append(decomposition[k].Matrix[i, size - j - 1] ? "1" : "0"); // -
+                            stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            //stringBuilder.Append(decomposition[k].Matrix[i, size - j - 1] ? "1" : "0"); // -
                         }
                     }
                 }
@@ -126,8 +120,8 @@ internal static class CubeSymetricDetector
                     {
                         for (var i = 0; i < size; i++)
                         {
-                            //sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
-                            sb.Append(decomposition[k].Matrix[i, size - j - 1] ? "1" : "0");
+                            //stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            stringBuilder.Append(decomposition[k].Matrix[i, size - j - 1] ? "1" : "0");
                         }
                     }
                 }
@@ -139,8 +133,8 @@ internal static class CubeSymetricDetector
                     {
                         for (var k = 0; k < size; k++)
                         {
-                            sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
-                            //sb.Append(decomposition[k].Matrix[size - i - 1, j] ? "1" : "0"); // -
+                            stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            //stringBuilder.Append(decomposition[k].Matrix[size - i - 1, j] ? "1" : "0"); // -
                         }
                     }
                 }
@@ -152,14 +146,14 @@ internal static class CubeSymetricDetector
                     {
                         for (var k = 0; k < size; k++)
                         {
-                            //sb.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
-                            sb.Append(decomposition[k].Matrix[size - i - 1, j] ? "1" : "0");
+                            //stringBuilder.Append(decomposition[k].Matrix[i, j] ? "1" : "0");
+                            stringBuilder.Append(decomposition[k].Matrix[size - i - 1, j] ? "1" : "0");
                         }
                     }
                 }
                 break;
         }
 
-        return sb.ToString();
+        return stringBuilder.ToString();
     }
 }

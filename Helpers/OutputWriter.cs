@@ -1,135 +1,78 @@
-﻿using MatrixAlg.Analysers;
-using MatrixAlg.Models;
+﻿using System.Collections.Concurrent;
 
 namespace MatrixAlg.Helpers;
 
 /// <summary>
-/// Helper class, used to output matrix
+/// Helper class, used to manage output
 /// </summary>
 internal static class OutputWriter
 {
+    /// <summary>
+    /// Output file name
+    /// </summary>
     private const string OutputFileName = "output.txt";
-
-    public static bool CanWriteToConsole = true;
+    /// <summary>
+    /// Queue of strings for output
+    /// </summary>
+    private static readonly ConcurrentQueue<string> OutputQueue = new();
+    /// <summary>
+    /// Can write to console flag
+    /// </summary>
+    public static bool CanWriteToConsole { get; set; } = true;
+    /// <summary>
+    /// Queue of strings for output monitoring enabled flag
+    /// </summary>
+    private static bool OutputQueueMonitoringEnabled { get; set; } = false;
 
     /// <summary>
-    /// Write matrix
+    /// Clear output file
     /// </summary>
-    /// <param name="matrix">Matrix</param>
-    public static void WriteMatrix(bool[,] matrix)
-    {
-        // Get matrix size
-        var size = matrix.GetLength(0);
-
-        // Enumerate rows
-        for (var i = 0; i < size; i++)
-        {
-            // Enumerate columns
-            for (var j = 0; j < size; j++)
-            {
-                // Write cell value
-                Write(matrix[i, j] ? " *" : " O");
-            }
-            // Write empty line
-            WriteLine();
-        }
-    }
-
-    /// <summary>
-    /// Write decomposition output
-    /// </summary>
-    /// <param name="decomposition">Decompositions on 1-transversals</param>
-    /// <param name="n">Number of decomposition</param>
-    public static void WriteDecomposition(byte[][] decomposition, ulong n)
-    {
-        // Output decomposition counter value
-        WriteLine($"Decomposition #{n}");
-
-        // Define a list with matrixes details
-        var matrixes = decomposition
-            .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
-            .ToArray();
-
-        // Check if cube of decomposition is symetric
-        var isCubeSymetric = CubeSymetricDetector.IsSymetric(matrixes, out var sortedMartixes);
-        // If cube is symetric
-        if (isCubeSymetric)
-        {
-            // Write that cube of decomposition is symetric
-            WriteLine("Cube of decomposition is symetric.");
-        }
-        // If cube is not symetric
-        else
-        {
-            // Write that cube of decomposition is not symetric
-            WriteLine("Cube of decomposition is not symetric.");
-        }
-
-        // Enumerate all matrixes
-        foreach (var matrix in sortedMartixes)
-        {
-            // Output matrix
-            WriteMatrix(matrix.Matrix);
-
-            // If is symetric
-            if (matrix.IsSymetric)
-            {
-                // Write that matrix is symetric
-                WriteLine("Matrix is symetric.");
-            }
-            // If is self conjugate
-            else if (matrix.IsSelfConjugate)
-            {
-                // Write that matrix is self conjugate
-                WriteLine("Matrix is self conjugate.");
-            }
-            // If is not symetric and not self conjugate
-            else
-            {
-                // Check if conjugate not symetric matrix exists
-                matrix.HasСonjugate = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
-                // If conjugate not symetric matrix exists
-                if (matrix.HasСonjugate)
-                {
-                    // Write that matrix is conjugate to other matrix
-                    WriteLine("Matrix is not symetric and not self conjugate, but is conjugate to other matrix.");
-                }
-                // If conjugate not symetric matrix not exists
-                else
-                {
-                    // Write that matrix is not conjugate to other matrix
-                    WriteLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
-                }
-            }
-        }
-
-        // Write empty line
-        WriteLine();
-    }
-
     public static void Clear()
     {
+        // Check if output file exists
         if (File.Exists(OutputFileName))
         {
+            // Remove output file
             File.Delete(OutputFileName);
         }
     }
 
     public static void Write(string s)
     {
-        if (CanWriteToConsole)
-        {
-            Console.Write(s);
-        }
-        File.AppendAllText(OutputFileName, s);
+        OutputQueue.Enqueue(s);
     }
 
     public static void WriteLine(string? s = null)
     {
-        if (CanWriteToConsole)
+        Write($"{s}{Environment.NewLine}");
+    }
+
+    public static void StartOutputQueueMonitoring()
+    {
+        OutputQueueMonitoringEnabled = true;
+        Task.Run(() =>
         {
-            Console.WriteLine(s);
+            while (OutputQueueMonitoringEnabled)
+            {
+                while (OutputQueue.TryDequeue(out var s))
+                {
+                    if (CanWriteToConsole)
+                    {
+                        Console.Write(s);
+                    }
+                    File.AppendAllText(OutputFileName, s);
+                }
+                Thread.Sleep(10);
+            }
+        });
+    }
+
+    public static void StopOutputQueueMonitoring()
+    {
+        while (!OutputQueue.IsEmpty)
+        {
+            Thread.Sleep(10);
         }
-        File.AppendAllText(OutputFileName, $"{s}{Environment.NewLine}");
+        OutputQueueMonitoringEnabled = false;
     }
 }

@@ -19,14 +19,23 @@ internal class Program
 
         // Clear output
         OutputWriter.Clear();
+        // Enable output queue monitoring
+        OutputWriter.StartOutputQueueMonitoring();
 
         // Read input matrix
         var input = InputReader.Read();
 
+        // If console output not allowed
+        if (!OutputWriter.CanWriteToConsole)
+        {
+            // Write that output will be saved to file
+            Console.WriteLine("Processing started. Output will be saved to file.");
+        }
+
         // Write input matrix title
         OutputWriter.WriteLine("Input matrix:");
         // Write input matrix
-        OutputWriter.WriteMatrix(input);
+        DataOutputWriter.WriteMatrix(input);
 
         // If input matrix is symetric
         if (MatrixSymetricDetector.IsSymetric(input))
@@ -67,6 +76,9 @@ internal class Program
         // Write empty line
         OutputWriter.WriteLine();
 
+        // Generate combinations for cube analyse
+        CubeSymetricDetector.GenerateCombinations(transversal);
+
         // Initiate decompositor
         var decompositor = new Decompositor(input, transversal);
         // Process input matrix decomposition on 1-transversals
@@ -79,15 +91,19 @@ internal class Program
 
         // Stop timer
         stopwatch.Stop();
-        // Write elapsed time to console
-        Console.WriteLine($"Elapsed: {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
 
-        // Get current process
-        using var proc = Process.GetCurrentProcess();
-        // Measure memory usage
-        var memory = proc.PrivateMemorySize64 / (1024 * 1024);
-        // Output memory usage to console
-        Console.WriteLine($"Memory used: {memory} Mb");
+        // If console output not allowed
+        if (!OutputWriter.CanWriteToConsole)
+        {
+            // Write that processing id finished
+            Console.WriteLine("Processing finished. Pending for output to be saved to file.");
+        }
+
+        // Stop output queue monitoring
+        OutputWriter.StopOutputQueueMonitoring();
+
+        // Write elapsed time to console
+        Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
 
         // Output done message to console
         Console.WriteLine("Done. Press <Enter> to exit...");
