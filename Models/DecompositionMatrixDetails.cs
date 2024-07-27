@@ -9,7 +9,7 @@ internal class DecompositionMatrixDetails
         MatrixElements = matrixElements;
         Index = index;
         Matrix = BuildMatrix(matrixElements);
-        IsSymetric = SymetricDetector.IsSymetric(Matrix);
+        IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
         HasSimilar = false;
         Hash = GetHash(matrixElements);
     }

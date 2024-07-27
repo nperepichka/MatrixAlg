@@ -26,7 +26,7 @@ internal class Program
         ConsoleWriter.WriteMatrix(input);
 
         // Check if input matrix is symetric
-        var isInputSymetric = SymetricDetector.IsSymetric(input);
+        var isInputSymetric = MatrixSymetricDetector.IsSymetric(input);
         // If is symetric
         if (isInputSymetric)
         {
@@ -41,7 +41,7 @@ internal class Program
         }
 
         // Find transversal size in input matrix
-        var transversal = TransversalDetector.FindTransversal(input);
+        var transversal = MatrixTransversalDetector.FindTransversal(input);
         // If transversal exists
         if (transversal > 0)
         {
@@ -60,8 +60,8 @@ internal class Program
         // Write empty line to console
         Console.WriteLine();
 
-        // Detect if show output param passed in console
-        var showOutput = args?.Contains("show") == true;
+        // Show output if matrix size is less than 5 or "show" param passed in console
+        var showOutput = input.GetLength(0) < 5 || args?.Contains("show") == true;
 
         // Initiate decompositor
         var decompositor = new Decompositor(input, transversal, showOutput);

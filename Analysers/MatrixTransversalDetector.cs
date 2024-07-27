@@ -1,6 +1,6 @@
 ﻿namespace MatrixAlg.Analysers;
 
-internal static class TransversalDetector
+internal static class MatrixTransversalDetector
 {
     public static byte FindTransversal(bool[,] matrix)
     {

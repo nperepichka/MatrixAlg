@@ -47,7 +47,7 @@ internal static class ConsoleWriter
             .ToArray();
 
         // Check if cube of decomposition is symetric
-        var isCubeSymetric = SymetricDetector.IsCubeSymetric(matrixes, out var sortedMartixes);
+        var isCubeSymetric = CubeSymetricDetector.IsSymetric(matrixes, out var sortedMartixes);
         // If cube is symetric
         if (isCubeSymetric)
         {
@@ -80,7 +80,7 @@ internal static class ConsoleWriter
                 Console.WriteLine("Matrix is not symetric.");
 
                 // Check if has similar not symetric matrix exists
-                matrix.HasSimilar = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && SymetricDetector.AreSimilar(matrix.Matrix, m.Matrix));
+                matrix.HasSimilar = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixSimilarDetector.AreSimilar(matrix.Matrix, m.Matrix));
                 // If similar not symetric matrix exists
                 if (matrix.HasSimilar)
                 {
