@@ -1,5 +1,6 @@
 ﻿using MatrixAlg.Analysers;
 using MatrixAlg.Helpers;
+using MatrixAlg.Processors;
 using System.Diagnostics;
 
 namespace MatrixAlg;

@@ -1,6 +1,6 @@
 ﻿using MatrixAlg.Helpers;
 
-namespace MatrixAlg.Analysers;
+namespace MatrixAlg.Processors;
 
 internal class Decompositor(bool[,] Input, byte Transversal)
 {

@@ -6,10 +6,6 @@ namespace MatrixAlg.Analysers;
 
 internal static class CubeSymetricDetector
 {
-    private static readonly CubeView[] CubeViews = Enum
-        .GetValues(typeof(CubeView))
-        .OfType<CubeView>().ToArray();
-
     private static readonly List<int[]> Combinations = [];
 
     public static void GenerateCombinations(int size)
@@ -48,16 +44,23 @@ internal static class CubeSymetricDetector
         foreach (var combination in Combinations)
         {
             var testDecomposition = combination
-                .Select(index => decomposition.First(m => m.Index == index))
+                .Select(i => decomposition[i])
                 .ToArray();
 
-            var views = CubeViews
-                .ToDictionary(view => view, view => ViewToString(testDecomposition, view));
+            var topView = ViewToString(testDecomposition, CubeView.Top);
+            var rightView = ViewToString(testDecomposition, CubeView.Right);
+            var backView = ViewToString(testDecomposition, CubeView.Back);
 
-            if (
-                views[CubeView.Top] == views[CubeView.Right] && views[CubeView.Right] == views[CubeView.Back]
-                || views[CubeView.Top] == views[CubeView.Left] && views[CubeView.Left] == views[CubeView.Front]
-                )
+            if (topView == rightView && rightView == backView)
+            {
+                sortedDecomposition = testDecomposition;
+                return true;
+            }
+
+            var leftView = ViewToString(testDecomposition, CubeView.Left);
+            var frontView = ViewToString(testDecomposition, CubeView.Front);
+
+            if (topView == leftView && leftView == frontView)
             {
                 sortedDecomposition = testDecomposition;
                 return true;

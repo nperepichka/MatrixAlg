@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 
 namespace MatrixAlg.Helpers;
 
@@ -54,15 +55,30 @@ internal static class OutputWriter
         {
             while (OutputQueueMonitoringEnabled)
             {
+                var outputStringBuilder = new StringBuilder(string.Empty);
+                var outputBuilderCounter = 0;
+
                 while (OutputQueue.TryDequeue(out var s))
                 {
                     if (CanWriteToConsole)
                     {
                         Console.Write(s);
                     }
-                    File.AppendAllText(OutputFileName, s);
+                    outputStringBuilder.Append(s);
+                    outputBuilderCounter++;
+
+                    if (outputBuilderCounter == 100)
+                    {
+                        break;
+                    }
                 }
-                Thread.Sleep(10);
+
+                File.AppendAllText(OutputFileName, outputStringBuilder.ToString());
+
+                if (outputBuilderCounter == 0)
+                {
+                    Thread.Sleep(10);
+                }
             }
         });
     }
