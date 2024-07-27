@@ -12,37 +12,39 @@ internal class Program
     /// <summary>
     /// Application entry point method
     /// </summary>
-    private static void Main(string[] args)
+    private static void Main()
     {
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
 
-        // Read input matrix
-        var input = InputReader.Read();
-
         // Clear output
         OutputWriter.Clear();
+
+        // Read input matrix
+        var input = InputReader.Read();
 
         // Write input matrix title
         OutputWriter.WriteLine("Input matrix:");
         // Write input matrix
         OutputWriter.WriteMatrix(input);
 
-        // Check if input matrix is symetric
-        var isInputSymetric = MatrixSymetricDetector.IsSymetric(input);
-        // TODO: test if self similar
-        // TODO: output something if writes only to console
-        // If is symetric
-        if (isInputSymetric)
+        // If input matrix is symetric
+        if (MatrixSymetricDetector.IsSymetric(input))
         {
             // Write that matrix is symetric
             OutputWriter.WriteLine("Input matrix is symetric.");
         }
-        // If is not symetric
+        // If input matrix is self similar
+        else if (MatrixSimilarDetector.IsSelfSimilar(input))
+        {
+            // Write that matrix is self similar
+            OutputWriter.WriteLine("Input matrix is self similar.");
+        }
+        // If input matrix is not symetric and is not self similar
         else
         {
-            // Write that matrix is symetric
-            OutputWriter.WriteLine("Input matrix is not symetric.");
+            // Write that matrix is not symetric and is not self similar
+            OutputWriter.WriteLine("Input matrix is not symetric and is not self similar.");
         }
 
         // Find transversal size in input matrix

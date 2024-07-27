@@ -37,6 +37,12 @@ internal static class InputReader
 
         // Set console output flag according to matrix size - allowed if size < 5
         OutputWriter.CanWriteToConsole = size < 5;
+        // If Console output not allowed
+        if (!OutputWriter.CanWriteToConsole)
+        {
+            // Write that output will be saved to file
+            Console.WriteLine("Processing started. Output will be saved to file.");
+        }
 
         // Define empty matrix
         var res = new bool[size, size];
