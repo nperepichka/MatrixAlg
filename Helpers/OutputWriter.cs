@@ -77,28 +77,28 @@ internal static class OutputWriter
                 // Write that matrix is symetric
                 WriteLine("Matrix is symetric.");
             }
-            // If is self similar
-            else if (matrix.IsSelfSimilar)
+            // If is self conjugate
+            else if (matrix.IsSelfConjugate)
             {
-                // Write that matrix is self similar
-                WriteLine("Matrix is self similar.");
+                // Write that matrix is self conjugate
+                WriteLine("Matrix is self conjugate.");
             }
-            // If is not symetric and not self similar
+            // If is not symetric and not self conjugate
             else
             {
-                // Check if has similar not symetric matrix exists
-                matrix.HasSimilar = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixSimilarDetector.AreSimilar(matrix.Matrix, m.Matrix));
-                // If similar not symetric matrix exists
-                if (matrix.HasSimilar)
+                // Check if conjugate not symetric matrix exists
+                matrix.HasСonjugate = sortedMartixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
+                // If conjugate not symetric matrix exists
+                if (matrix.HasСonjugate)
                 {
-                    // Write that matrix is similar to other matrix
-                    WriteLine("Matrix is not symetric and not self similar, but is similar to other matrix.");
+                    // Write that matrix is conjugate to other matrix
+                    WriteLine("Matrix is not symetric and not self conjugate, but is conjugate to other matrix.");
                 }
-                // If similar not symetric matrix not exists
+                // If conjugate not symetric matrix not exists
                 else
                 {
-                    // Write that matrix is not similar to other matrix
-                    WriteLine("Matrix is not symetric, not self similar and not similar to other matrix.");
+                    // Write that matrix is not conjugate to other matrix
+                    WriteLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
                 }
             }
         }

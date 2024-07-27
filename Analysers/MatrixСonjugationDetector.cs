@@ -1,8 +1,8 @@
 ﻿namespace MatrixAlg.Analysers;
 
-internal static class MatrixSimilarDetector
+internal static class MatrixСonjugationDetector
 {
-    public static bool AreSimilar(bool[,] matrix1, bool[,] matrix2)
+    public static bool AreСonjugate(bool[,] matrix1, bool[,] matrix2)
     {
         if (AreSame(matrix1, matrix2))
         {
@@ -172,7 +172,7 @@ internal static class MatrixSimilarDetector
         return true;
     }
 
-    public static bool IsSelfSimilar(bool[,] matrix)
+    public static bool IsSelfConjugate(bool[,] matrix)
     {
         var matrixr1 = RotateMatrix(matrix);
         if (AreSame(matrixr1, matrix))

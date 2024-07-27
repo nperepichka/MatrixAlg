@@ -10,8 +10,8 @@ internal class DecompositionMatrixDetails
         Index = index;
         Matrix = BuildMatrix(matrixElements);
         IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
-        IsSelfSimilar = MatrixSimilarDetector.IsSelfSimilar(Matrix);
-        HasSimilar = false;
+        IsSelfConjugate = MatrixСonjugationDetector.IsSelfConjugate(Matrix);
+        HasСonjugate = false;
         Hash = GetHash(matrixElements);
     }
 
@@ -19,8 +19,8 @@ internal class DecompositionMatrixDetails
     public bool[,] Matrix {  get; set; }
     public int Index { get; set; }
     public bool IsSymetric { get; set; }
-    public bool IsSelfSimilar { get; set; }
-    public bool HasSimilar { get; set; }
+    public bool IsSelfConjugate { get; set; }
+    public bool HasСonjugate { get; set; }
     public string Hash { get; set; }
 
     private static bool[,] BuildMatrix(byte[] elements)

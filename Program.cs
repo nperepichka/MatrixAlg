@@ -34,17 +34,17 @@ internal class Program
             // Write that matrix is symetric
             OutputWriter.WriteLine("Input matrix is symetric.");
         }
-        // If input matrix is self similar
-        else if (MatrixSimilarDetector.IsSelfSimilar(input))
+        // If input matrix is self conjugate
+        else if (MatrixСonjugationDetector.IsSelfConjugate(input))
         {
-            // Write that matrix is self similar
-            OutputWriter.WriteLine("Input matrix is self similar.");
+            // Write that matrix is self conjugate
+            OutputWriter.WriteLine("Input matrix is self conjugate.");
         }
-        // If input matrix is not symetric and is not self similar
+        // If input matrix is not symetric and is not self conjugate
         else
         {
-            // Write that matrix is not symetric and is not self similar
-            OutputWriter.WriteLine("Input matrix is not symetric and is not self similar.");
+            // Write that matrix is not symetric and is not self conjugate
+            OutputWriter.WriteLine("Input matrix is not symetric and is not self conjugate.");
         }
 
         // Find transversal size in input matrix
