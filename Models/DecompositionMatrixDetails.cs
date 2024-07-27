@@ -16,7 +16,7 @@ internal class DecompositionMatrixDetails
     }
 
     public byte[] MatrixElements { get; set; }
-    public bool[,] Matrix {  get; set; }
+    public bool[,] Matrix { get; set; }
     public int Index { get; set; }
     public bool IsSymetric { get; set; }
     public bool IsSelfConjugate { get; set; }
