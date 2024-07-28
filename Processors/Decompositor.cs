@@ -96,7 +96,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
                 Interlocked.Increment(ref DecomposesCount);
                 DataOutputWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
             }
-            //Interlocked.Add(ref DecomposesCount, (ulong)decompositions.Count);
+
         }
         else if (n != 2)
         {

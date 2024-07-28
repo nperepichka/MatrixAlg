@@ -72,10 +72,10 @@ internal static class DataOutputWriter
             .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
             .ToArray();
 
-        // Check if decomposition is a cube
-        var shouldAnalyzeCube = decomposition.Length == decomposition[0].Length;
+        // Check if decomposition cube should be analyzed
+        var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCube && decomposition.Length == decomposition[0].Length;
 
-        // If decomposition is a cube
+        // If decomposition cube should be analyzed
         if (shouldAnalyzeCube)
         {
             // Check if cube of decomposition is symetric
@@ -133,6 +133,19 @@ internal static class DataOutputWriter
 
                     // TODO: instead of this test combined matrix (pending more details)
                 }
+            }
+        }
+
+        // Check if decomposition mosaic should be drawn
+        var shouldDrawMosaics = ApplicationConfiguration.DrawMosaics && decomposition.Length % 2 == 0;
+
+        // If decomposition mosaic should be drawn
+        if (shouldDrawMosaics)
+        {
+            var mosaics = MosaicBuilder.BuildMosaics(matrixes);
+            for (var i = 0; i < mosaics.Count; i++)
+            {
+                MosaicDrawer.Draw(mosaics[i], $"mosaic_{n}_{i}");
             }
         }
 

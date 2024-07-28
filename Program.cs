@@ -1,5 +1,6 @@
 ﻿using MatrixAlg.Analysers;
 using MatrixAlg.Helpers;
+using MatrixAlg.Models;
 using MatrixAlg.Processors;
 using System.Diagnostics;
 
@@ -15,13 +16,14 @@ internal class Program
     /// </summary>
     private static void Main()
     {
-        // Start timer to measure running time
-        var stopwatch = Stopwatch.StartNew();
-
         // Clear output
         OutputWriter.Clear();
+        // Clear mosaics
+        MosaicDrawer.Clear();
         // Enable output queue monitoring
         OutputWriter.StartOutputQueueMonitoring();
+        // Initiate configuration
+        ApplicationConfiguration.Init();
 
         // Read input matrix
         var input = InputReader.Read();
@@ -32,6 +34,9 @@ internal class Program
             // Write to console that output will be saved to file
             Console.WriteLine("Processing started. Output will be saved to file.");
         }
+
+        // Start timer to measure running time
+        var stopwatch = Stopwatch.StartNew();
 
         // Write input matrix title
         OutputWriter.WriteLine("Input matrix:");
