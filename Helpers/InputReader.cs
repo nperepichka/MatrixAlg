@@ -5,6 +5,10 @@
 /// </summary>
 internal static class InputReader
 {
+    /// <summary>
+    /// Read input matrix from file
+    /// </summary>
+    /// <returns>Input matrix</returns>
     public static bool[,] Read()
     {
         // Read data form input.txt file

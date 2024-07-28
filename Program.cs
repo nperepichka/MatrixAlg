@@ -29,7 +29,7 @@ internal class Program
         // If console output not allowed
         if (!OutputWriter.CanWriteToConsole)
         {
-            // Write that output will be saved to file
+            // Write to console that output will be saved to file
             Console.WriteLine("Processing started. Output will be saved to file.");
         }
 
@@ -41,19 +41,19 @@ internal class Program
         // If input matrix is symetric
         if (MatrixSymetricDetector.IsSymetric(input))
         {
-            // Write that matrix is symetric
+            // Write that input matrix is symetric
             OutputWriter.WriteLine("Input matrix is symetric.");
         }
-        // If input matrix is self conjugate
+        // Else, if input matrix is self conjugate
         else if (MatrixСonjugationDetector.IsSelfConjugate(input))
         {
-            // Write that matrix is self conjugate
+            // Write that input matrix is self conjugate
             OutputWriter.WriteLine("Input matrix is self conjugate.");
         }
-        // If input matrix is not symetric and is not self conjugate
+        // Else, if input matrix is not symetric and is not self conjugate
         else
         {
-            // Write that matrix is not symetric and is not self conjugate
+            // Write that input matrix is not symetric and is not self conjugate
             OutputWriter.WriteLine("Input matrix is not symetric and is not self conjugate.");
         }
 
@@ -62,13 +62,13 @@ internal class Program
         // If transversal exists
         if (transversal > 0)
         {
-            // Write that matrix has transversal
+            // Write that input matrix has transversal
             OutputWriter.WriteLine($"Input matrix has transversal: {transversal}.");
         }
-        // If transversal not exists
+        // Else, if transversal not exists
         else
         {
-            // Write that matrix has no transversal
+            // Write that input matrix has no transversal
             OutputWriter.WriteLine($"Input matrix has no transversal.");
             //Exit an application
             return;
@@ -80,14 +80,14 @@ internal class Program
         // Generate combinations for cube analyse
         CubeSymetricDetector.GenerateCombinations(transversal);
 
-        // Initiate decompositor
+        // Initiate decompositor object
         var decompositor = new Decompositor(input, transversal);
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
 
         // Write empty line
         OutputWriter.WriteLine();
-        // Output total decompositions count value
+        // Output total decompositions count
         OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
 
         // Stop timer
@@ -96,7 +96,7 @@ internal class Program
         // If console output not allowed
         if (!OutputWriter.CanWriteToConsole)
         {
-            // Write that processing id finished
+            // Write to console that processing id finished
             Console.WriteLine("Processing finished. Pending for output to be saved to file.");
         }
 

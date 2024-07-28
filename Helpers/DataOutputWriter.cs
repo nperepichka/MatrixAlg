@@ -27,20 +27,20 @@ internal static class DataOutputWriter
             {
                 // Prepare cell value
                 var cellValue = matrix[i, j] ? " *" : " O";
-                // Check if string is not passed
+                // Check if string builder is not passed
                 if (stringBuilder == null)
                 {
                     // Write cell value to default output
                     OutputWriter.Write(cellValue);
                 }
-                // If string builder is passed
+                // Else, if string builder is passed
                 else
                 {
                     // Append cell value to string builder
                     stringBuilder.Append(cellValue);
                 }
             }
-            // Check if string is not passed
+            // Check if string builder is not passed
             if (stringBuilder == null)
             {
                 // Write empty line to default output
@@ -48,7 +48,7 @@ internal static class DataOutputWriter
             }
             else
             {
-                // Append empty line to string builder
+                // Else, append empty line to string builder
                 stringBuilder.AppendLine();
             }
         }
@@ -72,8 +72,10 @@ internal static class DataOutputWriter
             .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
             .ToArray();
 
+        // Check if decomposition is a cube
         var shouldAnalyzeCube = decomposition.Length == decomposition[0].Length;
 
+        // If decomposition is a cube
         if (shouldAnalyzeCube)
         {
             // Check if cube of decomposition is symetric

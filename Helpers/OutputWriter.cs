@@ -21,7 +21,7 @@ internal static class OutputWriter
     /// </summary>
     public static bool CanWriteToConsole { get; set; } = true;
     /// <summary>
-    /// Queue of strings for output monitoring enabled flag
+    /// Output queue monitoring enabled flag
     /// </summary>
     private static bool OutputQueueMonitoringEnabled { get; set; } = false;
 
@@ -38,13 +38,23 @@ internal static class OutputWriter
         }
     }
 
+    /// <summary>
+    /// Add string value to output queue
+    /// </summary>
+    /// <param name="s">Value</param>
     public static void Write(string s)
     {
+        // Add string value to output queue
         OutputQueue.Enqueue(s);
     }
 
+    /// <summary>
+    /// Add string value to output queue with new line symbol
+    /// </summary>
+    /// <param name="s">Value</param>
     public static void WriteLine(string? s = null)
     {
+        // Add string value to output queue with new line symbol
         Write($"{s}{Environment.NewLine}");
     }
 
