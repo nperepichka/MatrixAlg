@@ -12,7 +12,7 @@ internal class DecompositionMatrixDetails
         IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
         IsSelfConjugate = MatrixСonjugationDetector.IsSelfConjugate(Matrix);
         HasСonjugate = false;
-        Hash = GetHash(matrixElements);
+        //Hash = GetHash(matrixElements);
     }
 
     public byte[] MatrixElements { get; set; }
@@ -21,7 +21,7 @@ internal class DecompositionMatrixDetails
     public bool IsSymetric { get; set; }
     public bool IsSelfConjugate { get; set; }
     public bool HasСonjugate { get; set; }
-    public string Hash { get; set; }
+    //public string Hash { get; set; }
 
     private static bool[,] BuildMatrix(byte[] elements)
     {
@@ -37,9 +37,9 @@ internal class DecompositionMatrixDetails
         return res;
     }
 
-    private static string GetHash(byte[] matrixElements)
+    /*private static string GetHash(byte[] matrixElements)
     {
         var hashElementSize = matrixElements.Length.ToString().Length;
         return string.Concat(matrixElements.Select(e => e.ToString().PadLeft(hashElementSize)));
-    }
+    }*/
 }
