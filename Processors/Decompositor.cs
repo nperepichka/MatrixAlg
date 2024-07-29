@@ -49,6 +49,8 @@ internal class Decompositor(bool[,] Input, byte Transversal)
 
     private void GenerateDecompositions(byte n, byte[][] decomposition)
     {
+        // TODO: this logic should be rewrite to work with each combination 1 by 1 instead of presaving all before moving to next step
+
         var nextRowVariants = InputPositionsPerRow[n];
 
         var decompositions = new List<byte[][]>();
