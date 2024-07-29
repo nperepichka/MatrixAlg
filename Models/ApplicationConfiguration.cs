@@ -2,8 +2,9 @@
 
 internal static class ApplicationConfiguration
 {
-    public static bool AnalyzeCube { get; private set; } = false;
+    public static bool AnalyzeCubes { get; private set; } = false;
     public static bool DrawMosaics { get; private set; } = false;
+    public static bool OutputDecompositions { get; private set; } = true;
 
     public static void Init()
     {
@@ -16,8 +17,9 @@ internal static class ApplicationConfiguration
                 .Select(l => l.Split("="))
                 .ToDictionary(k => k[0].Trim(), v => v[1].Trim());
 
-            AnalyzeCube = values.GetConfigFlag(nameof(AnalyzeCube), AnalyzeCube);
+            AnalyzeCubes = values.GetConfigFlag(nameof(AnalyzeCubes), AnalyzeCubes);
             DrawMosaics = values.GetConfigFlag(nameof(DrawMosaics), DrawMosaics);
+            OutputDecompositions = values.GetConfigFlag(nameof(OutputDecompositions), OutputDecompositions);
         }
         catch (Exception ex)
         {

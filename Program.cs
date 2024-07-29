@@ -16,10 +16,13 @@ internal class Program
     /// </summary>
     private static void Main()
     {
+        // Write to console that cleaning output is started
+        Console.WriteLine("Cleaning output started.");
         // Clear output
         OutputWriter.Clear();
         // Clear mosaics
         MosaicDrawer.Clear();
+
         // Enable output queue monitoring
         OutputWriter.StartOutputQueueMonitoring();
         // Initiate configuration
@@ -28,8 +31,8 @@ internal class Program
         // Read input matrix
         var input = InputReader.Read();
 
-        // If should analyze cube and input matrix size is more that 8
-        if (ApplicationConfiguration.AnalyzeCube && input.GetLength(0) > 8)
+        // If should analyze cubes and input matrix size is more that 8
+        if (ApplicationConfiguration.AnalyzeCubes && input.GetLength(0) > 8)
         {
             // Write that input matrix size should be 8 or less to enable AnalyzeCube option
             OutputWriter.WriteLine($"Input matrix size should be 8 or less to enable AnalyzeCube option. Application will exit.");
@@ -39,12 +42,8 @@ internal class Program
             return;
         }
 
-        // If console output not allowed
-        if (!OutputWriter.CanWriteToConsole)
-        {
-            // Write to console that output will be saved to file
-            Console.WriteLine("Processing started. Output will be saved to file.");
-        }
+        // Write to console that processing is started
+        Console.WriteLine("Processing started.");
 
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
@@ -95,8 +94,8 @@ internal class Program
         // Write empty line
         OutputWriter.WriteLine();
 
-        // If should analyze cube
-        if (ApplicationConfiguration.AnalyzeCube)
+        // If should analyze cubes
+        if (ApplicationConfiguration.AnalyzeCubes)
         {
             // Generate combinations for cube analyse
             CubeSymetricDetector.GenerateCombinations(transversal);
@@ -119,7 +118,7 @@ internal class Program
         if (!OutputWriter.CanWriteToConsole)
         {
             // Write to console that processing id finished
-            Console.WriteLine("Processing finished. Pending for output to be saved to file.");
+            Console.WriteLine("Processing finished. Pending for output to be saved.");
         }
 
         // Stop output queue monitoring

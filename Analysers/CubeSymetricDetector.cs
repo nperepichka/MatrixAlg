@@ -6,6 +6,8 @@ namespace MatrixAlg.Analysers;
 
 internal static class CubeSymetricDetector
 {
+    // TODO: rewrite this class don't to generate Combinations
+
     private static readonly List<int[]> Combinations = [];
 
     public static void GenerateCombinations(int size)

@@ -8,25 +8,24 @@ namespace MatrixAlg.Helpers;
 /// </summary>
 internal static class MosaicBuilder
 {
-    public static List<bool[,]> BuildMosaics(DecompositionMatrixDetails[] decomposition)
+    public static bool[,] BuildMosaic(DecompositionMatrixDetails[] decomposition)
     {
-        var size = decomposition[0].MatrixElements.Length;
+        var size = decomposition[0].Matrix.GetLength(0);
         var halfSize = size / 2;
 
-        var mosaic1 = BuildMatrix(size);
-        var mosaic2 = BuildMatrix(size);
+        var mosaic = BuildMatrix(size);
+        var list = new List<bool[,]>();
 
-        var m1list = new List<bool[,]>();
         var m1Count = 0;
         var m2Count = 0;
 
         foreach (var matrix in decomposition)
         {
-            var shouldUseInM1 = m1Count < halfSize && !m1list.Any(m => MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m)) || m2Count >= halfSize;
+            var shouldUse = m1Count < halfSize && !list.Any(m => MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m)) || m2Count >= halfSize;
 
-            if (shouldUseInM1)
+            if (shouldUse)
             {
-                m1list.Add(matrix.Matrix);
+                list.Add(matrix.Matrix);
                 m1Count++;
             }
             else
@@ -40,20 +39,16 @@ internal static class MosaicBuilder
                 {
                     if (matrix.Matrix[i, j])
                     {
-                        if (shouldUseInM1)
+                        if (shouldUse)
                         {
-                            mosaic1[i, j] = true;
-                        }
-                        else
-                        {
-                            mosaic2[i, j] = true;
+                            mosaic[i, j] = true;
                         }
                     }
                 }
             }
         }
 
-        return [mosaic1, mosaic2];
+        return mosaic;
     }
 
     private static bool[,] BuildMatrix(int size)

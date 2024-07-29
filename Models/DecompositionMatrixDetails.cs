@@ -6,21 +6,15 @@ internal class DecompositionMatrixDetails
 {
     public DecompositionMatrixDetails(byte[] matrixElements, int index)
     {
-        MatrixElements = matrixElements;
         Index = index;
         Matrix = BuildMatrix(matrixElements);
         IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
-        IsSelfConjugate = MatrixСonjugationDetector.IsSelfConjugate(Matrix);
-        HasСonjugate = false;
         //Hash = GetHash(matrixElements);
     }
 
-    public byte[] MatrixElements { get; set; }
     public bool[,] Matrix { get; set; }
     public int Index { get; set; }
     public bool IsSymetric { get; set; }
-    public bool IsSelfConjugate { get; set; }
-    public bool HasСonjugate { get; set; }
     //public string Hash { get; set; }
 
     private static bool[,] BuildMatrix(byte[] elements)

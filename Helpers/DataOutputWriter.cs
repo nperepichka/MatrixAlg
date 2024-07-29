@@ -61,95 +61,97 @@ internal static class DataOutputWriter
     /// <param name="n">Number of decomposition</param>
     public static void WriteDecomposition(byte[][] decomposition, ulong n)
     {
-        // Initiate string builder
-        var outputStringBuilder = new StringBuilder(string.Empty);
-
-        // Append decomposition counter value to string builder
-        outputStringBuilder.AppendLine($"Decomposition #{n}");
+        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics)
+        {
+            return;
+        }
 
         // Define a list with matrixes details
         var matrixes = decomposition
             .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
             .ToArray();
 
-        // Check if decomposition cube should be analyzed
-        var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCube && decomposition.Length == decomposition[0].Length;
-
-        // If decomposition cube should be analyzed
-        if (shouldAnalyzeCube)
+        if (ApplicationConfiguration.OutputDecompositions)
         {
-            // Check if cube of decomposition is symetric
-            var isCubeSymetric = CubeSymetricDetector.IsSymetric(matrixes, out var sortedMartixes);
-            // Set matrixes value
-            matrixes = sortedMartixes;
-            // If cube is symetric
-            if (isCubeSymetric)
-            {
-                // Append message that cube of decomposition is symetric to string builder
-                outputStringBuilder.AppendLine("Cube of decomposition is symetric.");
-            }
-            // If cube is not symetric
-            else
-            {
-                // Append message that cube of decomposition is not symetric to string builder
-                outputStringBuilder.AppendLine("Cube of decomposition is not symetric.");
-            }
-        }
+            // Initiate string builder
+            var outputStringBuilder = new StringBuilder(string.Empty);
 
-        // Enumerate all matrixes
-        foreach (var matrix in matrixes)
-        {
-            // Output matrix to string builder
-            WriteMatrix(matrix.Matrix, outputStringBuilder);
+            // Append decomposition counter value to string builder
+            outputStringBuilder.AppendLine($"Decomposition #{n}");
 
-            // If is symetric
-            if (matrix.IsSymetric)
+            // Check if decomposition cube should be analyzed
+            var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCubes && decomposition.Length == decomposition[0].Length;
+
+            // If decomposition cube should be analyzed
+            if (shouldAnalyzeCube)
             {
-                // Append message that matrix is symetric to string builder
-                outputStringBuilder.AppendLine("Matrix is symetric.");
-            }
-            // If is self conjugate
-            else if (matrix.IsSelfConjugate)
-            {
-                // Append message that matrix is self conjugate to string builder
-                outputStringBuilder.AppendLine("Matrix is self conjugate.");
-            }
-            // If is not symetric and not self conjugate
-            else
-            {
-                // Check if conjugate not symetric matrix exists
-                matrix.HasСonjugate = matrixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
-                // If conjugate not symetric matrix exists
-                if (matrix.HasСonjugate)
+                // Check if cube of decomposition is symetric
+                var isCubeSymetric = CubeSymetricDetector.IsSymetric(matrixes, out var sortedMartixes);
+                // Set matrixes value
+                matrixes = sortedMartixes;
+                // If cube is symetric
+                if (isCubeSymetric)
                 {
-                    // Append message that matrix is conjugate to other matrix to string builder
-                    outputStringBuilder.AppendLine("Matrix is conjugate to other matrix.");
+                    // Append message that cube of decomposition is symetric to string builder
+                    outputStringBuilder.AppendLine("Cube of decomposition is symetric.");
                 }
-                // If conjugate not symetric matrix not exists
+                // If cube is not symetric
                 else
                 {
-                    // Append message that matrix is not conjugate to other matrix to string builder
-                    outputStringBuilder.AppendLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
-
-                    // TODO: instead of this test combined matrix (pending more details)
+                    // Append message that cube of decomposition is not symetric to string builder
+                    outputStringBuilder.AppendLine("Cube of decomposition is not symetric.");
                 }
             }
-        }
 
-        // Check if decomposition mosaic should be drawn
-        var shouldDrawMosaics = ApplicationConfiguration.DrawMosaics && decomposition.Length % 2 == 0;
+            // Enumerate all matrixes
+            foreach (var matrix in matrixes)
+            {
+                // Output matrix to string builder
+                WriteMatrix(matrix.Matrix, outputStringBuilder);
+
+                // If is symetric
+                if (matrix.IsSymetric)
+                {
+                    // Append message that matrix is symetric to string builder
+                    outputStringBuilder.AppendLine("Matrix is symetric.");
+                }
+                // If is self conjugate
+                else if (MatrixСonjugationDetector.IsSelfConjugate(matrix.Matrix))
+                {
+                    // Append message that matrix is self conjugate to string builder
+                    outputStringBuilder.AppendLine("Matrix is self conjugate.");
+                }
+                // If is not symetric and not self conjugate
+                else
+                {
+                    // Check if conjugate not symetric matrix exists
+                    var hasСonjugate = matrixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
+                    // If conjugate not symetric matrix exists
+                    if (hasСonjugate)
+                    {
+                        // Append message that matrix is conjugate to other matrix to string builder
+                        outputStringBuilder.AppendLine("Matrix is conjugate to other matrix.");
+                    }
+                    // If conjugate not symetric matrix not exists
+                    else
+                    {
+                        // Append message that matrix is not conjugate to other matrix to string builder
+                        outputStringBuilder.AppendLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
+
+                        // TODO: instead of this test combined matrix (pending more details)
+                    }
+                }
+            }
+
+            // Write string builder value
+            OutputWriter.WriteLine(outputStringBuilder.ToString());
+        }
 
         // If decomposition mosaic should be drawn
-        if (shouldDrawMosaics)
+        if (ApplicationConfiguration.DrawMosaics)
         {
-            var mosaics = MosaicBuilder.BuildMosaics(matrixes);
-            for (var i = 0; i < mosaics.Count; i++)
-            {
-                MosaicDrawer.Draw(mosaics[i], $"mosaic_{n}_{i}");
-            }
+            var mosaic = MosaicBuilder.BuildMosaic(matrixes);
+            MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
         }
-
-        // Write string builder value
-        OutputWriter.WriteLine(outputStringBuilder.ToString());
     }
 }

@@ -11,7 +11,7 @@ namespace MatrixAlg.Helpers;
 internal static class MosaicDrawer
 {
     private const string OutputPathName = "mosaics";
-    private const int CellSize = 20;
+    private const int CellSize = 10;
 
     public static void Clear()
     {
