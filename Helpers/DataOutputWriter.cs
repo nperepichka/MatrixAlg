@@ -151,7 +151,38 @@ internal static class DataOutputWriter
         if (ApplicationConfiguration.DrawMosaics)
         {
             var mosaic = MosaicBuilder.BuildMosaic(matrixes);
-            MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
+
+            var size = mosaic.GetLength(0);
+            // Each byte holds 8 bits (8 bools)
+            var flatArray = new byte[(size * size + 7) / 8];
+
+            var bitIndex = 0;
+            for (var i = 0; i < size; i++)
+            {
+                for (var j = 0; j < size; j++)
+                {
+                    if (mosaic[i, j])
+                    {
+                        flatArray[bitIndex / 8] |= (byte)(1 << (bitIndex % 8));
+                    }
+                    bitIndex++;
+                }
+            }
+
+            var hash = Encoding.ASCII.GetString(flatArray);
+            bool isNew;
+            lock (Lock)
+            {
+                isNew = Hash.Add(hash);
+            }
+            if (isNew)
+            {
+                MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
+            }
         }
     }
+
+    private static readonly object Lock = new();
+
+    private static readonly HashSet<string> Hash = [];
 }
