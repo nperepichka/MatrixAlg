@@ -9,13 +9,11 @@ internal class DecompositionMatrixDetails
         Index = index;
         Matrix = BuildMatrix(matrixElements);
         IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
-        //Hash = GetHash(matrixElements);
     }
 
     public bool[,] Matrix { get; set; }
     public int Index { get; set; }
     public bool IsSymetric { get; set; }
-    //public string Hash { get; set; }
 
     private static bool[,] BuildMatrix(byte[] elements)
     {
@@ -30,10 +28,4 @@ internal class DecompositionMatrixDetails
         }
         return res;
     }
-
-    /*private static string GetHash(byte[] matrixElements)
-    {
-        var hashElementSize = matrixElements.Length.ToString().Length;
-        return string.Concat(matrixElements.Select(e => e.ToString().PadLeft(hashElementSize)));
-    }*/
 }

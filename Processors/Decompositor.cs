@@ -7,6 +7,8 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     private readonly byte Size = (byte)Input.GetLength(0);
     private readonly List<byte[]> InputPositionsPerRow = [];
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
+    private readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
+    private int ParallelsCount = 0;
 
     /// <summary>
     /// Decomposition counter
@@ -91,7 +93,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     {
         // Build next row for 1st matrix
 
-        if (row != 1)
+        if (ParallelsCount >= ExpectedParallelsCount || row % 2 == 0)
         {
             foreach (var nextRowVariant in InputPositionsPerRow[row])
             {
@@ -105,6 +107,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         }
         else
         {
+            Interlocked.Add(ref ParallelsCount, InputPositionsPerRow[row].Length);
             Parallel.ForEach(InputPositionsPerRow[row], ParallelOptions, nextRowVariant =>
             {
                 if (!decomposition[0].Contains(nextRowVariant))
@@ -113,6 +116,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
                     newDecomposition[0][row] = nextRowVariant;
                     GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
                 }
+                Interlocked.Decrement(ref ParallelsCount);
             });
         }
     }
