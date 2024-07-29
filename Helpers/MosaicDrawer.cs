@@ -42,7 +42,25 @@ internal static class MosaicDrawer
             }
         }
 
-        // Save the image as a PNG file
-        image.Save($"mosaics/{name}.png");
+        var attempt = 1;
+        while (true)
+        {
+            try
+            {
+                // Save the image as a PNG file
+                image.Save($"mosaics/{name}.png");
+                break;
+            }
+            catch (Exception ex)
+            {
+                if (attempt == 5 || ex is not IOException)
+                {
+                    Console.WriteLine($"Error occurred: {ex.Message}");
+                    break;
+                }
+                attempt++;
+                Thread.Sleep(100);
+            }
+        }
     }
 }

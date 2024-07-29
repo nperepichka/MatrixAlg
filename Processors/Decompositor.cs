@@ -47,71 +47,72 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         return decomposition;
     }
 
-    private void GenerateDecompositions(byte n, byte[][] decomposition)
+    private void GenerateDecompositionMatrixNextRowVariants(byte row, byte[][] decomposition, byte matrixIndex)
     {
-        // TODO: this logic should be rewrite to work with each combination 1 by 1 instead of presaving all before moving to next step
+        var nextMatrixIndex = matrixIndex;
+        nextMatrixIndex++;
 
-        var nextRowVariants = InputPositionsPerRow[n];
+        var nextRow = row;
+        nextRow++;
 
-        var decompositions = new List<byte[][]>();
-
-        // Build next row for 1st matrix
-        foreach (var nextRowVariant in nextRowVariants)
+        foreach (var nextRowVariant in InputPositionsPerRow[row])
         {
-            if (!decomposition[0].Contains(nextRowVariant))
+            if (
+                !decomposition[matrixIndex].Contains(nextRowVariant) && // current matrix of current decomposition does not contain this column
+                decomposition.All(m => m[row] != nextRowVariant) // all matrixes of current decomposition does not contain this column in this row
+                )
             {
-                var newDecomposition = CloneDecomposition(decomposition, true);
-                newDecomposition[0][n] = nextRowVariant;
-                decompositions.Add(newDecomposition);
-            }
-        }
+                var newDecomposition = CloneDecomposition(decomposition, false);
+                newDecomposition[matrixIndex][row] = nextRowVariant;
 
-        // Build next row for each other matrix
-        for (byte i = 1; i < Transversal; i++)
-        {
-            var currentDecompositions = decompositions.ToArray();
-            decompositions.Clear();
-
-            // Take a decomposition
-            foreach (var currentDecomposition in currentDecompositions)
-            {
-                foreach (var nextRowVariant in nextRowVariants)
+                if (nextMatrixIndex != Transversal)
                 {
-                    if (
-                        !currentDecomposition[i].Contains(nextRowVariant) && // current matrix of current decomposition does not contain this column
-                        currentDecomposition.All(m => m[n] != nextRowVariant) // all matrixes of current decomposition does not contain this column in this row
-                        )
+                    GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, nextMatrixIndex);
+                }
+                else
+                {
+                    if (nextRow != Size)
                     {
-                        var newDecomposition = CloneDecomposition(currentDecomposition, false);
-                        newDecomposition[i][n] = nextRowVariant;
-                        decompositions.Add(newDecomposition);
+                        GenerateDecompositions(nextRow, newDecomposition);
+                    }
+                    else
+                    {
+                        // Increase decompositions count
+                        Interlocked.Increment(ref DecomposesCount);
+                        // Output decomposition
+                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount);
                     }
                 }
             }
         }
+    }
 
-        n++;
-        if (n == Size)
-        {
-            foreach (var nextDecomposition in decompositions)
-            {
-                Interlocked.Increment(ref DecomposesCount);
-                DataOutputWriter.WriteDecomposition(nextDecomposition, DecomposesCount);
-            }
+    private void GenerateDecompositions(byte row, byte[][] decomposition)
+    {
+        // Build next row for 1st matrix
 
-        }
-        else if (n != 2)
+        if (row != 1)
         {
-            foreach (var nextDecomposition in decompositions)
+            foreach (var nextRowVariant in InputPositionsPerRow[row])
             {
-                GenerateDecompositions(n, nextDecomposition);
+                if (!decomposition[0].Contains(nextRowVariant))
+                {
+                    var newDecomposition = CloneDecomposition(decomposition, true);
+                    newDecomposition[0][row] = nextRowVariant;
+                    GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
+                }
             }
         }
         else
         {
-            Parallel.ForEach(decompositions, ParallelOptions, nextDecomposition =>
+            Parallel.ForEach(InputPositionsPerRow[row], ParallelOptions, nextRowVariant =>
             {
-                GenerateDecompositions(n, nextDecomposition);
+                if (!decomposition[0].Contains(nextRowVariant))
+                {
+                    var newDecomposition = CloneDecomposition(decomposition, true);
+                    newDecomposition[0][row] = nextRowVariant;
+                    GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
+                }
             });
         }
     }
