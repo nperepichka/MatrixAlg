@@ -1,4 +1,7 @@
-﻿using SkiaSharp;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace MatrixAlg.Helpers;
 
@@ -23,28 +26,23 @@ internal static class MosaicDrawer
     {
         var size = mosaic.GetLength(0);
 
-        using var bitmap = new SKBitmap(size * CellSize, size * CellSize);
-        using var canvas = new SKCanvas(bitmap);
+        using var image = new Image<Rgba32>(size * CellSize, size * CellSize);
         for (var row = 0; row < size; row++)
         {
             for (var col = 0; col < size; col++)
             {
                 // Determine the color of the current cell
-                var cellColor = mosaic[row, col] ? SKColors.Black : SKColors.White;
+                var cellColor = mosaic[row, col] ? Color.Black : Color.White;
 
                 // Define the rectangle for the current cell
-                var rect = new SKRect(col * CellSize, row * CellSize, (col + 1) * CellSize, (row + 1) * CellSize);
+                var rect = new Rectangle(col * CellSize, row * CellSize, CellSize, CellSize);
 
                 // Fill the rectangle with the cell color
-                using var paint = new SKPaint { Color = cellColor };
-                canvas.DrawRect(rect, paint);
+                image.Mutate(ctx => ctx.Fill(cellColor, rect));
             }
         }
 
-        // Save the bitmap as a PNG file
-        using var image = SKImage.FromBitmap(bitmap);
-        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        using var stream = File.OpenWrite($"mosaics/{name}.png");
-        data.SaveTo(stream);
+        // Save the image as a PNG file
+        image.Save($"mosaics/{name}.png");
     }
 }
