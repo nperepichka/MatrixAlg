@@ -107,7 +107,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, InputPositionsPerRow[row].Length);
+            Interlocked.Add(ref ParallelsCount, Transversal);
             Parallel.ForEach(InputPositionsPerRow[row], ParallelOptions, nextRowVariant =>
             {
                 if (!decomposition[0].Contains(nextRowVariant))
