@@ -19,8 +19,8 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     {
         GenerateInputPositionsPerRow();
 
-        var initialDecompositionSytate = BuildDecompositionWithFirstRow();
-        GenerateDecompositions(1, initialDecompositionSytate);
+        var initialDecompositionState = BuildDecompositionWithFirstRow();
+        GenerateDecompositions(1, initialDecompositionState);
     }
 
     private void GenerateInputPositionsPerRow()

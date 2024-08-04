@@ -100,6 +100,9 @@ internal static class OutputWriter
     {
         try
         {
+            // TODO: update don't to use all space
+            //var freeBytes = new DriveInfo(Directory.GetCurrentDirectory()).AvailableFreeSpace;
+
             File.AppendAllText(OutputFileName, stringBuilder.ToString());
             stringBuilder.Clear();
         }

@@ -15,7 +15,7 @@ internal static class ApplicationConfiguration
                 .Select(l => l.Split(";")[0].Trim())
                 .Where(l => !string.IsNullOrEmpty(l))
                 .Select(l => l.Split("="))
-                .ToDictionary(k => k[0].Trim(), v => v[1].Trim());
+                .ToDictionary(k => k[0].Trim(), v => int.TryParse(v[1].Trim(), out var val) ? val : 0);
 
             AnalyzeCubes = values.GetConfigFlag(nameof(AnalyzeCubes), AnalyzeCubes);
             DrawMosaics = values.GetConfigFlag(nameof(DrawMosaics), DrawMosaics);
@@ -23,18 +23,30 @@ internal static class ApplicationConfiguration
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Invalid configuration file ({ex.Message}). Using default configuration.");
+            throw new Exception($"Invalid configuration file ({ex.Message}).");
         }
     }
 
-    private static bool GetConfigFlag(this Dictionary<string, string> values, string valueName, bool dafalutValue)
+    private static bool GetConfigFlag(this Dictionary<string, int> values, string valueName, bool dafalutValue)
+    {
+        return GetConfigFlag(values, valueName, dafalutValue, out _);
+    }
+
+    private static bool GetConfigFlag(this Dictionary<string, int> values, string valueName, bool dafalutValue, out int configValue)
     {
         try
         {
-            return values.TryGetValue(valueName, out var value) && value == "1";
+            if (values.TryGetValue(valueName, out var value))
+            {
+                configValue = value;
+                return value != 0;
+            }
+            configValue = 0;
+            return false;
         }
         catch
         {
+            configValue = 0;
             return dafalutValue;
         }
     }
