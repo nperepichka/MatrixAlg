@@ -79,30 +79,6 @@ internal static class DataOutputWriter
             // Append decomposition counter value to string builder
             outputStringBuilder.AppendLine($"Decomposition #{n}");
 
-            // Check if decomposition cube should be analyzed
-            var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCubes && decomposition.Length == decomposition[0].Length;
-
-            // If decomposition cube should be analyzed
-            if (shouldAnalyzeCube)
-            {
-                // Check if cube of decomposition is symetric
-                var isCubeSymetric = CubeSymetricDetector.IsSymetric(matrixes, out var sortedMartixes);
-                // Set matrixes value
-                matrixes = sortedMartixes;
-                // If cube is symetric
-                if (isCubeSymetric)
-                {
-                    // Append message that cube of decomposition is symetric to string builder
-                    outputStringBuilder.AppendLine("Cube of decomposition is symetric.");
-                }
-                // If cube is not symetric
-                else
-                {
-                    // Append message that cube of decomposition is not symetric to string builder
-                    outputStringBuilder.AppendLine("Cube of decomposition is not symetric.");
-                }
-            }
-
             // Enumerate all matrixes
             foreach (var matrix in matrixes)
             {
@@ -141,6 +117,18 @@ internal static class DataOutputWriter
                         // TODO: instead of this test combined matrix (pending more details)
                     }
                 }
+            }
+
+            // Check if decomposition cube should be analyzed
+            var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCubes && decomposition.Length == decomposition[0].Length;
+
+            // If decomposition cube should be analyzed
+            if (shouldAnalyzeCube)
+            {
+                // Check variants of isomorphic cubes of decomposition
+                var isomorphicVariants = CubeIsomorphicDetector.GetIsomorphicVariantsCount(matrixes, outputStringBuilder);
+                // Append message about ways to build isomorphic cube of decomposition to string builder
+                outputStringBuilder.AppendLine($"Isomorphic cube of decomposition can be build {isomorphicVariants} different ways.");
             }
 
             // Write string builder value

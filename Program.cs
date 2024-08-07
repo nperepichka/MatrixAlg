@@ -98,7 +98,7 @@ internal class Program
         if (ApplicationConfiguration.AnalyzeCubes)
         {
             // Generate combinations for cube analyse
-            CubeSymetricDetector.GenerateCombinations(transversal);
+            CubeIsomorphicDetector.GenerateCombinations(transversal);
         }
 
         // Initiate decompositor object
