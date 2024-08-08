@@ -125,10 +125,10 @@ internal static class DataOutputWriter
             // If decomposition cube should be analyzed
             if (shouldAnalyzeCube)
             {
-                // Check variants of isomorphic cubes of decomposition
-                var isomorphicVariants = CubeIsomorphicDetector.GetIsomorphicVariantsCount(matrixes, outputStringBuilder);
-                // Append message about ways to build isomorphic cube of decomposition to string builder
-                outputStringBuilder.AppendLine($"Isomorphic cube of decomposition can be build {isomorphicVariants} different ways.");
+                // Check variants of invariant cubes of decomposition
+                var invariantCubesCount = CubeInvariantDetector.GetInvariantCubesCount(matrixes, outputStringBuilder);
+                // Append message about ways to build invariant cube of decomposition to string builder
+                outputStringBuilder.AppendLine($"Invariant cube of decomposition can be build {invariantCubesCount} different ways.");
             }
 
             // Write string builder value

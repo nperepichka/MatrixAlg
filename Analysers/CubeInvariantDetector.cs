@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MatrixAlg.Analysers;
 
-internal static class CubeIsomorphicDetector
+internal static class CubeInvariantDetector
 {
     // TODO: rewrite this class don't to generate Combinations
 
@@ -42,10 +42,14 @@ internal static class CubeIsomorphicDetector
         }
     }
 
-    public static int GetIsomorphicVariantsCount(DecompositionMatrixDetails[] decomposition, StringBuilder outputStringBuilder)
+    public static int GetInvariantCubesCount(DecompositionMatrixDetails[] decomposition, StringBuilder outputStringBuilder)
     {
         var res = 0;
-        //outputStringBuilder.AppendLine("\nCube variants\n");
+
+        if (ApplicationConfiguration.OutputCubeDetails)
+        {
+            outputStringBuilder.AppendLine("\nCube variants");
+        }
 
         foreach (var combination in Combinations)
         {
@@ -53,47 +57,50 @@ internal static class CubeIsomorphicDetector
                 .Select(i => decomposition[i])
                 .ToArray();
 
-            /*foreach (var d in testDecomposition)
-            {
-                DataOutputWriter.WriteMatrix(d.Matrix, outputStringBuilder);
-                outputStringBuilder.AppendLine();
-            }*/
+            var topViews = ViewVariantsToString(testDecomposition, CubeView.Top);
+            var rightView = ViewVariantsToString(testDecomposition, CubeView.Right)[0];
+            var backView = ViewVariantsToString(testDecomposition, CubeView.Back)[0];
+            var leftView = ViewVariantsToString(testDecomposition, CubeView.Left)[0];
+            var frontView = ViewVariantsToString(testDecomposition, CubeView.Front)[0];
+            var bottomView = ViewVariantsToString(testDecomposition, CubeView.Bottom)[0];
 
-            var topView = ViewVariantsToString(testDecomposition, CubeView.Top);
-            var rightView = ViewVariantsToString(testDecomposition, CubeView.Right);
-            var backView = ViewVariantsToString(testDecomposition, CubeView.Back);
-            var leftView = ViewVariantsToString(testDecomposition, CubeView.Left);
-            var frontView = ViewVariantsToString(testDecomposition, CubeView.Front);
-            var bottomView = ViewVariantsToString(testDecomposition, CubeView.Bottom);
-
-            /*for (var i = 0; i < topView.Count; i++)
+            if (ApplicationConfiguration.OutputCubeDetails)
             {
-                outputStringBuilder.AppendLine("top     " + topView[i]);
-                outputStringBuilder.AppendLine("bottom  " + bottomView[i]);
-                outputStringBuilder.AppendLine("right   " + rightView[i]);
-                outputStringBuilder.AppendLine("left    " + leftView[i]);
-                outputStringBuilder.AppendLine("front   " + frontView[i]);
-                outputStringBuilder.AppendLine("back    " + backView[i]);
+                foreach (var d in testDecomposition)
+                {
+                    outputStringBuilder.AppendLine();
+                    DataOutputWriter.WriteMatrix(d.Matrix, outputStringBuilder);
+                }
                 outputStringBuilder.AppendLine();
-            }*/
+
+                for (var i = 0; i < topViews.Count; i++)
+                {
+                    outputStringBuilder.AppendLine("top     " + topViews[i]);
+                }
+                outputStringBuilder.AppendLine("bottom  " + bottomView);
+                outputStringBuilder.AppendLine("right   " + rightView);
+                outputStringBuilder.AppendLine("left    " + leftView);
+                outputStringBuilder.AppendLine("front   " + frontView);
+                outputStringBuilder.AppendLine("back    " + backView);
+            }
 
             if (
-                   topView.Any(t => rightView.Any(r => r == t)) && topView.Any(t => backView.Any(b => b == t))
-                || topView.Any(t => leftView.Any(l => l == t)) && topView.Any(t => backView.Any(b => b == t))
-                || topView.Any(t => rightView.Any(r => r == t)) && topView.Any(t => frontView.Any(f => f == t))
-                || topView.Any(t => leftView.Any(l => l == t)) && topView.Any(t => frontView.Any(f => f == t))
-                || bottomView.Any(b => rightView.Any(r => r == b)) && bottomView.Any(t => backView.Any(b => b == t))
-                || bottomView.Any(b => leftView.Any(l => l == b)) && bottomView.Any(t => backView.Any(b => b == t))
-                || bottomView.Any(b => rightView.Any(r => r == b)) && bottomView.Any(t => frontView.Any(f => f == t))
-                || bottomView.Any(b => leftView.Any(l => l == b)) && bottomView.Any(t => frontView.Any(f => f == t))
+                   topViews.Any(tv => tv == rightView)
+                && topViews.Any(tv => tv == backView)
+                && topViews.Any(tv => tv == leftView)
+                && topViews.Any(tv => tv == bottomView)
+                && topViews.Any(tv => tv == frontView)
                 )
             {
                 res++;
-                /*outputStringBuilder.AppendLine("Isomorphic\n");
+                if (ApplicationConfiguration.OutputCubeDetails)
+                {
+                    outputStringBuilder.AppendLine("Invariant");
+                }
             }
-            else
+            else if (ApplicationConfiguration.OutputCubeDetails)
             {
-                outputStringBuilder.AppendLine("Not isomorphic\n");*/
+                outputStringBuilder.AppendLine("Not invariant");
             }
         }
 
@@ -107,11 +114,27 @@ internal static class CubeIsomorphicDetector
         var matrixes = decomposition.Select(m => m.Matrix).ToArray();
         res.Add(ViewToString(matrixes, view));
 
-        for (int i = 0; i < matrixes.Length; i++)
+        if (view == CubeView.Top)
         {
-            matrixes[i] = RotateMatrix(matrixes[i]);
+            for (int i = 0; i < matrixes.Length; i++)
+            {
+                matrixes[i] = RotateMatrix(matrixes[i]);
+            }
+            res.Add(ViewToString(matrixes, view));
+
+            for (int i = 0; i < matrixes.Length; i++)
+            {
+                matrixes[i] = RotateMatrix(matrixes[i]);
+            }
+            res.Add(ViewToString(matrixes, view));
+
+            for (int i = 0; i < matrixes.Length; i++)
+            {
+                matrixes[i] = RotateMatrix(matrixes[i]);
+            }
+            res.Add(ViewToString(matrixes, view));
         }
-        res.Add(ViewToString(matrixes, view));
+
 
         return res;
     }
@@ -147,11 +170,11 @@ internal static class CubeIsomorphicDetector
                         for (var j = 0; j < size; j++)
                         {
 
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
             case CubeView.Bottom:
@@ -161,11 +184,11 @@ internal static class CubeIsomorphicDetector
                     {
                         for (var j = 0; j < size; j++)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
             case CubeView.Left:
@@ -175,11 +198,11 @@ internal static class CubeIsomorphicDetector
                     {
                         for (var i = 0; i < size; i++)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
             case CubeView.Right:
@@ -189,11 +212,11 @@ internal static class CubeIsomorphicDetector
                     {
                         for (var i = size - 1; i >= 0; i--)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
             case CubeView.Front:
@@ -203,11 +226,11 @@ internal static class CubeIsomorphicDetector
                     {
                         for (var j = 0; j < size; j++)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
             case CubeView.Back:
@@ -217,11 +240,11 @@ internal static class CubeIsomorphicDetector
                     {
                         for (var j = size - 1; j >= 0; j--)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "1" : "0");
+                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
                         }
-                        stringBuilder.Append(" ");
+                        stringBuilder.Append(' ');
                     }
-                    stringBuilder.Append(" ");
+                    stringBuilder.Append(' ');
                 }
                 break;
         }

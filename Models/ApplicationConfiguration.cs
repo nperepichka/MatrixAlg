@@ -3,6 +3,7 @@
 internal static class ApplicationConfiguration
 {
     public static bool AnalyzeCubes { get; private set; } = false;
+    public static bool OutputCubeDetails { get; private set; } = false;
     public static bool DrawMosaics { get; private set; } = false;
     public static bool OutputDecompositions { get; private set; } = true;
 
@@ -18,6 +19,7 @@ internal static class ApplicationConfiguration
                 .ToDictionary(k => k[0].Trim(), v => int.TryParse(v[1].Trim(), out var val) ? val : 0);
 
             AnalyzeCubes = values.GetConfigFlag(nameof(AnalyzeCubes), AnalyzeCubes);
+            OutputCubeDetails = values.GetConfigFlag(nameof(OutputCubeDetails), OutputCubeDetails);
             DrawMosaics = values.GetConfigFlag(nameof(DrawMosaics), DrawMosaics);
             OutputDecompositions = values.GetConfigFlag(nameof(OutputDecompositions), OutputDecompositions);
         }
