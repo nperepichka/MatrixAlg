@@ -110,6 +110,10 @@ internal class Program
         OutputWriter.WriteLine();
         // Output total decompositions count
         OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
+        if (ApplicationConfiguration.AnalyzeCubes)
+        {
+            OutputWriter.WriteLine($"Unique invariant cubes count: {decompositor.UniqueCubesCount}");
+        }
 
         // Stop timer
         stopwatch.Stop();

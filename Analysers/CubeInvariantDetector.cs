@@ -7,6 +7,8 @@ namespace MatrixAlg.Analysers;
 
 internal static class CubeInvariantDetector
 {
+    private static readonly object Lock = new();
+
     // TODO: rewrite this class don't to generate Combinations
 
     private static readonly List<int[]> Combinations = [];
@@ -42,8 +44,9 @@ internal static class CubeInvariantDetector
         }
     }
 
-    public static int GetInvariantCubesCount(DecompositionMatrixDetails[] decomposition, StringBuilder outputStringBuilder)
+    public static int GetInvariantCubesCount(DecompositionMatrixDetails[] decomposition, StringBuilder outputStringBuilder, ref List<string> viewOfFoundCubes, out int uniqueCubes)
     {
+        uniqueCubes = 0;
         var res = 0;
 
         if (ApplicationConfiguration.OutputCubeDetails)
@@ -93,9 +96,28 @@ internal static class CubeInvariantDetector
                 )
             {
                 res++;
+
+                bool isUnique;
+                lock (Lock)
+                {
+                    isUnique = !viewOfFoundCubes.Any(v1 => topViews.Any(v2 => v1 == v2));
+                    if (isUnique)
+                    {
+                        viewOfFoundCubes.Add(topViews[0]);
+                        Interlocked.Increment(ref uniqueCubes);
+                    }
+                }
+
                 if (ApplicationConfiguration.OutputCubeDetails)
                 {
-                    outputStringBuilder.AppendLine("Invariant");
+                    if (isUnique)
+                    {
+                        outputStringBuilder.AppendLine("Invariant (already exists)");
+                    }
+                    else
+                    {
+                        outputStringBuilder.AppendLine("Invariant (unique)");
+                    }
                 }
             }
             else if (ApplicationConfiguration.OutputCubeDetails)

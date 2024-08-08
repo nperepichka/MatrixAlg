@@ -59,7 +59,7 @@ internal static class DataOutputWriter
     /// </summary>
     /// <param name="decomposition">Decompositions on 1-transversals</param>
     /// <param name="n">Number of decomposition</param>
-    public static void WriteDecomposition(byte[][] decomposition, ulong n)
+    public static void WriteDecomposition(byte[][] decomposition, ulong n, ref List<string> viewOfFoundCubes)
     {
         if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics)
         {
@@ -126,9 +126,9 @@ internal static class DataOutputWriter
             if (shouldAnalyzeCube)
             {
                 // Check variants of invariant cubes of decomposition
-                var invariantCubesCount = CubeInvariantDetector.GetInvariantCubesCount(matrixes, outputStringBuilder);
+                var invariantCubesCount = CubeInvariantDetector.GetInvariantCubesCount(matrixes, outputStringBuilder, ref viewOfFoundCubes, out var uniqueCubes);
                 // Append message about ways to build invariant cube of decomposition to string builder
-                outputStringBuilder.AppendLine($"Invariant cube of decomposition can be build {invariantCubesCount} different ways.");
+                outputStringBuilder.AppendLine($"Invariant cube of decomposition can be build {invariantCubesCount} different ways, {uniqueCubes} of them are unique.");
             }
 
             // Write string builder value

@@ -9,11 +9,14 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
     private readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private int ParallelsCount = 0;
+    private List<string> CubeViews = [];
 
     /// <summary>
     /// Decomposition counter
     /// </summary>
     public ulong DecomposesCount = 0;
+
+    public int UniqueCubesCount => CubeViews.Count;
 
     public void Decompose()
     {
@@ -82,7 +85,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
                         // Increase decompositions count
                         Interlocked.Increment(ref DecomposesCount);
                         // Output decomposition
-                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount);
+                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount, ref CubeViews);
                     }
                 }
             }
