@@ -1,14 +1,15 @@
 ﻿using MatrixAlg.Enums;
 using MatrixAlg.Helpers;
-using MatrixAlg.Models;
 using System.Text;
 
 namespace MatrixAlg.Processors;
 
 internal class CubeCreator(byte Size)
 {
+    private readonly object CubeResultLock = new();
     private readonly object CubeLock = new();
     public readonly HashSet<string> CubeViews = [];
+    public readonly HashSet<string> CubeHashes = [];
 
     // TODO: rewrite this class don't to generate Combinations
     private static readonly List<byte[]> Combinations = [];
@@ -47,12 +48,21 @@ internal class CubeCreator(byte Size)
         }
     }
 
-    public void CreateInvariantCubes(DecompositionMatrixDetails[] decomposition)
+    public void CreateInvariantCubes(bool[][,] matrixes)
     {
+        var hash = GetHash(matrixes);
+        lock (CubeLock)
+        {
+            if (!CubeHashes.Add(hash))
+            {
+                return;
+            }
+        }
+
         foreach (var combination in Combinations)
         {
             var matrixesCombination = combination
-                .Select(i => decomposition[i].Matrix)
+                .Select(i => matrixes[i])
                 .ToArray();
 
             var topViews = ViewVariantsToString(matrixesCombination, CubeView.Top);
@@ -68,7 +78,7 @@ internal class CubeCreator(byte Size)
             {
                 var uniqueCandidateView = topViews.Min(tv => tv)!;
                 bool isUnique;
-                lock (CubeLock)
+                lock (CubeResultLock)
                 {
                     isUnique = CubeViews.Add(uniqueCandidateView);
                 }
@@ -79,6 +89,56 @@ internal class CubeCreator(byte Size)
                 }
             }
         }
+    }
+
+    private string GetHash(bool[][,] matrixes)
+    {
+        Array.Sort(matrixes, CompareMatrixes);
+
+        var flatArray = new char[(Size * Size * Size + 15) / 16];
+
+        var bitIndex = 0;
+        int i;
+        int j;
+
+        foreach (var matrix in matrixes)
+        {
+            for (i = 0; i < Size; i++)
+            {
+                for (j = 0; j < Size; j++)
+                {
+                    if (matrix[i, j])
+                    {
+                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                    }
+                    bitIndex++;
+                }
+            }
+        }
+
+        return new string(flatArray);
+    }
+
+    private static int CompareMatrixes(bool[,] matrixA, bool[,] matrixB)
+    {
+        var size = matrixA.GetLength(0);
+
+        for (var i = 0; i < size; i++)
+        {
+            for (var j = 0; j < size; j++)
+            {
+                if (matrixA[i, j] && !matrixB[i, j])
+                {
+                    return 1;
+                }
+                else if (!matrixA[i, j] && matrixB[i, j])
+                {
+                    return -1;
+                }
+            }
+        }
+
+        return 0;
     }
 
     private string FormatView(string view)
@@ -114,36 +174,21 @@ internal class CubeCreator(byte Size)
 
         for (var i = 0; i < matrixes.Length; i++)
         {
-            matrixes[i] = RotateMatrix(matrixes[i]);
+            matrixes[i] = MatrixBuilder.RotateMatrix(matrixes[i]);
         }
         res.Add(ViewToString(matrixes, view));
 
         for (var i = 0; i < matrixes.Length; i++)
         {
-            matrixes[i] = RotateMatrix(matrixes[i]);
+            matrixes[i] = MatrixBuilder.RotateMatrix(matrixes[i]);
         }
         res.Add(ViewToString(matrixes, view));
 
         for (var i = 0; i < matrixes.Length; i++)
         {
-            matrixes[i] = RotateMatrix(matrixes[i]);
+            matrixes[i] = MatrixBuilder.RotateMatrix(matrixes[i]);
         }
         res.Add(ViewToString(matrixes, view));
-
-        return res;
-    }
-
-    private bool[,] RotateMatrix(bool[,] matrix)
-    {
-        var res = new bool[Size, Size];
-
-        for (var i = Size - 1; i >= 0; --i)
-        {
-            for (var j = 0; j < Size; ++j)
-            {
-                res[j, Size - i - 1] = matrix[i, j];
-            }
-        }
 
         return res;
     }

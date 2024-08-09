@@ -71,13 +71,17 @@ internal static class DataOutputWriter
             return;
         }
 
-        // Define a list with matrixes details
         var matrixes = decomposition
-            .Select((matrixElements, index) => new DecompositionMatrixDetails(matrixElements, index))
+            .Select(MatrixBuilder.BuildMatrix)
             .ToArray();
 
         if (ApplicationConfiguration.OutputDecompositions)
         {
+            // Define a list with matrixes details
+            var matrixesWithDetailes = matrixes
+                .Select((matrix, index) => new DecompositionMatrixDetails(matrix, index))
+                .ToArray();
+
             // Initiate string builder
             var outputStringBuilder = new StringBuilder(string.Empty);
 
@@ -85,7 +89,7 @@ internal static class DataOutputWriter
             outputStringBuilder.AppendLine($"Decomposition #{n}");
 
             // Enumerate all matrixes
-            foreach (var matrix in matrixes)
+            foreach (var matrix in matrixesWithDetailes)
             {
                 // Output matrix to string builder
                 WriteMatrix(matrix.Matrix, outputStringBuilder);
@@ -106,7 +110,7 @@ internal static class DataOutputWriter
                 else
                 {
                     // Check if conjugate not symetric matrix exists
-                    var hasСonjugate = matrixes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
+                    var hasСonjugate = matrixesWithDetailes.Any(m => m.Index != matrix.Index && !m.IsSymetric && MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m.Matrix));
                     // If conjugate not symetric matrix exists
                     if (hasСonjugate)
                     {
@@ -142,10 +146,24 @@ internal static class DataOutputWriter
         }
     }
 
-    private static void DrawMosaic(DecompositionMatrixDetails[] matrixes, ulong n)
+    private static void DrawMosaic(bool[][,] matrixes, ulong n)
     {
         var mosaic = MosaicBuilder.BuildMosaic(matrixes);
 
+        var hash = GetHash(mosaic);
+        bool isNew;
+        lock (MosaicLock)
+        {
+            isNew = MosaicHashes.Add(hash);
+        }
+        if (isNew)
+        {
+            MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
+        }
+    }
+
+    private static string GetHash(bool[,] mosaic)
+    {
         var size = mosaic.GetLength(0);
         // Each byte holds 8 bits (8 bools)
         var flatArray = new byte[(size * size + 7) / 8];
@@ -163,16 +181,7 @@ internal static class DataOutputWriter
             }
         }
 
-        var hash = Encoding.ASCII.GetString(flatArray);
-        bool isNew;
-        lock (MosaicLock)
-        {
-            isNew = MosaicHashes.Add(hash);
-        }
-        if (isNew)
-        {
-            MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
-        }
+        return Encoding.ASCII.GetString(flatArray);
     }
 
     public static void OutputCube(string cubeView, int n, byte size)

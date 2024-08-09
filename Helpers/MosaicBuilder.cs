@@ -1,5 +1,4 @@
 ﻿using MatrixAlg.Analysers;
-using MatrixAlg.Models;
 
 namespace MatrixAlg.Helpers;
 
@@ -8,24 +7,24 @@ namespace MatrixAlg.Helpers;
 /// </summary>
 internal static class MosaicBuilder
 {
-    public static bool[,] BuildMosaic(DecompositionMatrixDetails[] decomposition)
+    public static bool[,] BuildMosaic(bool[][,] matrixes)
     {
-        var size = decomposition[0].Matrix.GetLength(0);
+        var size = matrixes[0].GetLength(0);
         var halfSize = size / 2;
 
-        var mosaic = BuildMatrix(size);
+        var mosaic = MatrixBuilder.BuildEmptyMatrix(size);
         var list = new List<bool[,]>();
 
         var m1Count = 0;
         var m2Count = 0;
 
-        foreach (var matrix in decomposition)
+        foreach (var matrix in matrixes)
         {
-            var shouldUse = m1Count < halfSize && !list.Any(m => MatrixСonjugationDetector.AreСonjugate(matrix.Matrix, m)) || m2Count >= halfSize;
+            var shouldUse = m1Count < halfSize && !list.Any(m => MatrixСonjugationDetector.AreСonjugate(matrix, m)) || m2Count >= halfSize;
 
             if (shouldUse)
             {
-                list.Add(matrix.Matrix);
+                list.Add(matrix);
                 m1Count++;
             }
             else
@@ -37,7 +36,7 @@ internal static class MosaicBuilder
             {
                 for (var j = 0; j < size; j++)
                 {
-                    if (matrix.Matrix[i, j])
+                    if (matrix[i, j])
                     {
                         if (shouldUse)
                         {
@@ -49,18 +48,5 @@ internal static class MosaicBuilder
         }
 
         return mosaic;
-    }
-
-    private static bool[,] BuildMatrix(int size)
-    {
-        var res = new bool[size, size];
-        for (var i = 0; i < size; i++)
-        {
-            for (var j = 0; j < size; j++)
-            {
-                res[i, j] = false;
-            }
-        }
-        return res;
     }
 }

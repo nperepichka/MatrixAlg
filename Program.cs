@@ -33,11 +33,11 @@ internal class Program
         // Get size of input matrix
         var size = (byte)input.GetLength(0);
 
-        // If should analyze cubes and input matrix size is more that 7
-        if (ApplicationConfiguration.AnalyzeCubes && size > 7)
+        // If should analyze cubes and input matrix size is more that 8
+        if (ApplicationConfiguration.AnalyzeCubes && size > 8)
         {
-            // Write that input matrix size should be 7 or less to enable AnalyzeCube option
-            OutputWriter.WriteLine($"Input matrix size should be 7 or less to enable AnalyzeCube option. Application will exit.");
+            // Write that input matrix size should be 8 or less to enable AnalyzeCube option
+            OutputWriter.WriteLine($"Input matrix size should be 8 or less to enable AnalyzeCube option. Application will exit.");
             // Wait for exit confirmed
             WaitForExit();
             //Exit an application
