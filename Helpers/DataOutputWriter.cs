@@ -33,7 +33,7 @@ internal static class DataOutputWriter
                 // Prepare cell value
                 var cellValue = matrix[i, j] ? " *" : " O";
                 // Check if string builder is not passed
-                if (stringBuilder == null)
+                if (stringBuilder is null)
                 {
                     // Write cell value to default output
                     OutputWriter.Write(cellValue);
@@ -46,7 +46,7 @@ internal static class DataOutputWriter
                 }
             }
             // Check if string builder is not passed
-            if (stringBuilder == null)
+            if (stringBuilder is null)
             {
                 // Write empty line to default output
                 OutputWriter.WriteLine();

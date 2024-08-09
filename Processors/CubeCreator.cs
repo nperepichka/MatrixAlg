@@ -47,12 +47,12 @@ internal class CubeCreator(byte Size)
         }
     }
 
-    public void CreateInvariantCubes(DecompositionMatrixDetails[] matrixes)
+    public void CreateInvariantCubes(DecompositionMatrixDetails[] decomposition)
     {
         foreach (var combination in Combinations)
         {
             var matrixesCombination = combination
-                .Select(i => matrixes[i])
+                .Select(i => decomposition[i].Matrix)
                 .ToArray();
 
             var topViews = ViewVariantsToString(matrixesCombination, CubeView.Top);
@@ -62,11 +62,11 @@ internal class CubeCreator(byte Size)
                 && topViews.Any(tv => tv == ViewToString(matrixesCombination, CubeView.Back))
                 && topViews.Any(tv => tv == ViewToString(matrixesCombination, CubeView.Left))
                 && topViews.Any(tv => tv == ViewToString(matrixesCombination, CubeView.Front))
-                // TODO: maybe we don't need next line
-                && topViews.Any(tv => tv == ViewToString(matrixesCombination, CubeView.Bottom))
+                // no need to check bottom view
+                //&& topViews.Any(tv => tv == ViewToString(matrixesCombination, CubeView.Bottom))
                 )
             {
-                var uniqueCandidateView = topViews.OrderByDescending(tv => tv).First();
+                var uniqueCandidateView = topViews.Min(tv => tv)!;
                 bool isUnique;
                 lock (CubeLock)
                 {
@@ -74,7 +74,8 @@ internal class CubeCreator(byte Size)
                 }
                 if (isUnique)
                 {
-                    OutputWriter.WriteLine($"Unique invariant cube found:{Environment.NewLine}{FormatView(uniqueCandidateView)}{Environment.NewLine}");
+                    var formatedView = FormatView(uniqueCandidateView);
+                    OutputWriter.WriteLine($"Unique invariant cube found:{Environment.NewLine}{formatedView}{Environment.NewLine}");
                 }
             }
         }
@@ -104,12 +105,12 @@ internal class CubeCreator(byte Size)
         return stringBuilder.ToString();
     }
 
-    private List<string> ViewVariantsToString(DecompositionMatrixDetails[] decomposition, CubeView view)
+    private List<string> ViewVariantsToString(bool[][,] matrixes, CubeView view)
     {
-        var res = new List<string>(4);
-
-        var matrixes = decomposition.Select(m => m.Matrix).ToArray();
-        res.Add(ViewToString(matrixes, view));
+        var res = new List<string>(4)
+        {
+            ViewToString(matrixes, view)
+        };
 
         for (var i = 0; i < matrixes.Length; i++)
         {
@@ -130,12 +131,6 @@ internal class CubeCreator(byte Size)
         res.Add(ViewToString(matrixes, view));
 
         return res;
-    }
-
-    private string ViewToString(DecompositionMatrixDetails[] decomposition, CubeView view)
-    {
-        var matrixes = decomposition.Select(m => m.Matrix).ToArray();
-        return ViewToString(matrixes, view);
     }
 
     private bool[,] RotateMatrix(bool[,] matrix)
@@ -156,78 +151,80 @@ internal class CubeCreator(byte Size)
     private string ViewToString(bool[][,] matrixes, CubeView view)
     {
         var stringBuilder = new StringBuilder(string.Empty);
+        int k;
+        int i;
+        int j;
 
         switch (view)
         {
             case CubeView.Top:
-                for (var k = 0; k < Size; k++)
+                for (k = 0; k < Size; k++)
                 {
-                    for (var i = 0; i < Size; i++)
+                    for (i = 0; i < Size; i++)
                     {
-                        for (var j = 0; j < Size; j++)
+                        for (j = 0; j < Size; j++)
                         {
-
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
-                        }
-                    }
-                }
-                break;
-            case CubeView.Bottom:
-                for (var k = Size - 1; k >= 0; k--)
-                {
-                    for (var i = Size - 1; i >= 0; i--)
-                    {
-                        for (var j = 0; j < Size; j++)
-                        {
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
-                        }
-                    }
-                }
-                break;
-            case CubeView.Left:
-                for (var j = 0; j < Size; j++)
-                {
-                    for (var k = 0; k < Size; k++)
-                    {
-                        for (var i = 0; i < Size; i++)
-                        {
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
                         }
                     }
                 }
                 break;
             case CubeView.Right:
-                for (var j = Size - 1; j >= 0; j--)
+                for (j = Size - 1; j >= 0; j--)
                 {
-                    for (var k = 0; k < Size; k++)
+                    for (k = 0; k < Size; k++)
                     {
-                        for (var i = Size - 1; i >= 0; i--)
+                        for (i = Size - 1; i >= 0; i--)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
-                        }
-                    }
-                }
-                break;
-            case CubeView.Front:
-                for (var i = Size - 1; i >= 0; i--)
-                {
-                    for (var k = 0; k < Size; k++)
-                    {
-                        for (var j = 0; j < Size; j++)
-                        {
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
                         }
                     }
                 }
                 break;
             case CubeView.Back:
-                for (var i = 0; i < Size; i++)
+                for (i = 0; i < Size; i++)
                 {
-                    for (var k = 0; k < Size; k++)
+                    for (k = 0; k < Size; k++)
                     {
-                        for (var j = Size - 1; j >= 0; j--)
+                        for (j = Size - 1; j >= 0; j--)
                         {
-                            stringBuilder.Append(matrixes[k][i, j] ? "*" : "O");
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
+                        }
+                    }
+                }
+                break;
+            case CubeView.Left:
+                for (j = 0; j < Size; j++)
+                {
+                    for (k = 0; k < Size; k++)
+                    {
+                        for (i = 0; i < Size; i++)
+                        {
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
+                        }
+                    }
+                }
+                break;
+            case CubeView.Front:
+                for (i = Size - 1; i >= 0; i--)
+                {
+                    for (k = 0; k < Size; k++)
+                    {
+                        for ( j = 0; j < Size; j++)
+                        {
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
+                        }
+                    }
+                }
+                break;
+            case CubeView.Bottom:
+                for (k = Size - 1; k >= 0; k--)
+                {
+                    for (i = Size - 1; i >= 0; i--)
+                    {
+                        for (j = 0; j < Size; j++)
+                        {
+                            stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
                         }
                     }
                 }
