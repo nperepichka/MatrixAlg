@@ -66,7 +66,7 @@ internal static class DataOutputWriter
     /// <param name="n">Number of decomposition</param>
     public static void WriteDecomposition(byte[][] decomposition, ulong n, CubeCreator cubeCreator)
     {
-        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics)
+        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics && !ApplicationConfiguration.AnalyzeCubes)
         {
             return;
         }
