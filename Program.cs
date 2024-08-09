@@ -30,12 +30,14 @@ internal class Program
 
         // Read input matrix
         var input = InputReader.Read();
+        // Get size of input matrix
+        var size = (byte)input.GetLength(0);
 
-        // If should analyze cubes and input matrix size is more that 8
-        if (ApplicationConfiguration.AnalyzeCubes && input.GetLength(0) > 8)
+        // If should analyze cubes and input matrix size is more that 7
+        if (ApplicationConfiguration.AnalyzeCubes && size > 7)
         {
-            // Write that input matrix size should be 8 or less to enable AnalyzeCube option
-            OutputWriter.WriteLine($"Input matrix size should be 8 or less to enable AnalyzeCube option. Application will exit.");
+            // Write that input matrix size should be 7 or less to enable AnalyzeCube option
+            OutputWriter.WriteLine($"Input matrix size should be 7 or less to enable AnalyzeCube option. Application will exit.");
             // Wait for exit confirmed
             WaitForExit();
             //Exit an application
@@ -97,14 +99,26 @@ internal class Program
         // If should analyze cubes
         if (ApplicationConfiguration.AnalyzeCubes)
         {
+            if (transversal != size)
+            {
+                OutputWriter.WriteLine($"Input matrix size should be equal to amount of transversals to enable AnalyzeCube option. Application will exit.");
+                // Wait for exit confirmed
+                WaitForExit();
+                //Exit an application
+                return;
+            }
             // Generate combinations for cube analyse
-            CubeInvariantDetector.GenerateCombinations(transversal);
+            CubeCreator.GenerateCombinations(size);
         }
 
+        // Initiate cube creator object
+        var cubeCreator = new CubeCreator(transversal);
         // Initiate decompositor object
-        var decompositor = new Decompositor(input, transversal);
+        var decompositor = new Decompositor(input, transversal, cubeCreator);
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
+
+        cubeCreator.OutputCubes();
 
         // Write empty line
         OutputWriter.WriteLine();
@@ -112,7 +126,7 @@ internal class Program
         OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
         if (ApplicationConfiguration.AnalyzeCubes)
         {
-            OutputWriter.WriteLine($"Unique invariant cubes count: {decompositor.UniqueCubesCount}");
+            OutputWriter.WriteLine($"Unique invariant cubes count: {cubeCreator.CubeViews.Count}");
         }
 
         // Stop timer

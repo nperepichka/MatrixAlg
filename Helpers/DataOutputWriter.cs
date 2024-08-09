@@ -1,5 +1,6 @@
 ﻿using MatrixAlg.Analysers;
 using MatrixAlg.Models;
+using MatrixAlg.Processors;
 using System.Text;
 
 namespace MatrixAlg.Helpers;
@@ -9,6 +10,10 @@ namespace MatrixAlg.Helpers;
 /// </summary>
 internal static class DataOutputWriter
 {
+    private static readonly object MosaicLock = new();
+
+    private static readonly HashSet<string> MosaicHashes = [];
+
     /// <summary>
     /// Write matrix
     /// </summary>
@@ -59,7 +64,7 @@ internal static class DataOutputWriter
     /// </summary>
     /// <param name="decomposition">Decompositions on 1-transversals</param>
     /// <param name="n">Number of decomposition</param>
-    public static void WriteDecomposition(byte[][] decomposition, ulong n, ref List<string> viewOfFoundCubes)
+    public static void WriteDecomposition(byte[][] decomposition, ulong n, CubeCreator cubeCreator)
     {
         if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics)
         {
@@ -119,58 +124,73 @@ internal static class DataOutputWriter
                 }
             }
 
-            // Check if decomposition cube should be analyzed
-            var shouldAnalyzeCube = ApplicationConfiguration.AnalyzeCubes && decomposition.Length == decomposition[0].Length;
-
-            // If decomposition cube should be analyzed
-            if (shouldAnalyzeCube)
-            {
-                // Check variants of invariant cubes of decomposition
-                var invariantCubesCount = CubeInvariantDetector.GetInvariantCubesCount(matrixes, outputStringBuilder, ref viewOfFoundCubes, out var uniqueCubes);
-                // Append message about ways to build invariant cube of decomposition to string builder
-                outputStringBuilder.AppendLine($"Invariant cube of decomposition can be build {invariantCubesCount} different ways, {uniqueCubes} of them are unique.");
-            }
-
             // Write string builder value
             OutputWriter.WriteLine(outputStringBuilder.ToString());
+        }
+
+        // If decomposition cube should be analyzed
+        if (ApplicationConfiguration.AnalyzeCubes)
+        {
+            // Create invariant cubes of decomposition
+            cubeCreator.CreateInvariantCubes(matrixes);
         }
 
         // If decomposition mosaic should be drawn
         if (ApplicationConfiguration.DrawMosaics)
         {
-            var mosaic = MosaicBuilder.BuildMosaic(matrixes);
-
-            var size = mosaic.GetLength(0);
-            // Each byte holds 8 bits (8 bools)
-            var flatArray = new byte[(size * size + 7) / 8];
-
-            var bitIndex = 0;
-            for (var i = 0; i < size; i++)
-            {
-                for (var j = 0; j < size; j++)
-                {
-                    if (mosaic[i, j])
-                    {
-                        flatArray[bitIndex / 8] |= (byte)(1 << (bitIndex % 8));
-                    }
-                    bitIndex++;
-                }
-            }
-
-            var hash = Encoding.ASCII.GetString(flatArray);
-            bool isNew;
-            lock (Lock)
-            {
-                isNew = Hash.Add(hash);
-            }
-            if (isNew)
-            {
-                MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
-            }
+            DrawMosaic(matrixes, n);
         }
     }
 
-    private static readonly object Lock = new();
+    private static void DrawMosaic(DecompositionMatrixDetails[] matrixes, ulong n)
+    {
+        var mosaic = MosaicBuilder.BuildMosaic(matrixes);
 
-    private static readonly HashSet<string> Hash = [];
+        var size = mosaic.GetLength(0);
+        // Each byte holds 8 bits (8 bools)
+        var flatArray = new byte[(size * size + 7) / 8];
+
+        var bitIndex = 0;
+        for (var i = 0; i < size; i++)
+        {
+            for (var j = 0; j < size; j++)
+            {
+                if (mosaic[i, j])
+                {
+                    flatArray[bitIndex / 8] |= (byte)(1 << (bitIndex % 8));
+                }
+                bitIndex++;
+            }
+        }
+
+        var hash = Encoding.ASCII.GetString(flatArray);
+        bool isNew;
+        lock (MosaicLock)
+        {
+            isNew = MosaicHashes.Add(hash);
+        }
+        if (isNew)
+        {
+            MosaicDrawer.Draw(mosaic, $"mosaic_{n}");
+        }
+    }
+
+    public static void OutputCube(string cubeView, int n, byte size)
+    {
+        var stringBuilder = new StringBuilder($"Invarinat cube #{n}{Environment.NewLine}");
+
+        var start = 0;
+        while (start < cubeView.Length)
+        {
+            var slice = new List<int>(size);
+            for (var i = 0; i < size; i++)
+            {
+                slice.Add(cubeView.Substring(start, size).IndexOf('*'));
+                start += size;
+            }
+            stringBuilder.Append($"({string.Join(';', slice)}) ");
+        }
+
+        OutputWriter.WriteLine(stringBuilder.ToString());
+    }
 }

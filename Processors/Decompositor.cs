@@ -2,21 +2,18 @@
 
 namespace MatrixAlg.Processors;
 
-internal class Decompositor(bool[,] Input, byte Transversal)
+internal class Decompositor(bool[,] Input, byte Transversal, CubeCreator CubeCreator)
 {
     private readonly byte Size = (byte)Input.GetLength(0);
     private readonly List<byte[]> InputPositionsPerRow = [];
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
     private readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private int ParallelsCount = 0;
-    private List<string> CubeViews = [];
 
     /// <summary>
     /// Decomposition counter
     /// </summary>
     public ulong DecomposesCount = 0;
-
-    public int UniqueCubesCount => CubeViews.Count;
 
     public void Decompose()
     {
@@ -85,7 +82,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
                         // Increase decompositions count
                         Interlocked.Increment(ref DecomposesCount);
                         // Output decomposition
-                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount, ref CubeViews);
+                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount, CubeCreator);
                     }
                 }
             }
