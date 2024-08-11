@@ -180,7 +180,7 @@ internal static class DataOutputWriter
 
     public static void OutputCube(string cubeView, int n, byte size)
     {
-        var stringBuilder = new StringBuilder($"Invarinat cube #{n}{Environment.NewLine}");
+        var stringBuilder = new StringBuilder($"Invarianat cube #{n}{Environment.NewLine}");
 
         var start = 0;
         while (start < cubeView.Length)
