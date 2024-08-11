@@ -10,6 +10,7 @@ internal class CubeCreator(byte Size)
     private readonly object CubeLock = new();
     public readonly HashSet<string> CubeViews = [];
     public readonly HashSet<string> CubeHashes = [];
+    private readonly sbyte Size1 = (sbyte)(Size - 1);
 
     // TODO: rewrite this class don't to generate Combinations
     private static readonly List<byte[]> Combinations = [];
@@ -98,8 +99,8 @@ internal class CubeCreator(byte Size)
         var flatArray = new char[(Size * Size * Size + 15) / 16];
 
         var bitIndex = 0;
-        int i;
-        int j;
+        byte i;
+        byte j;
 
         foreach (var matrix in matrixes)
         {
@@ -123,9 +124,9 @@ internal class CubeCreator(byte Size)
     {
         var size = matrixA.GetLength(0);
 
-        for (var i = 0; i < size; i++)
+        for (byte i = 0; i < size; i++)
         {
-            for (var j = 0; j < size; j++)
+            for (byte j = 0; j < size; j++)
             {
                 if (matrixA[i, j] && !matrixB[i, j])
                 {
@@ -196,9 +197,9 @@ internal class CubeCreator(byte Size)
     private string ViewToString(bool[][,] matrixes, CubeView view)
     {
         var stringBuilder = new StringBuilder(string.Empty);
-        int k;
-        int i;
-        int j;
+        sbyte k;
+        sbyte i;
+        sbyte j;
 
         switch (view)
         {
@@ -215,11 +216,11 @@ internal class CubeCreator(byte Size)
                 }
                 break;
             case CubeView.Right:
-                for (j = Size - 1; j >= 0; j--)
+                for (j = Size1; j >= 0; j--)
                 {
                     for (k = 0; k < Size; k++)
                     {
-                        for (i = Size - 1; i >= 0; i--)
+                        for (i = Size1; i >= 0; i--)
                         {
                             stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
                         }
@@ -231,7 +232,7 @@ internal class CubeCreator(byte Size)
                 {
                     for (k = 0; k < Size; k++)
                     {
-                        for (j = Size - 1; j >= 0; j--)
+                        for (j = Size1; j >= 0; j--)
                         {
                             stringBuilder.Append(matrixes[k][i, j] ? '*' : 'O');
                         }
@@ -251,7 +252,7 @@ internal class CubeCreator(byte Size)
                 }
                 break;
             case CubeView.Front:
-                for (i = Size - 1; i >= 0; i--)
+                for (i = Size1; i >= 0; i--)
                 {
                     for (k = 0; k < Size; k++)
                     {
@@ -263,9 +264,9 @@ internal class CubeCreator(byte Size)
                 }
                 break;
             case CubeView.Bottom:
-                for (k = Size - 1; k >= 0; k--)
+                for (k = Size1; k >= 0; k--)
                 {
-                    for (i = Size - 1; i >= 0; i--)
+                    for (i = Size1; i >= 0; i--)
                     {
                         for (j = 0; j < Size; j++)
                         {

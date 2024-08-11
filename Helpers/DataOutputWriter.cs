@@ -59,14 +59,9 @@ internal static class DataOutputWriter
         }
     }
 
-    /// <summary>
-    /// Write decomposition output
-    /// </summary>
-    /// <param name="decomposition">Decompositions on 1-transversals</param>
-    /// <param name="n">Number of decomposition</param>
     public static void WriteDecomposition(byte[][] decomposition, ulong n, CubeCreator cubeCreator)
     {
-        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics && !ApplicationConfiguration.AnalyzeCubes)
+        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.AnalyzeCubes && !ApplicationConfiguration.DrawMosaics)
         {
             return;
         }
@@ -165,8 +160,7 @@ internal static class DataOutputWriter
     private static string GetHash(bool[,] mosaic)
     {
         var size = mosaic.GetLength(0);
-        // Each byte holds 8 bits (8 bools)
-        var flatArray = new byte[(size * size + 7) / 8];
+        var flatArray = new char[(size * size + 15) / 16];
 
         var bitIndex = 0;
         for (var i = 0; i < size; i++)
@@ -175,13 +169,13 @@ internal static class DataOutputWriter
             {
                 if (mosaic[i, j])
                 {
-                    flatArray[bitIndex / 8] |= (byte)(1 << (bitIndex % 8));
+                    flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
                 }
                 bitIndex++;
             }
         }
 
-        return Encoding.ASCII.GetString(flatArray);
+        return new string(flatArray);
     }
 
     public static void OutputCube(string cubeView, int n, byte size)
