@@ -1,42 +1,45 @@
-﻿namespace CubeAlg.Models
+﻿namespace CubeAlg.Models;
+
+internal class Point
 {
-    internal class Point
+    public Point(byte x, byte z)
     {
-        public Point(byte x, byte z)
-        {
-            X = x;
-            Z = z;
-            Y = null;
-        }
+        X = x;
+        Z = z;
+        Y = null;
+    }
 
-        public Point(byte x, byte? y, byte z)
-        {
-            X = x;
-            Z = z;
-            Y = y;
-        }
+    public Point(byte x, byte? y, byte z)
+    {
+        X = x;
+        Z = z;
+        Y = y;
+    }
 
-        public byte X { get; init; }
-        public byte? Y { get; set; }
-        public byte Z { get; init; }
+    public byte X { get; init; }
+    public byte? Y { get; private set; }
+    public byte Z { get; init; }
 
-        public bool IsInitialized
+    public bool IsInitialized
+    {
+        get
         {
-            get
-            {
-                return Y.HasValue;
-            }
+            return Y.HasValue;
         }
+    }
 
-        public Point Clone()
-        {
-            return new Point(X, Y, Z);
-        }
+    public void SetY(byte? y)
+    {
+        Y = y;
+    }
 
-        public void Print()
-        {
-            //Console.WriteLine(Y.HasValue ? $"({X}, {Y.Value}, {Z})" : $"({X}, ?, {Z})");
-            Console.WriteLine(Y.HasValue ? $"({Z}, {X}, {Y.Value})" : $"({Z}, {X}, ?)");
-        }
+    public Point Clone()
+    {
+        return new Point(X, Y, Z);
+    }
+
+    public void Print()
+    {
+        Console.WriteLine(Y.HasValue ? $"({X}, {Y.Value}, {Z})" : $"({X}, ?, {Z})");
     }
 }

@@ -1,86 +1,126 @@
 ﻿using CubeAlg.Models;
+using CubeAlg.Helpers;
+using System.Diagnostics;
+using CubeAlg.Enums;
 
-/// <summary>
-/// Application entry point class
-/// </summary>
+namespace CubeAlg;
+
 internal static class Program
 {
-    private static byte Size = 4;
+    private static readonly byte Size = 7;
 
-    private static byte MinZ = 0;
-    private static byte MaxZ = 0;
-    private static byte MinX = 0;
-    private static byte MaxX = 0;
-    private static byte MinY = 0;
-    private static byte MaxY = 0;
+    private static byte N = 0;
 
-    /// <summary>
-    /// Application entry point method
-    /// </summary>
+    private static bool ProcessSimetric1 = false;
+    private static bool ProcessSimetric2 = false;
+    //private static byte IgnoreSimetric2ForX = byte.MaxValue;
+
+    public static readonly HashSet<string> CubeHashes = [];
+
     private static void Main()
     {
-        var fillDiag = Size % 2 == 1;
+        ProcessSimetric1 = Size % 2 == 1;
+        ProcessSimetric2 = !ProcessSimetric1;
+        /*if (ProcessSimetric1)
+        {
+            IgnoreSimetric2ForX = (byte) ((Size + 1) / 2);
+        }*/
 
-        MinZ = 0;
-        MaxZ = (byte)(fillDiag ? (Size - 1) / 2 : ((Size / 2) - 1));
-        MinX = 0;
-        MaxX = (byte)(Size - 1);
-        MinY = (byte)(fillDiag ? (Size - 1) / 2 : (Size / 2));
-        MaxY = (byte)(Size - 1);
+        Console.WriteLine($"Size: {Size}");
+        Console.WriteLine();
 
-        var cube = new List<Point>(Size * Size * Size);
+        var cube = new List<Point>(Size * Size);
 
         for (byte z = 0; z < Size; z++)
         {
             for (byte x = 0; x < Size; x++)
             {
-                var point = fillDiag && z == x || z == 0 && x == 0
-                    ? new Point(x, x, z)
-                    : new Point(x, z);
-                cube.Add(point);
+                cube.Add(new Point(x, z));
             }
         }
 
-        Console.WriteLine("Initial state:");
-        cube.Print();
+        var stopwatch = Stopwatch.StartNew();
 
-        Process(cube);
+        Process(ref cube);
+
+        stopwatch.Stop();
+
+        Console.WriteLine($"Unique invariant cubes count: {N}");
+        Console.WriteLine();
+        Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
+
+        Console.WriteLine("Done. Press <Enter> to exit...");
+        Console.ReadLine();
     }
 
-    private static void Process(List<Point> cube)
+    private static void Process(ref List<Point> cube)
     {
-        // TODO:
-    }
+        var point = cube.FirstOrDefault(p => !p.IsInitialized);
 
-    private static Point? FindNext(this List<Point> cube)
-    {
-        for (byte z = MinZ; z <= MaxZ; z++)
+        if (point == null)
         {
-            for (byte x = MinX; x <= MaxX; x++)
+            var bCube = cube.BuildCube(Size);
+
+            var topViews = bCube.GetViewVariants(CubeView.Top, Size);
+
+            if (
+                   topViews.Any(tv => tv == bCube.GetView(CubeView.Right))
+                && topViews.Any(tv => tv == bCube.GetView(CubeView.Back))
+                && topViews.Any(tv => tv == bCube.GetView(CubeView.Left))
+                && topViews.Any(tv => tv == bCube.GetView(CubeView.Front))
+                )
             {
-                var point = cube.First(p => p.X == x && p.Z == z);
-                if (!point.IsInitialized)
+                var hash = topViews.Min(tv => tv)!;
+                if (CubeHashes.Add(hash))
                 {
-                    return point;
+                    N++;
+                    Console.WriteLine($"Cube found #{N}:");
+                    cube.Print();
                 }
             }
-        }
-        return null;
-    }
 
-    private static void Print(this List<Point> cube)
-    {
-        foreach (var point in cube)
+            return;
+        }
+
+        for (byte y = 0; y < Size; y++)
         {
-            point.Print();
-        }
-        Console.WriteLine();
-    }
+            var isValid = !cube.Any(p => (p.X == point.X || p.Z == point.Z) && p.Y == y);
+            if (isValid)
+            {
+                point.SetY(y);
 
-    private static List<Point> Clone(this List<Point> cube)
-    {
-        return cube
-            .Select(p => p.Clone())
-            .ToList();
+                if (ProcessSimetric1)
+                {
+                    if (y == point.X)
+                    {
+                        Process(ref cube);
+                    }
+                    else
+                    {
+                        var point2 = cube.FirstOrDefault(p => p.Z == point.Z && p.X == y);
+                        if (point2?.IsInitialized == false)
+                        {
+                            point2.SetY(point.X);
+                            Process(ref cube);
+                            point2.SetY(null);
+                        }
+                    }
+                }
+
+                //if (point.X != IgnoreSimetric2ForX)
+                if (ProcessSimetric2)
+                {
+                    var point3 = cube.FirstOrDefault(p => p.Z == point.Z && p.X == Size - point.X - 1);
+                    if (point3?.IsInitialized == false)
+                    {
+                        point3.SetY((byte)(Size - y - 1));
+                        Process(ref cube);
+                        point3.SetY(null);
+                    }
+                }
+
+                point.SetY(null);
+            }
+        }
     }
 }
