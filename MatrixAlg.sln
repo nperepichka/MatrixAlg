@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAlg", "MatrixAlg.csproj", "{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAlg", "MatrixAlg\MatrixAlg.csproj", "{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
