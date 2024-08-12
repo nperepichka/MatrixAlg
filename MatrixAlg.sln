@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixAlg", "MatrixAlg\MatrixAlg.csproj", "{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatrixAlg", "MatrixAlg\MatrixAlg.csproj", "{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeAlg", "CubeAlg\CubeAlg.csproj", "{BD7E759D-10F8-4F70-9173-DCBF73E42EE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3185E8E6-DB0B-4B06-B9A3-F36157C1BD7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD7E759D-10F8-4F70-9173-DCBF73E42EE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD7E759D-10F8-4F70-9173-DCBF73E42EE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD7E759D-10F8-4F70-9173-DCBF73E42EE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD7E759D-10F8-4F70-9173-DCBF73E42EE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
