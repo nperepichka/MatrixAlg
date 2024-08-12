@@ -1,28 +1,30 @@
 ﻿using CubeAlg.Enums;
 using CubeAlg.Models;
-using System.Text;
 
 namespace CubeAlg.Helpers;
 
 internal static class CubeHelpers
 {
-    public static void Print(this List<Point> cube)
+    public static void PrintCube(this Point[] cube)
     {
         foreach (var point in cube)
         {
             point.Print();
         }
-                Console.WriteLine();
+        Console.WriteLine();
     }
 
-    public static List<Point> Clone(this List<Point> cube)
+    public static Point[] CloneCube(this Point[] cube)
     {
-        return cube
-            .Select(p => p.Clone())
-            .ToList();
+        var res = new Point[cube.Length];
+        for (var i = 0; i < cube.Length; i++)
+        {
+            res[i] = cube[i].Clone();
+        }
+        return res;
     }
 
-    public static bool[,,] BuildCube(this List<Point> cube, byte size)
+    public static bool[,,] BuildCube(this Point[] cube, byte size)
     {
         var res = new bool[size, size, size];
         foreach (var point in cube)
@@ -33,6 +35,116 @@ internal static class CubeHelpers
     }
 
     public static string GetView(this bool[,,] cube, CubeView view)
+    {
+        var size = cube.GetLength(0);
+        var size1 = size - 1;
+        var flatArray = new char[(size * size * size + 15) / 16];
+        var bitIndex = 0;
+
+        switch (view)
+        {
+            case CubeView.Top:
+                for (var k = 0; k < size; k++)
+                {
+                    for (var i = 0; i < size; i++)
+                    {
+                        for (var j = 0; j < size; j++)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+            case CubeView.Right:
+                for (var j = size1; j >= 0; j--)
+                {
+                    for (var k = 0; k < size; k++)
+                    {
+                        for (var i = size1; i >= 0; i--)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+            case CubeView.Back:
+                for (var i = 0; i < size; i++)
+                {
+                    for (var k = 0; k < size; k++)
+                    {
+                        for (var j = size1; j >= 0; j--)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+            case CubeView.Left:
+                for (var j = 0; j < size; j++)
+                {
+                    for (var k = 0; k < size; k++)
+                    {
+                        for (var i = 0; i < size; i++)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+            case CubeView.Front:
+                for (var i = size1; i >= 0; i--)
+                {
+                    for (var k = 0; k < size; k++)
+                    {
+                        for (var j = 0; j < size; j++)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+            case CubeView.Bottom:
+                for (var k = size1; k >= 0; k--)
+                {
+                    for (var i = size1; i >= 0; i--)
+                    {
+                        for (var j = 0; j < size; j++)
+                        {
+                            if (cube[i, j, k])
+                            {
+                                flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+                break;
+        }
+
+        return new string(flatArray);
+    }
+
+    /*public static string GetView(this bool[,,] cube, CubeView view)
     {
         var size = cube.GetLength(0);
         var size1 = size - 1;
@@ -115,7 +227,7 @@ internal static class CubeHelpers
         }
 
         return stringBuilder.ToString();
-    }
+    }*/
 
     public static bool[,,] Rotate(this bool[,,] cube, int size)
     {

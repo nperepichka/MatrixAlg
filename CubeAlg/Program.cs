@@ -7,20 +7,23 @@ namespace CubeAlg;
 
 internal static class Program
 {
-    private static readonly byte Size = 7;
+    private static readonly byte Size = 6;
 
     private static byte N = 0;
 
     private static bool ProcessSimetric1 = false;
-    private static bool ProcessSimetric2 = false;
+    //private static bool ProcessSimetric2 = false;
     //private static byte IgnoreSimetric2ForX = byte.MaxValue;
 
-    public static readonly HashSet<string> CubeHashes = [];
+    private static readonly HashSet<string> CubeHashes = [];
+    private static readonly object CubeLock = new();
+
+    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
 
     private static void Main()
     {
         ProcessSimetric1 = Size % 2 == 1;
-        ProcessSimetric2 = !ProcessSimetric1;
+        //ProcessSimetric2 = !ProcessSimetric1;
         /*if (ProcessSimetric1)
         {
             IgnoreSimetric2ForX = (byte) ((Size + 1) / 2);
@@ -41,7 +44,7 @@ internal static class Program
 
         var stopwatch = Stopwatch.StartNew();
 
-        Process(ref cube);
+        Process([.. cube], true);
 
         stopwatch.Stop();
 
@@ -53,14 +56,21 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static void Process(ref List<Point> cube)
+    private static void Process(Point[] cube, bool runParallel = false)
     {
-        var point = cube.FirstOrDefault(p => !p.IsInitialized);
+        int? index = null;
+        for (int i = 0; i < cube.Length; i++)
+        {
+            if (!cube[i].IsInitialized)
+            {
+                index = i;
+                break;
+            }
+        }
 
-        if (point == null)
+        if (!index.HasValue)
         {
             var bCube = cube.BuildCube(Size);
-
             var topViews = bCube.GetViewVariants(CubeView.Top, Size);
 
             if (
@@ -71,55 +81,71 @@ internal static class Program
                 )
             {
                 var hash = topViews.Min(tv => tv)!;
-                if (CubeHashes.Add(hash))
+                lock (CubeLock)
                 {
-                    N++;
-                    Console.WriteLine($"Cube found #{N}:");
-                    cube.Print();
+                    if (CubeHashes.Add(hash))
+                    {
+                        N++;
+                        Console.WriteLine($"Cube found #{N}:");
+                        cube.PrintCube();
+                    }
                 }
             }
 
             return;
         }
 
-        for (byte y = 0; y < Size; y++)
+        if (runParallel)
         {
-            var isValid = !cube.Any(p => (p.X == point.X || p.Z == point.Z) && p.Y == y);
-            if (isValid)
+            Parallel.For(0, Size, ParallelOptions, y =>
             {
-                point.SetY(y);
+                ProcessItem(cube, index.Value, (byte)y);
+            });
+        }
+        else
+        {
+            for (byte y = 0; y < Size; y++)
+            {
+                ProcessItem(cube, index.Value, y);
+            }
+        }
+    }
 
-                if (ProcessSimetric1)
+    private static void ProcessItem(Point[] cube, int index, byte y)
+    {
+        if (cube.Any(p => (p.X == cube[index].X || p.Z == cube[index].Z) && p.Y == y))
+        {
+            return;
+        }
+
+        var nextCube = cube.CloneCube();
+        var nextPoint = nextCube[index];
+
+        nextPoint.SetY(y);
+
+        if (ProcessSimetric1)
+        {
+            if (y == nextPoint.X)
+            {
+                Process(nextCube);
+            }
+            else
+            {
+                var point2 = nextCube.FirstOrDefault(p => p.Z == nextPoint.Z && p.X == y);
+                if (point2?.IsInitialized == false)
                 {
-                    if (y == point.X)
-                    {
-                        Process(ref cube);
-                    }
-                    else
-                    {
-                        var point2 = cube.FirstOrDefault(p => p.Z == point.Z && p.X == y);
-                        if (point2?.IsInitialized == false)
-                        {
-                            point2.SetY(point.X);
-                            Process(ref cube);
-                            point2.SetY(null);
-                        }
-                    }
+                    point2.SetY(nextPoint.X);
+                    Process(nextCube);
                 }
-
-                //if (point.X != IgnoreSimetric2ForX)
-                if (ProcessSimetric2)
-                {
-                    var point3 = cube.FirstOrDefault(p => p.Z == point.Z && p.X == Size - point.X - 1);
-                    if (point3?.IsInitialized == false)
-                    {
-                        point3.SetY((byte)(Size - y - 1));
-                        Process(ref cube);
-                        point3.SetY(null);
-                    }
-                }
-
-                point.SetY(null);
+            }
+        }
+        else
+        {
+            var point3 = nextCube.FirstOrDefault(p => p.Z == nextPoint.Z && p.X == Size - nextPoint.X - 1);
+            if (point3?.IsInitialized == false)
+            {
+                point3.SetY((byte)(Size - y - 1));
+                Process(nextCube);
             }
         }
     }
