@@ -20,17 +20,15 @@ internal class Point
     public byte? Y { get; private set; }
     public byte Z { get; init; }
 
-    public bool IsInitialized
+    public bool SetY(byte? y)
     {
-        get
+        if (Y.HasValue != y.HasValue)
         {
-            return Y.HasValue;
+            Y = y;
+            return true;
         }
-    }
 
-    public void SetY(byte? y)
-    {
-        Y = y;
+        return false;
     }
 
     public Point Clone()
@@ -40,6 +38,6 @@ internal class Point
 
     public void Print()
     {
-        Console.WriteLine(Y.HasValue ? $"({X}, {Y.Value}, {Z})" : $"({X}, ?, {Z})");
+        Console.WriteLine($"({X}, {Y}, {Z})");
     }
 }
