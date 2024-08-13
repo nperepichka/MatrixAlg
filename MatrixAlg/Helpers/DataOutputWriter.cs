@@ -182,7 +182,7 @@ internal static class DataOutputWriter
     {
         var stringBuilder = new StringBuilder($"Invarianat cube #{n}{Environment.NewLine}");
 
-        // TODO: update this format
+        // TODO: update this format !!!
 
         var start = 0;
         while (start < cubeView.Length)

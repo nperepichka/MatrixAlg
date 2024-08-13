@@ -84,10 +84,10 @@ internal class Decompositor(bool[,] Input, byte Transversal, CubeCreator CubeCre
                         // Output decomposition
                         DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount, CubeCreator);
 
-                        if (Size > 6 && DecomposesCount % 1000000 == 0)
+                        /*if (Size > 6 && DecomposesCount % 1000000 == 0)
                         {
                             Console.WriteLine($"Processed: {DecomposesCount}");
-                        }
+                        }*/
                     }
                 }
             }

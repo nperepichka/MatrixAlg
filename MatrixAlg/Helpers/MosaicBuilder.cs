@@ -12,7 +12,7 @@ internal static class MosaicBuilder
         var size = matrixes[0].GetLength(0);
         var halfSize = size / 2;
 
-        var mosaic = MatrixBuilder.BuildEmptyMatrix(size);
+        var mosaic = new bool[size, size];
         var list = new List<bool[,]>();
 
         var m1Count = 0;
