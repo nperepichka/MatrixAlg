@@ -6,7 +6,10 @@ internal static class CubeHelpers
 {
     public static void PrintCube(this Point[] cube)
     {
-        foreach (var point in cube)
+        var sortedCube = cube
+            .OrderBy(p => p.X)
+            .ThenBy(p => p.Y);
+        foreach (var point in sortedCube)
         {
             point.Print();
         }

@@ -6,22 +6,29 @@ namespace CubeAlg;
 
 internal static class Program
 {
-    private static readonly byte Size = 6;
-
+    private static byte Size = 0;
     private static byte N = 0;
 
     //private static bool ProcessAltS = false;
 
     private static readonly HashSet<string> CubeHashes = [];
     private static readonly object CubeLock = new();
-
     private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
     private static readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private static int ParallelsCount = 0;
 
     private static void Main()
     {
-        Console.WriteLine($"Size: {Size}");
+        var sizeString = string.Empty;
+        while (!byte.TryParse(sizeString, out Size) || Size > 250 || Size < 1)
+        {
+            if (!string.IsNullOrEmpty(sizeString))
+            {
+                Console.WriteLine("Invalid input.");
+            }
+            Console.Write("Size: ");
+            sizeString = Console.ReadLine();
+        }
         Console.WriteLine();
 
         //ProcessAltS = Size % 2 == 0;
@@ -153,5 +160,13 @@ internal static class Program
         {
             Process(nextCube);
         }
+
+        // maybe if ProcessAltS we can run this way
+        /*t = Size - y - 1;
+        if (nextPoint.X != t)
+        {
+            nextCube[Size * (nextPoint.Z + 1) - (nextPoint.X + 1)].SetY((byte)t);
+        }
+        Process(nextCube);*/
     }
 }

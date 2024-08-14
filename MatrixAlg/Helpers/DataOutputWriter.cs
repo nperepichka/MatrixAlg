@@ -177,25 +177,4 @@ internal static class DataOutputWriter
 
         return new string(flatArray);
     }
-
-    public static void OutputCube(string cubeView, int n, byte size)
-    {
-        var stringBuilder = new StringBuilder($"Invarianat cube #{n}{Environment.NewLine}");
-
-        // TODO: update this format !!!
-
-        var start = 0;
-        while (start < cubeView.Length)
-        {
-            var slice = new List<int>(size);
-            for (var i = 0; i < size; i++)
-            {
-                slice.Add(cubeView.Substring(start, size).IndexOf('*'));
-                start += size;
-            }
-            stringBuilder.Append($"({string.Join(';', slice)}) ");
-        }
-
-        OutputWriter.WriteLine(stringBuilder.ToString());
-    }
 }

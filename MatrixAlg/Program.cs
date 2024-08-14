@@ -118,10 +118,6 @@ internal class Program
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
 
-        cubeCreator.OutputCubes();
-
-        // Write empty line
-        OutputWriter.WriteLine();
         // Output total decompositions count
         OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
         if (ApplicationConfiguration.AnalyzeCubes)

@@ -279,14 +279,4 @@ internal class CubeCreator(byte Size)
 
         return stringBuilder.ToString();
     }
-
-    public void OutputCubes()
-    {
-        var n = 1;
-        foreach (var cubeView in CubeViews.OrderBy(v => v))
-        {
-            DataOutputWriter.OutputCube(cubeView, n, Size);
-            n++;
-        }
-    }
 }
