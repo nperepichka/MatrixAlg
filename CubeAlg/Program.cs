@@ -163,7 +163,6 @@ internal static class Program
             nextCube[t].SetY(null);
         }
 
-        // maybe if ProcessAltS we can run only this part
         t = Size - y - 1;
         if (nextPoint.X != t && nextCube[zz + Size - nextPoint.X - 1].SetY((byte)t))
         {
