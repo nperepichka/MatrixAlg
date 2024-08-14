@@ -45,7 +45,7 @@ internal static class Program
 
         var stopwatch = Stopwatch.StartNew();
 
-        Process([.. cube]);
+        Process([.. cube], 0);
 
         stopwatch.Stop();
 
@@ -57,17 +57,17 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static void Process(Point[] cube)
+    private static void Process(Point[] cube, int minIndex)
     {
-        for (var i = 0; i < cube.Length; i++)
+        for (var index = minIndex; index < cube.Length; index++)
         {
-            if (!cube[i].Y.HasValue)
+            if (!cube[index].Y.HasValue)
             {
                 if (ParallelsCount >= ExpectedParallelsCount)
                 {
                     for (byte y = 0; y < Size; y++)
                     {
-                        ProcessItem(cube, i, y);
+                        ProcessItem(cube, index, y);
                     }
                 }
                 else
@@ -75,7 +75,7 @@ internal static class Program
                     Interlocked.Add(ref ParallelsCount, Size);
                     Parallel.For(0, Size, ParallelOptions, y =>
                     {
-                        ProcessItem(cube, i, (byte)y);
+                        ProcessItem(cube, index, (byte)y);
                         Interlocked.Decrement(ref ParallelsCount);
                     });
                 }
@@ -87,34 +87,34 @@ internal static class Program
         var bCube = cube.BuildCube(Size);
         var topViews = bCube.GetTopViewVariants(Size);
 
-        var rightView = bCube.GetRightView();
-        if (topViews[0] != rightView && topViews[1] != rightView && topViews[2] != rightView && topViews[3] != rightView)
+        var view = bCube.GetRightView();
+        if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        var backView = bCube.GetBackView();
-        if (topViews[0] != backView && topViews[1] != backView && topViews[2] != backView && topViews[3] != backView)
+        view = bCube.GetBackView();
+        if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        var leftView = bCube.GetLeftView();
-        if (topViews[0] != leftView && topViews[1] != leftView && topViews[2] != leftView && topViews[3] != leftView)
+        view = bCube.GetLeftView();
+        if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        var frontView = bCube.GetFrontView();
-        if (topViews[0] != frontView && topViews[1] != frontView && topViews[2] != frontView && topViews[3] != frontView)
+        view = bCube.GetFrontView();
+        if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        var hash = topViews.Min()!;
+        view = topViews.Min()!;
         lock (CubeLock)
         {
-            if (CubeHashes.Add(hash))
+            if (CubeHashes.Add(view))
             {
                 N++;
                 Console.WriteLine($"Cube found #{N}:");
@@ -126,9 +126,17 @@ internal static class Program
     private static void ProcessItem(Point[] cube, int index, byte y)
     {
         int t;
-        for (t = 0; t < cube.Length; t++)
+        var zz = cube[index].Z * Size;
+        for (t = zz; t < zz + Size; t++)
         {
-            if (cube[t].Y == y && (cube[t].X == cube[index].X || cube[t].Z == cube[index].Z))
+            if (cube[t].Y == y)
+            {
+                return;
+            }
+        }
+        for (t = 0; t < Size; t++)
+        {
+            if (cube[Size * t + cube[index].X].Y == y)
             {
                 return;
             }
@@ -136,6 +144,7 @@ internal static class Program
 
         var nextCube = cube.CloneCube();
         var nextPoint = nextCube[index];
+        index++;
 
         nextPoint.SetY(y);
 
@@ -143,30 +152,30 @@ internal static class Program
 
         if (y == nextPoint.X)
         {
-            Process(nextCube);
+            Process(nextCube, index);
             return;
         }
 
-        t = Size * nextPoint.Z + y;
+        t = zz + y;
         if (nextCube[t].SetY(nextPoint.X))
         {
-            Process(nextCube);
+            Process(nextCube, index);
             nextCube[t].SetY(null);
         }
 
         // maybe if ProcessAltS we can run only this part
         t = Size - y - 1;
-        if (nextPoint.X != t && nextCube[Size * (nextPoint.Z + 1) - (nextPoint.X + 1)].SetY((byte)t))
+        if (nextPoint.X != t && nextCube[zz + Size - nextPoint.X - 1].SetY((byte)t))
         {
-            Process(nextCube);
+            Process(nextCube, index);
         }
 
         // maybe if ProcessAltS we can run this way
         /*t = Size - y - 1;
         if (nextPoint.X != t)
         {
-            nextCube[Size * (nextPoint.Z + 1) - (nextPoint.X + 1)].SetY((byte)t);
+            nextCube[zz + Size - nextPoint.X - 1].SetY((byte)t);
         }
-        Process(nextCube);*/
+        Process(nextCube, index);*/
     }
 }
