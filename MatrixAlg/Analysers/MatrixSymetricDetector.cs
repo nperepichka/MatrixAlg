@@ -28,12 +28,12 @@ internal static class MatrixSymetricDetector
 
     private static bool IsSecondaryDiagonalSymmetric(bool[,] matrix)
     {
-        var size = matrix.GetLength(0);
-        for (var i = 0; i < size; i++)
+        var size1 = matrix.GetLength(0) - 1;
+        for (var i = 0; i <= size1; i++)
         {
-            for (var j = 0; j < size - i - 1; j++)
+            for (var j = 0; j < size1 - i; j++)
             {
-                if (matrix[i, j] != matrix[size - j - 1, size - i - 1])
+                if (matrix[i, j] != matrix[size1 - j, size1 - i])
                 {
                     return false;
                 }

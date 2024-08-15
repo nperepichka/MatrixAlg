@@ -1,5 +1,5 @@
-﻿using CubeAlg.Models;
-using CubeAlg.Helpers;
+﻿using CubeAlg.Helpers;
+using CubeAlg.Models;
 using System.Diagnostics;
 
 namespace CubeAlg;

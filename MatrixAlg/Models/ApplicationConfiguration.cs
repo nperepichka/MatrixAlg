@@ -2,7 +2,6 @@
 
 internal static class ApplicationConfiguration
 {
-    public static bool AnalyzeCubes { get; private set; } = false;
     public static bool DrawMosaics { get; private set; } = false;
     public static bool OutputDecompositions { get; private set; } = true;
 
@@ -17,7 +16,6 @@ internal static class ApplicationConfiguration
                 .Select(l => l.Split("="))
                 .ToDictionary(k => k[0].Trim(), v => int.TryParse(v[1].Trim(), out var val) ? val : 0);
 
-            AnalyzeCubes = values.GetConfigFlag(nameof(AnalyzeCubes), AnalyzeCubes);
             DrawMosaics = values.GetConfigFlag(nameof(DrawMosaics), DrawMosaics);
             OutputDecompositions = values.GetConfigFlag(nameof(OutputDecompositions), OutputDecompositions);
         }

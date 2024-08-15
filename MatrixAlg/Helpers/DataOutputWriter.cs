@@ -1,6 +1,5 @@
 ﻿using MatrixAlg.Analysers;
 using MatrixAlg.Models;
-using MatrixAlg.Processors;
 using System.Text;
 
 namespace MatrixAlg.Helpers;
@@ -59,9 +58,9 @@ internal static class DataOutputWriter
         }
     }
 
-    public static void WriteDecomposition(byte[][] decomposition, ulong n, CubeCreator cubeCreator)
+    public static void WriteDecomposition(byte[][] decomposition, ulong n)
     {
-        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.AnalyzeCubes && !ApplicationConfiguration.DrawMosaics)
+        if (!ApplicationConfiguration.OutputDecompositions && !ApplicationConfiguration.DrawMosaics)
         {
             return;
         }
@@ -125,13 +124,6 @@ internal static class DataOutputWriter
 
             // Write string builder value
             OutputWriter.WriteLine(outputStringBuilder.ToString());
-        }
-
-        // If decomposition cube should be analyzed
-        if (ApplicationConfiguration.AnalyzeCubes)
-        {
-            // Create invariant cubes of decomposition
-            cubeCreator.CreateInvariantCubes(matrixes);
         }
 
         // If decomposition mosaic should be drawn

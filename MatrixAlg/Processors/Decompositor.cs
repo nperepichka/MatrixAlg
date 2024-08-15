@@ -2,7 +2,7 @@
 
 namespace MatrixAlg.Processors;
 
-internal class Decompositor(bool[,] Input, byte Transversal, CubeCreator CubeCreator)
+internal class Decompositor(bool[,] Input, byte Transversal)
 {
     private readonly byte Size = (byte)Input.GetLength(0);
     private readonly List<byte[]> InputPositionsPerRow = [];
@@ -82,7 +82,7 @@ internal class Decompositor(bool[,] Input, byte Transversal, CubeCreator CubeCre
                         // Increase decompositions count
                         Interlocked.Increment(ref DecomposesCount);
                         // Output decomposition
-                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount, CubeCreator);
+                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount);
 
                         /*if (Size > 6 && DecomposesCount % 1000000 == 0)
                         {
