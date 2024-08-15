@@ -1,0 +1,9 @@
+Size: 2
+
+Cube found #1:
+(0, 0, 1)
+(0, 1, 0)
+(1, 0, 0)
+(1, 1, 1)
+
+Unique invariant cubes count: 1

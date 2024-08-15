@@ -125,18 +125,19 @@ internal static class Program
 
     private static void ProcessItem(Point[] cube, int index, byte y)
     {
-        int t;
-        var zz = cube[index].Z * Size;
-        for (t = zz; t < zz + Size; t++)
+        var p1 = cube[index].Z * Size;
+        int p2;
+
+        for (p2 = p1; p2 < p1 + Size; p2++)
         {
-            if (cube[t].Y == y)
+            if (cube[p2].Y == y)
             {
                 return;
             }
         }
-        for (t = 0; t < Size; t++)
+        for (p2 = 0; p2 < Size; p2++)
         {
-            if (cube[Size * t + cube[index].X].Y == y)
+            if (cube[Size * p2 + cube[index].X].Y == y)
             {
                 return;
             }
@@ -156,15 +157,15 @@ internal static class Program
             return;
         }
 
-        t = zz + y;
-        if (nextCube[t].SetY(nextPoint.X))
+        p2 = p1 + y;
+        if (nextCube[p2].SetY(nextPoint.X))
         {
             Process(nextCube, index);
-            nextCube[t].SetY(null);
+            nextCube[p2].SetY(null);
         }
 
-        t = Size - y - 1;
-        if (nextPoint.X != t && nextCube[zz + Size - nextPoint.X - 1].SetY((byte)t))
+        p2 = Size - y - 1;
+        if (nextPoint.X != p2 && nextCube[p1 + Size - nextPoint.X - 1].SetY((byte)p2))
         {
             Process(nextCube, index);
         }
