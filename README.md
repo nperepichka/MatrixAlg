@@ -1,5 +1,10 @@
 # General
 
+> MatrixAlgs
+> - MatrixAlg
+> - CubeAlg
+> - MatrixDiagAlg
+
 ## About
 **Author**: N. V. Perepichka  
 Implemented in scope of PhD study  
@@ -12,4 +17,7 @@ Implemented in scope of PhD study
 ...
 
 # CubeAlg
+...
+
+# MatrixDiagAlg
 ...
