@@ -11,43 +11,43 @@ internal static class MatrixСonjugationDetector
             return true;
         }
 
-        var rotatedMatrix1 = MatrixBuilder.RotateMatrix(matrix1);
+        var rotatedMatrix1 = matrix1.RotateMatrix();
         if (AreSame(matrix2, rotatedMatrix1))
         {
             return true;
         }
 
-        rotatedMatrix1 = MatrixBuilder.RotateMatrix(rotatedMatrix1);
+        rotatedMatrix1 = rotatedMatrix1.RotateMatrix();
         if (AreSame(matrix2, rotatedMatrix1))
         {
             return true;
         }
 
-        rotatedMatrix1 = MatrixBuilder.RotateMatrix(rotatedMatrix1);
+        rotatedMatrix1 = rotatedMatrix1.RotateMatrix();
         if (AreSame(matrix2, rotatedMatrix1))
         {
             return true;
         }
 
-        var transformedMatrix1 = MirrorMatrixD1(matrix1);
+        var transformedMatrix1 = matrix1.MirrorMatrixD1();
         if (AreSame(transformedMatrix1, matrix2))
         {
             return true;
         }
 
-        transformedMatrix1 = MirrorMatrixD2(matrix1);
+        transformedMatrix1 = matrix1.MirrorMatrixD2();
         if (AreSame(transformedMatrix1, matrix2))
         {
             return true;
         }
 
-        transformedMatrix1 = MirrorMatrixH(matrix1);
+        transformedMatrix1 = matrix1.MirrorMatrixH();
         if (AreSame(transformedMatrix1, matrix2))
         {
             return true;
         }
 
-        transformedMatrix1 = MirrorMatrixV(matrix1);
+        transformedMatrix1 = matrix1.MirrorMatrixV();
         if (AreSame(transformedMatrix1, matrix2))
         {
             return true;
@@ -56,7 +56,7 @@ internal static class MatrixСonjugationDetector
         return false;
     }
 
-    private static bool[,] MirrorMatrixD1(bool[,] matrix)
+    private static bool[,] MirrorMatrixD1(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -81,7 +81,7 @@ internal static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixD2(bool[,] matrix)
+    private static bool[,] MirrorMatrixD2(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -108,7 +108,7 @@ internal static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixV(bool[,] matrix)
+    private static bool[,] MirrorMatrixV(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -124,7 +124,7 @@ internal static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixH(bool[,] matrix)
+    private static bool[,] MirrorMatrixH(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -158,21 +158,21 @@ internal static class MatrixСonjugationDetector
         return true;
     }
 
-    public static bool IsSelfConjugate(bool[,] matrix)
+    public static bool IsSelfConjugate(this bool[,] matrix)
     {
-        var rotatedMatrix = MatrixBuilder.RotateMatrix(matrix);
+        var rotatedMatrix = matrix.RotateMatrix();
         if (AreSame(matrix, rotatedMatrix))
         {
             return true;
         }
 
-        rotatedMatrix = MatrixBuilder.RotateMatrix(rotatedMatrix);
+        rotatedMatrix = rotatedMatrix.RotateMatrix();
         if (AreSame(matrix, rotatedMatrix))
         {
             return true;
         }
 
-        rotatedMatrix = MatrixBuilder.RotateMatrix(rotatedMatrix);
+        rotatedMatrix = rotatedMatrix.RotateMatrix();
         if (AreSame(matrix, rotatedMatrix))
         {
             return true;

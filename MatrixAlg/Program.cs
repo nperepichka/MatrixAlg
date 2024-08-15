@@ -3,6 +3,7 @@ using MatrixAlg.Helpers;
 using MatrixAlg.Models;
 using MatrixAlg.Processors;
 using System.Diagnostics;
+using System.Text;
 
 namespace MatrixAlg;
 
@@ -16,13 +17,8 @@ internal class Program
     /// </summary>
     private static void Main()
     {
-        // Write to console that cleaning output is started
-        Console.WriteLine("Cleaning output started.");
         // Clear output
         OutputWriter.Clear();
-        // Clear mosaics
-        MosaicDrawer.Clear();
-
         // Enable output queue monitoring
         OutputWriter.StartOutputQueueMonitoring();
         // Initiate configuration
@@ -39,17 +35,21 @@ internal class Program
 
         // Write input matrix title
         OutputWriter.WriteLine("Input matrix:");
-        // Write input matrix
-        DataOutputWriter.WriteMatrix(input);
+        // Initiate string builder
+        var outputStringBuilder = new StringBuilder(string.Empty);
+        // Write input matrix to string builder
+        input.WriteMatrix(outputStringBuilder);
+        // Write string builder value
+        OutputWriter.WriteLine(outputStringBuilder.ToString());
 
         // If input matrix is symetric
-        if (MatrixSymetricDetector.IsSymetric(input))
+        if (input.IsSymetric())
         {
             // Write that input matrix is symetric
             OutputWriter.WriteLine("Input matrix is symetric.");
         }
         // Else, if input matrix is self conjugate
-        else if (MatrixСonjugationDetector.IsSelfConjugate(input))
+        else if (input.IsSelfConjugate())
         {
             // Write that input matrix is self conjugate
             OutputWriter.WriteLine("Input matrix is self conjugate.");
@@ -95,7 +95,7 @@ internal class Program
         stopwatch.Stop();
 
         // If console output not allowed
-        if (!OutputWriter.CanWriteToConsole)
+        if (!ApplicationConfiguration.EnableConsoleOutput)
         {
             // Write to console that processing id finished
             Console.WriteLine("Processing finished. Pending for output to be saved.");

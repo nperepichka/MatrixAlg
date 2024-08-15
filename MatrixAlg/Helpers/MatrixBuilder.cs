@@ -2,7 +2,7 @@
 
 internal static class MatrixBuilder
 {
-    public static bool[,] BuildMatrix(byte[] elements)
+    public static bool[,] BuildMatrix(this byte[] elements)
     {
         var size = elements.Length;
         var res = new bool[size, size];
@@ -15,7 +15,7 @@ internal static class MatrixBuilder
         return res;
     }
 
-    public static bool[,] RotateMatrix(bool[,] matrix)
+    public static bool[,] RotateMatrix(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];

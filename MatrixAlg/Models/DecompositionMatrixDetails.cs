@@ -8,7 +8,7 @@ internal class DecompositionMatrixDetails
     {
         Index = index;
         Matrix = matrix;
-        IsSymetric = MatrixSymetricDetector.IsSymetric(Matrix);
+        IsSymetric = Matrix.IsSymetric();
     }
 
     public bool[,] Matrix { get; set; }

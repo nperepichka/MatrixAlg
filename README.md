@@ -4,6 +4,7 @@
 > - MatrixAlg
 > - CubeAlg
 > - MatrixDiagAlg
+> - MosaicAlg
 
 ## About
 **Author**: N. V. Perepichka  
@@ -20,4 +21,7 @@ Implemented in scope of PhD study
 ...
 
 # MatrixDiagAlg
+...
+
+# MosaicAlg
 ...

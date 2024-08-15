@@ -2,8 +2,8 @@
 
 internal static class ApplicationConfiguration
 {
-    public static bool DrawMosaics { get; private set; } = false;
     public static bool OutputDecompositions { get; private set; } = true;
+    public static bool EnableConsoleOutput { get; private set; } = true;
 
     public static void Init()
     {
@@ -16,8 +16,8 @@ internal static class ApplicationConfiguration
                 .Select(l => l.Split("="))
                 .ToDictionary(k => k[0].Trim(), v => int.TryParse(v[1].Trim(), out var val) ? val : 0);
 
-            DrawMosaics = values.GetConfigFlag(nameof(DrawMosaics), DrawMosaics);
             OutputDecompositions = values.GetConfigFlag(nameof(OutputDecompositions), OutputDecompositions);
+            EnableConsoleOutput = values.GetConfigFlag(nameof(EnableConsoleOutput), EnableConsoleOutput);
         }
         catch (Exception ex)
         {

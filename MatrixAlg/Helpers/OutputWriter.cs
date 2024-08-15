@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using MatrixAlg.Models;
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace MatrixAlg.Helpers;
@@ -16,10 +17,6 @@ internal static class OutputWriter
     /// Queue of strings for output
     /// </summary>
     private static readonly ConcurrentQueue<string> OutputQueue = new();
-    /// <summary>
-    /// Can write to console flag
-    /// </summary>
-    public static bool CanWriteToConsole { get; set; } = true;
     /// <summary>
     /// Output queue monitoring enabled flag
     /// </summary>
@@ -71,7 +68,7 @@ internal static class OutputWriter
 
                 while (OutputQueue.TryDequeue(out var s))
                 {
-                    if (CanWriteToConsole)
+                    if (ApplicationConfiguration.EnableConsoleOutput)
                     {
                         Console.Write(s);
                     }
@@ -100,9 +97,6 @@ internal static class OutputWriter
     {
         try
         {
-            // TODO: update don't to use all space
-            //var freeBytes = new DriveInfo(Directory.GetCurrentDirectory()).AvailableFreeSpace;
-
             File.AppendAllText(OutputFileName, stringBuilder.ToString());
             stringBuilder.Clear();
         }

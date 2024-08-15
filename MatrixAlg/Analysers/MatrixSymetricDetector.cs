@@ -2,15 +2,15 @@
 
 internal static class MatrixSymetricDetector
 {
-    public static bool IsSymetric(bool[,] matrix)
+    public static bool IsSymetric(this bool[,] matrix)
     {
-        return IsMainDiagonalSymmetric(matrix)
-            || IsSecondaryDiagonalSymmetric(matrix)
-            || IsVerticalSymmetric(matrix)
-            || IsHorizontalSymmetric(matrix);
+        return matrix.IsMainDiagonalSymmetric()
+            || matrix.IsSecondaryDiagonalSymmetric()
+            || matrix.IsVerticalSymmetric()
+            || matrix.IsHorizontalSymmetric();
     }
 
-    private static bool IsMainDiagonalSymmetric(bool[,] matrix)
+    private static bool IsMainDiagonalSymmetric(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         for (var i = 0; i < size; i++)
@@ -26,7 +26,7 @@ internal static class MatrixSymetricDetector
         return true;
     }
 
-    private static bool IsSecondaryDiagonalSymmetric(bool[,] matrix)
+    private static bool IsSecondaryDiagonalSymmetric(this bool[,] matrix)
     {
         var size1 = matrix.GetLength(0) - 1;
         for (var i = 0; i <= size1; i++)
@@ -42,7 +42,7 @@ internal static class MatrixSymetricDetector
         return true;
     }
 
-    private static bool IsVerticalSymmetric(bool[,] matrix)
+    private static bool IsVerticalSymmetric(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         for (var i = 0; i < size; i++)
@@ -58,7 +58,7 @@ internal static class MatrixSymetricDetector
         return true;
     }
 
-    private static bool IsHorizontalSymmetric(bool[,] matrix)
+    private static bool IsHorizontalSymmetric(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         for (var i = 0; i < size / 2; i++)

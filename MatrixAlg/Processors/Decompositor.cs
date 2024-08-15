@@ -82,7 +82,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
                         // Increase decompositions count
                         Interlocked.Increment(ref DecomposesCount);
                         // Output decomposition
-                        DataOutputWriter.WriteDecomposition(newDecomposition, DecomposesCount);
+                        newDecomposition.WriteDecomposition(DecomposesCount);
 
                         /*if (Size > 6 && DecomposesCount % 1000000 == 0)
                         {
