@@ -171,10 +171,10 @@ internal static class Program
         }
 
         // maybe if ProcessAltS we can run this way
-        /*t = Size - y - 1;
-        if (nextPoint.X != t)
+        /*p2 = Size - y - 1;
+        if (nextPoint.X != p2)
         {
-            nextCube[zz + Size - nextPoint.X - 1].SetY((byte)t);
+            nextCube[p1 + Size - nextPoint.X - 1].SetY((byte)p2);
         }
         Process(nextCube, index);*/
     }
