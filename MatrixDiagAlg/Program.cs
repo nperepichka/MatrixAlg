@@ -79,6 +79,7 @@ internal static class Program
         // Write empty line
         OutputWriter.WriteLine();
 
+        // TODO: uncomment
         /*
         // Initiate decompositor object
         var decompositor = new Decompositor(input, transversal);
