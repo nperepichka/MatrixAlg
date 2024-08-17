@@ -1,9 +1,10 @@
 ﻿using MatrixAlg.Analysers;
-using MatrixAlg.Helpers;
-using MatrixAlg.Models;
+using MatrixShared.Helpers;
+using MatrixShared.Models;
 using MatrixAlg.Processors;
 using System.Diagnostics;
 using System.Text;
+using MatrixShared.Analysers;
 
 namespace MatrixAlg;
 
@@ -62,7 +63,7 @@ internal class Program
         }
 
         // Find transversal size in input matrix
-        var transversal = MatrixTransversalDetector.FindTransversal(input);
+        var transversal = input.FindTransversal();
         // If transversal exists
         if (transversal > 0)
         {
@@ -73,9 +74,11 @@ internal class Program
         else
         {
             // Write that input matrix has no transversal
-            OutputWriter.WriteLine($"Input matrix has no transversal. Application will exit.");
-            // Wait for exit confirmed
-            WaitForExit();
+            OutputWriter.WriteLine($"Input matrix has no transversal.");
+            // Output done message to console
+            OutputWriter.WriteLine("Press <Enter> to exit...");
+            // Wait for "Enter" key
+            Console.ReadLine();
             //Exit an application
             return;
         }
@@ -107,12 +110,6 @@ internal class Program
         // Write elapsed time to console
         Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
 
-        // Wait for exit confirmed
-        WaitForExit();
-    }
-
-    private static void WaitForExit()
-    {
         // Output done message to console
         Console.WriteLine("Done. Press <Enter> to exit...");
         // Wait for "Enter" key

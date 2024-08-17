@@ -1,6 +1,6 @@
-﻿namespace MatrixAlg.Analysers;
+﻿namespace MatrixShared.Analysers;
 
-internal static class MatrixSymetricDetector
+public static class MatrixSymetricDetector
 {
     public static bool IsSymetric(this bool[,] matrix)
     {

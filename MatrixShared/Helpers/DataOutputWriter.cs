@@ -1,13 +1,13 @@
-﻿using MatrixAlg.Analysers;
-using MatrixAlg.Models;
+﻿using MatrixShared.Analysers;
+using MatrixShared.Models;
 using System.Text;
 
-namespace MatrixAlg.Helpers;
+namespace MatrixShared.Helpers;
 
 /// <summary>
 /// Helper class, used to output data
 /// </summary>
-internal static class DataOutputWriter
+public static class DataOutputWriter
 {
     /// <summary>
     /// Write matrix

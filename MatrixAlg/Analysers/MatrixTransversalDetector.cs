@@ -2,7 +2,7 @@
 
 internal static class MatrixTransversalDetector
 {
-    public static byte FindTransversal(bool[,] matrix)
+    public static byte FindTransversal(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var columnVal = Enumerable.Repeat(byte.MinValue, size).ToArray();

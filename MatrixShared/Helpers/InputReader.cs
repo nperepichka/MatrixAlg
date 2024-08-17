@@ -1,9 +1,9 @@
-﻿namespace MatrixAlg.Helpers;
+﻿namespace MatrixShared.Helpers;
 
 /// <summary>
 /// Helper class, used to read input matrix from input.txt file
 /// </summary>
-internal static class InputReader
+public static class InputReader
 {
     /// <summary>
     /// Read input matrix from file

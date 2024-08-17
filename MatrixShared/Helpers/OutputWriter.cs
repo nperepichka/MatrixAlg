@@ -1,13 +1,13 @@
-﻿using MatrixAlg.Models;
+﻿using MatrixShared.Models;
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace MatrixAlg.Helpers;
+namespace MatrixShared.Helpers;
 
 /// <summary>
 /// Helper class, used to manage output
 /// </summary>
-internal static class OutputWriter
+public static class OutputWriter
 {
     /// <summary>
     /// Output file name

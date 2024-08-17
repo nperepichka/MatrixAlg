@@ -1,8 +1,8 @@
-﻿using MatrixAlg.Helpers;
+﻿using MatrixShared.Helpers;
 
-namespace MatrixAlg.Analysers;
+namespace MatrixShared.Analysers;
 
-internal static class MatrixСonjugationDetector
+public static class MatrixСonjugationDetector
 {
     public static bool AreСonjugate(bool[,] matrix1, bool[,] matrix2)
     {

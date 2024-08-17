@@ -1,6 +1,6 @@
-﻿namespace MatrixAlg.Helpers;
+﻿namespace MatrixShared.Helpers;
 
-internal static class MatrixBuilder
+public static class MatrixBuilder
 {
     public static bool[,] BuildMatrix(this byte[] elements)
     {

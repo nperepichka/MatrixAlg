@@ -1,4 +1,4 @@
-﻿using MatrixAlg.Helpers;
+﻿using MatrixShared.Helpers;
 
 namespace MatrixAlg.Processors;
 

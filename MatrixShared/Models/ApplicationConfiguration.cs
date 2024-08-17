@@ -1,6 +1,6 @@
-﻿namespace MatrixAlg.Models;
+﻿namespace MatrixShared.Models;
 
-internal static class ApplicationConfiguration
+public static class ApplicationConfiguration
 {
     public static bool OutputDecompositions { get; private set; } = true;
     public static bool EnableConsoleOutput { get; private set; } = true;

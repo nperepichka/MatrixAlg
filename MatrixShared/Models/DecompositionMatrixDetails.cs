@@ -1,8 +1,8 @@
-﻿using MatrixAlg.Analysers;
+﻿using MatrixShared.Analysers;
 
-namespace MatrixAlg.Models;
+namespace MatrixShared.Models;
 
-internal class DecompositionMatrixDetails
+public class DecompositionMatrixDetails
 {
     public DecompositionMatrixDetails(bool[,] matrix, int index)
     {
