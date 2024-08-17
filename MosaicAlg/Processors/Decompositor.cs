@@ -11,8 +11,8 @@ internal class Decompositor(byte Size)
 
     public void Decompose()
     {
-        var initialDecompositionState = new byte[Size][];
-        for (byte i = 0; i < Size; i++)
+        var initialDecompositionState = new byte[HalfSize][];
+        for (byte i = 0; i < HalfSize; i++)
         {
             initialDecompositionState[i] = [];
         }
@@ -38,7 +38,7 @@ internal class Decompositor(byte Size)
                 var newDecomposition = CloneDecomposition(decomposition, false);
                 newDecomposition[matrixIndex][row] = index;
 
-                if (nextMatrixIndex != Size)
+                if (nextMatrixIndex != HalfSize)
                 {
                     GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, nextMatrixIndex);
                 }
@@ -50,9 +50,7 @@ internal class Decompositor(byte Size)
                     }
                     else
                     {
-                        // TODO: rewrite don't to generate useless elements
-                        var halfDecomposition = newDecomposition.Take(HalfSize).ToArray();
-                        MosaicDrawer.Draw(halfDecomposition, Size);
+                        MosaicDrawer.Draw(newDecomposition, Size);
                     }
                 }
             }

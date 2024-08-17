@@ -86,7 +86,7 @@ internal static class DataOutputWriter
                     // Append message that matrix is not conjugate to other matrix to string builder
                     outputStringBuilder.AppendLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
 
-                    // TODO: instead of this test combined matrix (pending more details)
+                    // TODO: test combined matrix (pending more details)
                 }
             }
         }

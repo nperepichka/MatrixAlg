@@ -36,7 +36,7 @@ internal static class MosaicDrawer
             }
         }
 
-        var hash = GetHash(mosaic);
+        var hash = GetHash(mosaic, size);
         var isNew = false;
         var n = 0;
         lock (MosaicLock)
@@ -49,13 +49,12 @@ internal static class MosaicDrawer
         }
         if (isNew)
         {
-            DrawImage(mosaic, $"mosaic_{n}");
+            DrawImage(mosaic, $"mosaic_{n}", size);
         }
     }
 
-    private static string GetHash(bool[,] mosaic)
+    private static string GetHash(bool[,] mosaic, byte size)
     {
-        var size = mosaic.GetLength(0);
         var flatArray = new char[(size * size + 15) / 16];
 
         var bitIndex = 0;
@@ -74,10 +73,8 @@ internal static class MosaicDrawer
         return new string(flatArray);
     }
 
-    private static void DrawImage(bool[,] mosaic, string name)
+    private static void DrawImage(bool[,] mosaic, string name, byte size)
     {
-        var size = mosaic.GetLength(0);
-
         using var image = new Image<Rgba32>(size * CellSize, size * CellSize);
         for (var row = 0; row < size; row++)
         {
@@ -94,25 +91,14 @@ internal static class MosaicDrawer
             }
         }
 
-        var attempt = 1;
-        while (true)
+        try
         {
-            try
-            {
-                // Save the image as a PNG file
-                image.Save($"mosaics/{name}.png");
-                break;
-            }
-            catch (Exception ex)
-            {
-                if (attempt == 5 || ex is not IOException)
-                {
-                    Console.WriteLine($"Error occurred: {ex.Message}");
-                    break;
-                }
-                attempt++;
-                Thread.Sleep(10);
-            }
+            // Save the image as a PNG file
+            image.Save($"mosaics/{name}.png");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error occurred: {ex.Message}");
         }
     }
 }
