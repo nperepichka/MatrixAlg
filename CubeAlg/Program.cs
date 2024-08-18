@@ -87,25 +87,25 @@ internal static class Program
         var bCube = cube.BuildCube(Size);
         var topViews = bCube.GetTopViewVariants(Size);
 
-        var view = bCube.GetRightView();
+        var view = bCube.GetRightView(Size);
         if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        view = bCube.GetBackView();
+        view = bCube.GetBackView(Size);
         if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        view = bCube.GetLeftView();
+        view = bCube.GetLeftView(Size);
         if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;
         }
 
-        view = bCube.GetFrontView();
+        view = bCube.GetFrontView(Size);
         if (topViews[0] != view && topViews[1] != view && topViews[2] != view && topViews[3] != view)
         {
             return;

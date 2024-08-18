@@ -36,11 +36,10 @@ internal static class CubeHelpers
         return res;
     }
 
-    public static string GetTopView(this bool[,,] cube)
+    public static string GetTopView(this bool[,,] cube, byte size)
     {
-        var size = cube.GetLength(0);
-        var flatArray = new char[(size * size * size + 15) / 16];
-        var bitIndex = 0;
+        var flatArray = new char[size * size * size];
+        var index = 0;
 
         for (var k = 0; k < size; k++)
         {
@@ -48,11 +47,8 @@ internal static class CubeHelpers
             {
                 for (var j = 0; j < size; j++)
                 {
-                    if (cube[i, j, k])
-                    {
-                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                    }
-                    bitIndex++;
+                    flatArray[index] |= cube[i, j, k] ? '1' : '0';
+                    index++;
                 }
             }
         }
@@ -60,11 +56,10 @@ internal static class CubeHelpers
         return new string(flatArray);
     }
 
-    public static string GetRightView(this bool[,,] cube)
+    public static string GetRightView(this bool[,,] cube, byte size)
     {
-        var size = cube.GetLength(0);
-        var flatArray = new char[(size * size * size + 15) / 16];
-        var bitIndex = 0;
+        var flatArray = new char[size * size * size];
+        var index = 0;
 
         for (var j = size - 1; j >= 0; j--)
         {
@@ -72,11 +67,8 @@ internal static class CubeHelpers
             {
                 for (var i = size - 1; i >= 0; i--)
                 {
-                    if (cube[i, j, k])
-                    {
-                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                    }
-                    bitIndex++;
+                    flatArray[index] |= cube[i, j, k] ? '1' : '0';
+                    index++;
                 }
             }
         }
@@ -84,11 +76,10 @@ internal static class CubeHelpers
         return new string(flatArray);
     }
 
-    public static string GetBackView(this bool[,,] cube)
+    public static string GetBackView(this bool[,,] cube, byte size)
     {
-        var size = cube.GetLength(0);
-        var flatArray = new char[(size * size * size + 15) / 16];
-        var bitIndex = 0;
+        var flatArray = new char[size * size * size];
+        var index = 0;
 
         for (var i = 0; i < size; i++)
         {
@@ -96,11 +87,8 @@ internal static class CubeHelpers
             {
                 for (var j = size - 1; j >= 0; j--)
                 {
-                    if (cube[i, j, k])
-                    {
-                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                    }
-                    bitIndex++;
+                    flatArray[index] |= cube[i, j, k] ? '1' : '0';
+                    index++;
                 }
             }
         }
@@ -108,11 +96,10 @@ internal static class CubeHelpers
         return new string(flatArray);
     }
 
-    public static string GetLeftView(this bool[,,] cube)
+    public static string GetLeftView(this bool[,,] cube, byte size)
     {
-        var size = cube.GetLength(0);
-        var flatArray = new char[(size * size * size + 15) / 16];
-        var bitIndex = 0;
+        var flatArray = new char[size * size * size];
+        var index = 0;
 
         for (var j = 0; j < size; j++)
         {
@@ -120,11 +107,8 @@ internal static class CubeHelpers
             {
                 for (var i = 0; i < size; i++)
                 {
-                    if (cube[i, j, k])
-                    {
-                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                    }
-                    bitIndex++;
+                    flatArray[index] |= cube[i, j, k] ? '1' : '0';
+                    index++;
                 }
             }
         }
@@ -132,11 +116,10 @@ internal static class CubeHelpers
         return new string(flatArray);
     }
 
-    public static string GetFrontView(this bool[,,] cube)
+    public static string GetFrontView(this bool[,,] cube, byte size)
     {
-        var size = cube.GetLength(0);
-        var flatArray = new char[(size * size * size + 15) / 16];
-        var bitIndex = 0;
+        var flatArray = new char[size * size * size];
+        var index = 0;
 
         for (var i = size - 1; i >= 0; i--)
         {
@@ -144,11 +127,8 @@ internal static class CubeHelpers
             {
                 for (var j = 0; j < size; j++)
                 {
-                    if (cube[i, j, k])
-                    {
-                        flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                    }
-                    bitIndex++;
+                    flatArray[index] |= cube[i, j, k] ? '1' : '0';
+                    index++;
                 }
             }
         }
@@ -156,7 +136,7 @@ internal static class CubeHelpers
         return new string(flatArray);
     }
 
-    public static bool[,,] Rotate(this bool[,,] cube, int size)
+    public static bool[,,] Rotate(this bool[,,] cube, byte size)
     {
         var res = new bool[size, size, size];
 
@@ -178,21 +158,21 @@ internal static class CubeHelpers
         return res;
     }
 
-    public static List<string> GetTopViewVariants(this bool[,,] cube, int size)
+    public static List<string> GetTopViewVariants(this bool[,,] cube, byte size)
     {
         var res = new List<string>(4)
         {
-            cube.GetTopView()
+            cube.GetTopView(size)
         };
 
         cube = cube.Rotate(size);
-        res.Add(cube.GetTopView());
+        res.Add(cube.GetTopView(size));
 
         cube = cube.Rotate(size);
-        res.Add(cube.GetTopView());
+        res.Add(cube.GetTopView(size));
 
         cube = cube.Rotate(size);
-        res.Add(cube.GetTopView());
+        res.Add(cube.GetTopView(size));
 
         return res;
     }

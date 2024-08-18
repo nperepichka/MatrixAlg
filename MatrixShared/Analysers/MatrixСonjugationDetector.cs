@@ -56,7 +56,7 @@ public static class MatrixСonjugationDetector
         return false;
     }
 
-    private static bool[,] MirrorMatrixD1(this bool[,] matrix)
+    public static bool[,] MirrorMatrixD1(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -81,7 +81,7 @@ public static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixD2(this bool[,] matrix)
+    public static bool[,] MirrorMatrixD2(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -108,7 +108,7 @@ public static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixV(this bool[,] matrix)
+    public static bool[,] MirrorMatrixV(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];
@@ -124,7 +124,7 @@ public static class MatrixСonjugationDetector
         return res;
     }
 
-    private static bool[,] MirrorMatrixH(this bool[,] matrix)
+    public static bool[,] MirrorMatrixH(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
         var res = new bool[size, size];

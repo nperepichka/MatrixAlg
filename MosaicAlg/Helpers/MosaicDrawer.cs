@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using MatrixShared.Helpers;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -36,7 +37,7 @@ internal static class MosaicDrawer
             }
         }
 
-        var hash = GetHash(mosaic, size);
+        var hash = mosaic.GetHash();
         var isNew = false;
         var n = 0;
         lock (MosaicLock)
@@ -51,26 +52,6 @@ internal static class MosaicDrawer
         {
             DrawImage(mosaic, $"mosaic_{n}", size);
         }
-    }
-
-    private static string GetHash(bool[,] mosaic, byte size)
-    {
-        var flatArray = new char[(size * size + 15) / 16];
-
-        var bitIndex = 0;
-        for (var i = 0; i < size; i++)
-        {
-            for (var j = 0; j < size; j++)
-            {
-                if (mosaic[i, j])
-                {
-                    flatArray[bitIndex / 16] |= (char)(1 << (bitIndex % 16));
-                }
-                bitIndex++;
-            }
-        }
-
-        return new string(flatArray);
     }
 
     private static void DrawImage(bool[,] mosaic, string name, byte size)
