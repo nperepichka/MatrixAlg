@@ -5,8 +5,8 @@ internal static class MatrixTransversalDetector
     public static byte FindTransversal(this bool[,] matrix)
     {
         var size = matrix.GetLength(0);
-        var columnVal = Enumerable.Repeat(byte.MinValue, size).ToArray();
-        var rowVal = Enumerable.Repeat(byte.MinValue, size).ToArray();
+        var columnVal = new byte[size];
+        var rowVal = new byte[size];
 
         for (byte i = 0; i < size; i++)
         {
@@ -15,14 +15,20 @@ internal static class MatrixTransversalDetector
                 if (matrix[i, j])
                 {
                     columnVal[j]++;
-                    rowVal[j]++;
+                    rowVal[i]++;
                 }
             }
         }
 
         var transversal = columnVal[0];
+        for (byte i = 0; i < size; i++)
+        {
+            if (columnVal[i] != transversal || rowVal[i] != transversal)
+            {
+                return byte.MinValue;
+            }
+        }
 
-        return columnVal.All(_ => _ == transversal) && rowVal.All(_ => _ == transversal)
-            ? transversal : byte.MinValue;
+        return transversal;
     }
 }
