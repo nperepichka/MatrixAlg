@@ -8,7 +8,6 @@ internal static class Program
 {
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
-    private static readonly object Lock2 = new();
 
     private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
     private static readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
@@ -17,6 +16,8 @@ internal static class Program
     private static byte Size;
     private static readonly List<List<(byte x, byte y)>> Results = [];
     private static int MaxLength = 0;
+
+    private static readonly List<(byte x, byte y)> Combinations = [];
 
     private static void Main()
     {
@@ -31,6 +32,14 @@ internal static class Program
             sizeString = Console.ReadLine();
         }
         Console.WriteLine();
+
+        for (byte x = 0; x < Size; x++)
+        {
+            for (byte y = 0; y < Size; y++)
+            {
+                Combinations.Add((x, y));
+            }
+        }
 
         // Write to console that processing is started
         Console.WriteLine("Will search for diagonal 1-transversals.");
@@ -68,39 +77,27 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static readonly (byte? x, byte? y) NullPair = (null, null);
-
     private static void Process(List<(byte x, byte y)> elements, bool[,] matrix)
     {
         var isMatrixFilled = true;
-        var (lastX, lastY) = elements.Count == 0
-            ? NullPair
-            : elements[^1];
-        var canTake = lastX == null;
+        var (lastX, lastY) = elements.Count != 0
+            ? elements[^1]
+            : Combinations[0];
 
-        void processX(byte x)
+        void processXY(byte x, byte y)
         {
-            var maxY = x == Size - 1 && elements.Count < Size
-                ? (byte)elements.Count
-                : Size;
-
-            for (byte y = 0; y < maxY; y++)
+            if (!matrix[x, y])
             {
-                if (!matrix[x, y])
+                isMatrixFilled = false;
+                if (x > lastX || x == lastX && y > lastY)
                 {
-                    isMatrixFilled = false;
-                    if (canTake || x > lastX!.Value || x == lastX!.Value && y > lastY!.Value)
+                    var newMatrix = CloneMatrix(elements, matrix, x, y);
+
+                    if (newMatrix != null)
                     {
-                        canTake = true;
-
-                        var newMatrix = CloneMatrix(elements, matrix, x, y);
-
-                        if (newMatrix != null)
-                        {
-                            var newElements = elements.ToList();
-                            newElements.Add((x, y));
-                            Process(newElements, newMatrix);
-                        }
+                        var newElements = elements.ToList();
+                        newElements.Add((x, y));
+                        Process(newElements, newMatrix);
                     }
                 }
             }
@@ -108,57 +105,67 @@ internal static class Program
 
         if (ParallelsCount >= ExpectedParallelsCount)
         {
-            for (byte x = 0; x < Size; x++)
+            for (var i = 0; i < Combinations.Count; i++)
             {
-                processX(x);
+                processXY(Combinations[i].x, Combinations[i].y);
             }
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, Size);
-            Parallel.For(0, Size, ParallelOptions, x =>
+            Interlocked.Add(ref ParallelsCount, Combinations.Count);
+            Parallel.For(0, Combinations.Count, ParallelOptions, i =>
             {
-                processX((byte)x);
+                processXY(Combinations[i].x, Combinations[i].y);
                 Interlocked.Decrement(ref ParallelsCount);
             });
         }
 
         if (isMatrixFilled && elements.Count >= MaxLength)
         {
-            lock (Lock2)
+            if (elements.Count > MaxLength)
             {
-                if (elements.Count > MaxLength)
+                lock (Lock)
                 {
-                    MaxLength = elements.Count;
-                    Hashes.Clear();
-                    Results.Clear();
+                    if (elements.Count > MaxLength)
+                    {
+                        MaxLength = elements.Count;
+                        Hashes.Clear();
+                        Results.Clear();
+                    }
                 }
             }
 
             matrix = BuildMatrix(elements);
 
-            var hash = matrix.GetHash();
+            var hash1 = matrix.GetHash();
+            var hash2 = matrix.MirrorMatrixD1().GetHash();
+            var hash3 = matrix.MirrorMatrixD2().GetHash();
+            var hash4 = matrix.MirrorMatrixH().GetHash();
+            var hash5 = matrix.MirrorMatrixV().GetHash();
+
+            matrix = RotateMatrix(matrix);
+            var hash6 = matrix.GetHash();
+
+            matrix = RotateMatrix(matrix);
+            var hash7 = matrix.GetHash();
+
+            matrix = RotateMatrix(matrix);
+            var hash8 = matrix.GetHash();
 
             lock (Lock)
             {
-                if (Hashes.Add(hash))
+                if (Hashes.Add(hash1))
                 {
                     Results.Add(elements);
                     Console.WriteLine($"{MaxLength}: {Results.Count(r => r.Count == MaxLength)}");
 
-                    Hashes.Add(matrix.MirrorMatrixD1().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixD2().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixH().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixV().GetHash());
-
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
-
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
-
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
+                    Hashes.Add(hash2);
+                    Hashes.Add(hash3);
+                    Hashes.Add(hash4);
+                    Hashes.Add(hash5);
+                    Hashes.Add(hash6);
+                    Hashes.Add(hash7);
+                    Hashes.Add(hash8);
                 }
             }
         }
