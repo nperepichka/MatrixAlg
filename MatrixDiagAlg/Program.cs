@@ -33,6 +33,8 @@ internal static class Program
         }
         Console.WriteLine();
 
+        MaxLength = Size + Size - 2;
+
         for (byte x = 0; x < Size; x++)
         {
             for (byte y = 0; y < Size; y++)
@@ -122,19 +124,6 @@ internal static class Program
 
         if (isMatrixFilled && elements.Count >= MaxLength)
         {
-            if (elements.Count > MaxLength)
-            {
-                lock (Lock)
-                {
-                    if (elements.Count > MaxLength)
-                    {
-                        MaxLength = elements.Count;
-                        Hashes.Clear();
-                        Results.Clear();
-                    }
-                }
-            }
-
             matrix = BuildMatrix(elements);
 
             var hash = matrix.GetHash();
@@ -144,7 +133,7 @@ internal static class Program
                 if (Hashes.Add(hash))
                 {
                     Results.Add(elements);
-                    Console.WriteLine($"{MaxLength}: {Results.Count(r => r.Count == MaxLength)}");
+                    Console.WriteLine($"{MaxLength}: {Results.Count}");
 
                     Hashes.Add(matrix.MirrorMatrixD1().GetHash());
                     Hashes.Add(matrix.MirrorMatrixD2().GetHash());
