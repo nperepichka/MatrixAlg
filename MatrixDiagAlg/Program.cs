@@ -137,35 +137,25 @@ internal static class Program
 
             matrix = BuildMatrix(elements);
 
-            var hash1 = matrix.GetHash();
-            var hash2 = matrix.MirrorMatrixD1().GetHash();
-            var hash3 = matrix.MirrorMatrixD2().GetHash();
-            var hash4 = matrix.MirrorMatrixH().GetHash();
-            var hash5 = matrix.MirrorMatrixV().GetHash();
-
-            matrix = RotateMatrix(matrix);
-            var hash6 = matrix.GetHash();
-
-            matrix = RotateMatrix(matrix);
-            var hash7 = matrix.GetHash();
-
-            matrix = RotateMatrix(matrix);
-            var hash8 = matrix.GetHash();
+            var hash = matrix.GetHash();
 
             lock (Lock)
             {
-                if (Hashes.Add(hash1))
+                if (Hashes.Add(hash))
                 {
                     Results.Add(elements);
                     Console.WriteLine($"{MaxLength}: {Results.Count(r => r.Count == MaxLength)}");
 
-                    Hashes.Add(hash2);
-                    Hashes.Add(hash3);
-                    Hashes.Add(hash4);
-                    Hashes.Add(hash5);
-                    Hashes.Add(hash6);
-                    Hashes.Add(hash7);
-                    Hashes.Add(hash8);
+                    Hashes.Add(matrix.MirrorMatrixD1().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixD2().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixH().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixV().GetHash());
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
                 }
             }
         }
