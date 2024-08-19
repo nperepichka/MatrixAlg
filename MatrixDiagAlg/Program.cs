@@ -6,10 +6,17 @@ namespace MatrixDiagAlg;
 
 internal static class Program
 {
+    private static readonly HashSet<string> Hashes = [];
+    private static readonly object Lock = new();
+    private static readonly object Lock2 = new();
+
+    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
+    private static readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
+    private static int ParallelsCount = 0;
+
     private static byte Size;
     private static readonly List<List<(byte x, byte y)>> Results = [];
-    private static readonly HashSet<string> Hashes = [];
-    //private static int max = 0;
+    private static int MaxLength = 0;
 
     private static void Main()
     {
@@ -61,19 +68,23 @@ internal static class Program
         Console.ReadLine();
     }
 
+    private static readonly (byte? x, byte? y) NullPair = (null, null);
+
     private static void Process(List<(byte x, byte y)> elements, bool[,] matrix)
     {
         var isMatrixFilled = true;
-        (byte? lastX, byte? lastY) = (null, null);
-        if (elements.Count > 0)
-        {
-            (lastX, lastY) = elements[^1];
-        }
+        var (lastX, lastY) = elements.Count == 0
+            ? NullPair
+            : elements[^1];
         var canTake = lastX == null;
 
-        for (byte x = 0; x < Size; x++)
+        void processX(byte x)
         {
-            for (byte y = 0; y < Size; y++)
+            var maxY = x == Size - 1 && elements.Count < Size
+                ? (byte)elements.Count
+                : Size;
+
+            for (byte y = 0; y < maxY; y++)
             {
                 if (!matrix[x, y])
                 {
@@ -88,7 +99,6 @@ internal static class Program
                         {
                             var newElements = elements.ToList();
                             newElements.Add((x, y));
-
                             Process(newElements, newMatrix);
                         }
                     }
@@ -96,68 +106,60 @@ internal static class Program
             }
         }
 
-        if (isMatrixFilled /*&& elements.Count >= max*/)
+        if (ParallelsCount >= ExpectedParallelsCount)
         {
-            /*if (elements.Count > max)
+            for (byte x = 0; x < Size; x++)
             {
-                Hashes.Clear();
+                processX(x);
             }
-            max = elements.Count;*/
-            var hashes = new string[8];
+        }
+        else
+        {
+            Interlocked.Add(ref ParallelsCount, Size);
+            Parallel.For(0, Size, ParallelOptions, x =>
+            {
+                processX((byte)x);
+                Interlocked.Decrement(ref ParallelsCount);
+            });
+        }
+
+        if (isMatrixFilled && elements.Count >= MaxLength)
+        {
+            lock (Lock2)
+            {
+                if (elements.Count > MaxLength)
+                {
+                    MaxLength = elements.Count;
+                    Hashes.Clear();
+                    Results.Clear();
+                }
+            }
 
             matrix = BuildMatrix(elements);
-            hashes[0] = matrix.GetHash();
 
-            hashes[1] = matrix.MirrorMatrixD1().GetHash();
-            hashes[2] = matrix.MirrorMatrixD2().GetHash();
-            hashes[3] = matrix.MirrorMatrixH().GetHash();
-            hashes[4] = matrix.MirrorMatrixV().GetHash();
+            var hash = matrix.GetHash();
 
-            var matrix2 = RotateMatrix(matrix);
-            hashes[5] = matrix2.GetHash();
-
-            matrix2 = RotateMatrix(matrix2);
-            hashes[6] = matrix2.GetHash();
-
-            matrix2 = RotateMatrix(matrix2);
-            hashes[7] = matrix2.GetHash();
-
-            /*matrix = BuildMatrix(elements);
-            hashes[0] = matrix.GetHash();
-
-            hashes[1] = matrix.MirrorMatrixD1().GetHash();
-            hashes[2] = matrix.MirrorMatrixD2().GetHash();
-            hashes[3] = matrix.MirrorMatrixH().GetHash();
-            hashes[4] = matrix.MirrorMatrixV().GetHash();
-
-            var matrix2 = RotateMatrix(matrix);
-            hashes[5] = matrix2.GetHash();
-
-            hashes[6] = matrix2.MirrorMatrixD1().GetHash();
-            hashes[7] = matrix2.MirrorMatrixD2().GetHash();
-            hashes[8] = matrix2.MirrorMatrixH().GetHash();
-            hashes[9] = matrix2.MirrorMatrixV().GetHash();
-
-            matrix2 = RotateMatrix(matrix2);
-            hashes[10] = matrix2.GetHash();
-
-            hashes[11] = matrix2.MirrorMatrixD1().GetHash();
-            hashes[12] = matrix2.MirrorMatrixD2().GetHash();
-            hashes[13] = matrix2.MirrorMatrixH().GetHash();
-            hashes[14] = matrix2.MirrorMatrixV().GetHash();
-
-            matrix2 = RotateMatrix(matrix2);
-            hashes[15] = matrix2.GetHash();
-
-            hashes[16] = matrix2.MirrorMatrixD1().GetHash();
-            hashes[17] = matrix2.MirrorMatrixD2().GetHash();
-            hashes[18] = matrix2.MirrorMatrixH().GetHash();
-            hashes[19] = matrix2.MirrorMatrixV().GetHash();*/
-
-            var hash = hashes.Min()!;
-            if (Hashes.Add(hash))
+            lock (Lock)
             {
-                Results.Add(elements);
+                if (Hashes.Add(hash))
+                {
+                    Results.Add(elements);
+                    Console.WriteLine($"{MaxLength}: {Results.Count(r => r.Count == MaxLength)}");
+
+                    Hashes.Add(matrix.MirrorMatrixD1().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixD2().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixH().GetHash());
+                    Hashes.Add(matrix.MirrorMatrixV().GetHash());
+
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
+
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
+
+                    matrix = RotateMatrix(matrix);
+                    Hashes.Add(matrix.GetHash());
+                }
             }
         }
     }
@@ -214,9 +216,9 @@ internal static class Program
     public static bool[,] BuildMatrix(List<(byte x, byte y)> elements)
     {
         var res = new bool[Size, Size];
-        foreach (var (x, y) in elements)
+        for (var i = 0; i < elements.Count; i++)
         {
-            res[x, y] = true;
+            res[elements[i].x, elements[i].y] = true;
         }
         return res;
     }
