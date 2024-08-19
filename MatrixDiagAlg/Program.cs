@@ -68,6 +68,7 @@ internal static class Program
                 var output = string.Join(" ", res.OrderBy(e => e.x).ThenBy(e => e.y).Select(r => $"{r}"));
                 Console.WriteLine(output);
             }
+            Console.WriteLine($"{groupedResult.Key} -> {groupedResult.Count()}");
         }
 
         // Write elapsed time to console
@@ -133,7 +134,7 @@ internal static class Program
                 if (Hashes.Add(hash))
                 {
                     Results.Add(elements);
-                    Console.WriteLine($"{MaxLength}: {Results.Count}");
+                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
 
                     Hashes.Add(matrix.MirrorMatrixD1().GetHash());
                     Hashes.Add(matrix.MirrorMatrixD2().GetHash());
