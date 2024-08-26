@@ -72,9 +72,9 @@ internal static class Program
                 }
                 else
                 {
-                    Interlocked.Add(ref ParallelsCount, Size);
                     Parallel.For(0, Size, ParallelOptions, y =>
                     {
+                        Interlocked.Increment(ref ParallelsCount);
                         ProcessItem(cube, index, (byte)y);
                         Interlocked.Decrement(ref ParallelsCount);
                     });

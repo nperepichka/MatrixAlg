@@ -75,9 +75,9 @@ internal class Decompositor(byte Size)
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, Size);
             Parallel.For(0, Size, ParallelOptions, i =>
             {
+                Interlocked.Increment(ref ParallelsCount);
                 var index = (byte)i;
                 if (!decomposition[0].Contains(index))
                 {

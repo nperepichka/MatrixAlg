@@ -112,9 +112,9 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, Transversal);
             Parallel.ForEach(InputPositionsPerRow[row], ParallelOptions, nextRowVariant =>
             {
+                Interlocked.Increment(ref ParallelsCount);
                 if (!decomposition[0].Contains(nextRowVariant))
                 {
                     var newDecomposition = CloneDecomposition(decomposition, true);
