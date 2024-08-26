@@ -37,7 +37,7 @@ internal static class MosaicDrawer
             }
         }
 
-        var hash = mosaic.GetHash();
+        var hash = mosaic.GetHash(size);
         var isNew = false;
         var n = 0;
         lock (MosaicLock)

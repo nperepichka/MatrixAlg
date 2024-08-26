@@ -115,9 +115,10 @@ internal static class Program
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, Combinations.Count);
+            //Interlocked.Add(ref ParallelsCount, Combinations.Count);
             Parallel.For(0, Combinations.Count, ParallelOptions, i =>
             {
+                Interlocked.Increment(ref ParallelsCount);
                 processXY(Combinations[i].x, Combinations[i].y);
                 Interlocked.Decrement(ref ParallelsCount);
             });
@@ -127,25 +128,39 @@ internal static class Program
         {
             matrix = BuildMatrix(elements);
 
-            var hash = matrix.GetHash();
+            var hash = matrix.GetHash(Size);
 
+            bool isNew;
             lock (Lock)
             {
-                if (Hashes.Add(hash))
+                isNew = Hashes.Add(hash);
+            }
+
+            if (isNew)
+            {
+                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
+
+                var hash1 = matrix.MirrorMatrixD1(Size).GetHash(Size);
+                var hash2 = matrix.MirrorMatrixD2(Size).GetHash(Size);
+                var hash3 = matrix.MirrorMatrixH(Size).GetHash(Size);
+                var hash4 = matrix.MirrorMatrixV(Size).GetHash(Size);
+                matrix = RotateMatrix(matrix);
+                var hash5 = matrix.GetHash(Size);
+                matrix = RotateMatrix(matrix);
+                var hash6 = matrix.GetHash(Size);
+                matrix = RotateMatrix(matrix);
+                var hash7 = matrix.GetHash(Size);
+
+                lock (Lock)
                 {
                     Results.Add(elements);
-                    Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
-
-                    Hashes.Add(matrix.MirrorMatrixD1().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixD2().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixH().GetHash());
-                    Hashes.Add(matrix.MirrorMatrixV().GetHash());
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
-                    matrix = RotateMatrix(matrix);
-                    Hashes.Add(matrix.GetHash());
+                    Hashes.Add(hash1);
+                    Hashes.Add(hash2);
+                    Hashes.Add(hash3);
+                    Hashes.Add(hash4);
+                    Hashes.Add(hash5);
+                    Hashes.Add(hash6);
+                    Hashes.Add(hash7);
                 }
             }
         }

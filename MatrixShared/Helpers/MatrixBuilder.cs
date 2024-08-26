@@ -15,9 +15,8 @@ public static class MatrixBuilder
         return res;
     }
 
-    public static bool[,] RotateMatrix(this bool[,] matrix)
+    public static bool[,] RotateMatrix(this bool[,] matrix, byte size)
     {
-        var size = matrix.GetLength(0);
         var res = new bool[size, size];
 
         for (var i = 0; i < size; i++)

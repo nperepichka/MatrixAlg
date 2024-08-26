@@ -2,15 +2,17 @@
 
 public static class MatrixHash
 {
-    public static string GetHash(this bool[,] matrix)
+    public static string GetHash(this bool[,] matrix, byte size)
     {
-        var flatArray = new char[matrix.Length];
+        var flatArray = new char[size * size];
 
-        var i = 0;
-        foreach (var element in matrix)
+        var index = 0;
+        for (byte row = 0; row < size; row++)
         {
-            flatArray[i] = element ? '1' : '0';
-            i++;
+            for (byte col = 0; col < size; col++)
+            {
+                flatArray[index++] = matrix[row, col] ? '1' : '0';
+            }
         }
 
         return new string(flatArray);
