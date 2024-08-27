@@ -135,7 +135,6 @@ internal static class Program
             if (Hashes.Add(hash))
             {
                 Monitor.Exit(Lock);
-                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count + 1}");
 
                 var hash1 = matrix.MirrorMatrixD1(Size).GetHash(Size);
                 var hash2 = matrix.MirrorMatrixD2(Size).GetHash(Size);
@@ -157,6 +156,8 @@ internal static class Program
                 Hashes.Add(hash5);
                 Hashes.Add(hash6);
                 Hashes.Add(hash7);
+
+                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
             }
             Monitor.Exit(Lock);
         }
