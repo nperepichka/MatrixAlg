@@ -1,21 +1,19 @@
 ﻿using CubeAlg.Helpers;
 using CubeAlg.Models;
+using MatrixShared.Models;
 using System.Diagnostics;
 
 namespace CubeAlg;
 
 internal static class Program
 {
-    private static byte Size = 0;
-    private static byte N = 0;
+    private static readonly HashSet<string> Hashes = [];
+    private static readonly object Lock = new();
 
     //private static bool ProcessAltS = false;
-
-    private static readonly HashSet<string> CubeHashes = [];
-    private static readonly object CubeLock = new();
-    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
-    private static readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private static int ParallelsCount = 0;
+    private static byte Size = 0;
+    private static byte N = 0;
 
     private static void Main()
     {
@@ -63,7 +61,7 @@ internal static class Program
         {
             if (!cube[index].Y.HasValue)
             {
-                if (ParallelsCount >= ExpectedParallelsCount)
+                if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount)
                 {
                     for (byte y = 0; y < Size; y++)
                     {
@@ -72,7 +70,7 @@ internal static class Program
                 }
                 else
                 {
-                    Parallel.For(0, Size, ParallelOptions, y =>
+                    Parallel.For(0, Size, ParallelDefinitions.ParallelOptions, y =>
                     {
                         Interlocked.Increment(ref ParallelsCount);
                         ProcessItem(cube, index, (byte)y);
@@ -113,14 +111,14 @@ internal static class Program
 
         view = topViews.Min()!;
 
-        Monitor.Enter(CubeLock);
-        if (CubeHashes.Add(view))
+        Monitor.Enter(Lock);
+        if (Hashes.Add(view))
         {
             N++;
             Console.WriteLine($"Cube found #{N}:");
             cube.PrintCube();
         }
-        Monitor.Exit(CubeLock);
+        Monitor.Exit(Lock);
     }
 
     private static void ProcessItem(Point[] cube, int index, byte y)

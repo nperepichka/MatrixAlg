@@ -14,8 +14,8 @@ internal static class MosaicDrawer
     private const string OutputPathName = "mosaics";
     private const int CellSize = 10;
 
-    private static readonly object MosaicLock = new();
-    private static readonly HashSet<string> MosaicHashes = [];
+    private static readonly object Lock = new();
+    private static readonly HashSet<string> Hashes = [];
 
     public static void Clear()
     {
@@ -39,10 +39,10 @@ internal static class MosaicDrawer
 
         var hash = mosaic.GetHash(size);
 
-        Monitor.Enter(MosaicLock);
-        var isNew = MosaicHashes.Add(hash);
-        var n = MosaicHashes.Count;
-        Monitor.Exit(MosaicLock);
+        Monitor.Enter(Lock);
+        var isNew = Hashes.Add(hash);
+        var n = Hashes.Count;
+        Monitor.Exit(Lock);
 
         if (isNew)
         {

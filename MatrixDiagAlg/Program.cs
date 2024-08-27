@@ -1,5 +1,6 @@
 ﻿using MatrixShared.Analysers;
 using MatrixShared.Helpers;
+using MatrixShared.Models;
 using System.Diagnostics;
 
 namespace MatrixDiagAlg;
@@ -9,15 +10,12 @@ internal static class Program
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
 
-    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
-    private static readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private static int ParallelsCount = 0;
-
     private static byte Size;
-    private static readonly List<List<(byte x, byte y)>> Results = [];
     private static int MaxLength = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
+    private static readonly List<List<(byte x, byte y)>> Results = [];
 
     private static void Main()
     {
@@ -105,7 +103,7 @@ internal static class Program
             }
         }
 
-        if (ParallelsCount >= ExpectedParallelsCount)
+        if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount)
         {
             for (var i = 0; i < Combinations.Count; i++)
             {
@@ -114,7 +112,7 @@ internal static class Program
         }
         else
         {
-            Parallel.For(0, Combinations.Count, ParallelOptions, i =>
+            Parallel.For(0, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
             {
                 Interlocked.Increment(ref ParallelsCount);
                 processXY(Combinations[i].x, Combinations[i].y);

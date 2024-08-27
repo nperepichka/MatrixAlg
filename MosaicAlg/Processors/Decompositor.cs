@@ -1,11 +1,10 @@
-﻿using MosaicAlg.Helpers;
+﻿using MatrixShared.Models;
+using MosaicAlg.Helpers;
 
 namespace MosaicAlg.Processors;
 
 internal class Decompositor(byte Size)
 {
-    private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
-    private readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
     private int ParallelsCount = 0;
     private readonly byte HalfSize = (byte)(Size / 2);
 
@@ -118,7 +117,7 @@ internal class Decompositor(byte Size)
     {
         // Build next row for 1st matrix
 
-        if (ParallelsCount >= ExpectedParallelsCount || row % 2 == 0)
+        if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount || row % 2 == 0)
         {
             for (byte index = 0; index < Size; index++)
             {
@@ -127,7 +126,7 @@ internal class Decompositor(byte Size)
         }
         else
         {
-            Parallel.For(0, Size, ParallelOptions, index =>
+            Parallel.For(0, Size, ParallelDefinitions.ParallelOptions, index =>
             {
                 Interlocked.Increment(ref ParallelsCount);
                 ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, (byte)index);
