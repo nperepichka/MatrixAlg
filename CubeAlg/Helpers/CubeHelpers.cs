@@ -29,9 +29,9 @@ internal static class CubeHelpers
     public static bool[,,] BuildCube(this Point[] cube, byte size)
     {
         var res = new bool[size, size, size];
-        foreach (var point in cube)
+        for (var i = 0; i < cube.Length; i++)
         {
-            res[point.X, point.Y!.Value, point.Z] = true;
+            res[cube[i].X, cube[i].Y!.Value, cube[i].Z] = true;
         }
         return res;
     }

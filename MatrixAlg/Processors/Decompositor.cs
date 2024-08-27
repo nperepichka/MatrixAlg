@@ -57,15 +57,48 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         var nextRow = row;
         nextRow++;
 
-        foreach (var nextRowVariant in InputPositionsPerRow[row])
+        for (byte i = 0; i < Size; i++)
         {
-            if (
-                !decomposition[matrixIndex].Contains(nextRowVariant) && // current matrix of current decomposition does not contain this column
-                decomposition.All(m => m[row] != nextRowVariant) // all matrixes of current decomposition does not contain this column in this row
-                )
+            var canUse = true;
+
+            for (byte j = 0; j < Size; j++)
             {
-                var newDecomposition = CloneDecomposition(decomposition, false);
-                newDecomposition[matrixIndex][row] = nextRowVariant;
+                if (matrixIndex == j)
+                {
+                    for (byte e = 0; e < decomposition[j].Length; e++)
+                    {
+                        // current matrix of current decomposition does not contain this column
+                        if (decomposition[j][e] == InputPositionsPerRow[row][i])
+                        {
+                            canUse = false;
+                            break;
+                        }
+                    }
+                    if (!canUse)
+                    {
+                        break;
+                    }
+                }
+                // all matrixes of current decomposition does not contain this column in this row
+                if (decomposition[j][row] == InputPositionsPerRow[row][i])
+                {
+                    canUse = false;
+                    break;
+                }
+            }
+
+            if (canUse)
+            {
+                var rowsCount = decomposition[0].Length;
+                var newDecomposition = new byte[decomposition.Length][];
+
+                for (byte j = 0; j < decomposition.Length; j++)
+                {
+                    newDecomposition[j] = new byte[rowsCount];
+                    Array.Copy(decomposition[j], newDecomposition[j], rowsCount);
+                }
+
+                newDecomposition[matrixIndex][row] = InputPositionsPerRow[row][i];
 
                 if (nextMatrixIndex != Transversal)
                 {
@@ -94,55 +127,49 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         }
     }
 
+    private void ValidateAndGenerateDecompositionMatrixNextRowVariants(byte row, byte[][] decomposition, byte value)
+    {
+        var rowsCount = decomposition[0].Length;
+        for (byte j = 0; j < decomposition[0].Length; j++)
+        {
+            if (decomposition[0][j] == value)
+            {
+                return;
+            }
+        }
+
+        var newRowsCount = rowsCount + 1;
+        var newDecomposition = new byte[decomposition.Length][];
+
+        for (byte i = 0; i < decomposition.Length; i++)
+        {
+            newDecomposition[i] = new byte[newRowsCount];
+            Array.Copy(decomposition[i], newDecomposition[i], rowsCount);
+            newDecomposition[i][rowsCount] = i == 0 ? value : byte.MaxValue;
+        }
+
+        GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
+    }
+
     private void GenerateDecompositions(byte row, byte[][] decomposition)
     {
         // Build next row for 1st matrix
 
         if (ParallelsCount >= ExpectedParallelsCount || row % 2 == 0)
         {
-            foreach (var nextRowVariant in InputPositionsPerRow[row])
+            for (byte i = 0; i < Size; i++)
             {
-                if (!decomposition[0].Contains(nextRowVariant))
-                {
-                    var newDecomposition = CloneDecomposition(decomposition, true);
-                    newDecomposition[0][row] = nextRowVariant;
-                    GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
-                }
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
             }
         }
         else
         {
-            Parallel.ForEach(InputPositionsPerRow[row], ParallelOptions, nextRowVariant =>
+            Parallel.For(0, Size, ParallelOptions, i =>
             {
                 Interlocked.Increment(ref ParallelsCount);
-                if (!decomposition[0].Contains(nextRowVariant))
-                {
-                    var newDecomposition = CloneDecomposition(decomposition, true);
-                    newDecomposition[0][row] = nextRowVariant;
-                    GenerateDecompositionMatrixNextRowVariants(row, newDecomposition, 1);
-                }
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
                 Interlocked.Decrement(ref ParallelsCount);
             });
         }
-    }
-
-    private static byte[][] CloneDecomposition(byte[][] original, bool addRow)
-    {
-        var currentRowsCount = original[0].Length;
-        var newRowsCount = addRow ? currentRowsCount + 1 : currentRowsCount;
-
-        var clone = new byte[original.Length][];
-
-        for (var i = 0; i < original.Length; i++)
-        {
-            clone[i] = new byte[newRowsCount];
-            Array.Copy(original[i], clone[i], currentRowsCount);
-            if (addRow)
-            {
-                clone[i][currentRowsCount] = byte.MaxValue;
-            }
-        }
-
-        return clone;
     }
 }

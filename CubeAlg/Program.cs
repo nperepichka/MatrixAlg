@@ -112,15 +112,15 @@ internal static class Program
         }
 
         view = topViews.Min()!;
-        lock (CubeLock)
+
+        Monitor.Enter(CubeLock);
+        if (CubeHashes.Add(view))
         {
-            if (CubeHashes.Add(view))
-            {
-                N++;
-                Console.WriteLine($"Cube found #{N}:");
-                cube.PrintCube();
-            }
+            N++;
+            Console.WriteLine($"Cube found #{N}:");
+            cube.PrintCube();
         }
+        Monitor.Exit(CubeLock);
     }
 
     private static void ProcessItem(Point[] cube, int index, byte y)

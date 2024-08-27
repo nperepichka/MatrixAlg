@@ -38,16 +38,12 @@ internal static class MosaicDrawer
         }
 
         var hash = mosaic.GetHash(size);
-        var isNew = false;
-        var n = 0;
-        lock (MosaicLock)
-        {
-            if (MosaicHashes.Add(hash))
-            {
-                n = MosaicHashes.Count;
-                isNew = true;
-            }
-        }
+
+        Monitor.Enter(MosaicLock);
+        var isNew = MosaicHashes.Add(hash);
+        var n = MosaicHashes.Count;
+        Monitor.Exit(MosaicLock);
+
         if (isNew)
         {
             DrawImage(mosaic, $"mosaic_{n}", size);

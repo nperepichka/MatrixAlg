@@ -94,8 +94,7 @@ internal static class Program
                 isMatrixFilled = false;
                 if (x > lastX || x == lastX && y > lastY)
                 {
-                    var newMatrix = CloneMatrix(elements, matrix, x, y);
-
+                    var newMatrix = TryCloneMatrix(elements, matrix, x, y);
                     if (newMatrix != null)
                     {
                         var newElements = elements.ToList();
@@ -115,7 +114,6 @@ internal static class Program
         }
         else
         {
-            //Interlocked.Add(ref ParallelsCount, Combinations.Count);
             Parallel.For(0, Combinations.Count, ParallelOptions, i =>
             {
                 Interlocked.Increment(ref ParallelsCount);
@@ -126,18 +124,19 @@ internal static class Program
 
         if (isMatrixFilled && elements.Count >= MaxLength)
         {
-            matrix = BuildMatrix(elements);
+            // Build matrix
+            matrix = new bool[Size, Size];
+            for (var i = 0; i < elements.Count; i++)
+            {
+                matrix[elements[i].x, elements[i].y] = true;
+            }
 
             var hash = matrix.GetHash(Size);
 
-            bool isNew;
-            lock (Lock)
+            Monitor.Enter(Lock);
+            if (Hashes.Add(hash))
             {
-                isNew = Hashes.Add(hash);
-            }
-
-            if (isNew)
-            {
+                Monitor.Exit(Lock);
                 Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
 
                 var hash1 = matrix.MirrorMatrixD1(Size).GetHash(Size);
@@ -151,18 +150,17 @@ internal static class Program
                 matrix = RotateMatrix(matrix);
                 var hash7 = matrix.GetHash(Size);
 
-                lock (Lock)
-                {
-                    Results.Add(elements);
-                    Hashes.Add(hash1);
-                    Hashes.Add(hash2);
-                    Hashes.Add(hash3);
-                    Hashes.Add(hash4);
-                    Hashes.Add(hash5);
-                    Hashes.Add(hash6);
-                    Hashes.Add(hash7);
-                }
+                Monitor.Enter(Lock);
+                Results.Add(elements);
+                Hashes.Add(hash1);
+                Hashes.Add(hash2);
+                Hashes.Add(hash3);
+                Hashes.Add(hash4);
+                Hashes.Add(hash5);
+                Hashes.Add(hash6);
+                Hashes.Add(hash7);
             }
+            Monitor.Exit(Lock);
         }
     }
 
@@ -184,29 +182,26 @@ internal static class Program
         return res;
     }
 
-    private static bool[,]? CloneMatrix(List<(byte x, byte y)> elements, bool[,] original, byte newX, byte newY)
+    private static bool[,]? TryCloneMatrix(List<(byte x, byte y)> elements, bool[,] original, byte newX, byte newY)
     {
-        var clone = new bool[Size, Size];
         var v1 = newX - newY;
         var v2 = newX + newY;
 
+        for (var i = 0; i < elements.Count; i++)
+        {
+            if (elements[i].x - elements[i].y == v1 || elements[i].x + elements[i].y == v2)
+            {
+                return null;
+            }
+        }
+
+        var clone = new bool[Size, Size];
         for (byte x = 0; x < Size; x++)
         {
             for (byte y = 0; y < Size; y++)
             {
-                if (original[x, y])
+                if (original[x, y] || x - y == v1 || x + y == v2)
                 {
-                    clone[x, y] = true;
-                }
-                else if (x - y == v1 || x + y == v2)
-                {
-                    for (var i = 0; i < elements.Count; i++)
-                    {
-                        if (elements[i].x == x && elements[i].y == y)
-                        {
-                            return null;
-                        }
-                    }
                     clone[x, y] = true;
                 }
             }
@@ -214,15 +209,4 @@ internal static class Program
 
         return clone;
     }
-
-    public static bool[,] BuildMatrix(List<(byte x, byte y)> elements)
-    {
-        var res = new bool[Size, Size];
-        for (var i = 0; i < elements.Count; i++)
-        {
-            res[elements[i].x, elements[i].y] = true;
-        }
-        return res;
-    }
-
 }
