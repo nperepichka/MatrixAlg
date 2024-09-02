@@ -103,21 +103,19 @@ internal static class Program
             }
         }
 
-        if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount)
+        for (var index = 0; index < Combinations.Count; index++)
         {
-            for (var i = 0; i < Combinations.Count; i++)
+            if (ParallelsCount <= ParallelDefinitions.ExpectedParallelsCount)
             {
-                processXY(Combinations[i].x, Combinations[i].y);
+                Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
+                {
+                    Interlocked.Increment(ref ParallelsCount);
+                    processXY(Combinations[i].x, Combinations[i].y);
+                    Interlocked.Decrement(ref ParallelsCount);
+                });
+                break;
             }
-        }
-        else
-        {
-            Parallel.For(0, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
-            {
-                Interlocked.Increment(ref ParallelsCount);
-                processXY(Combinations[i].x, Combinations[i].y);
-                Interlocked.Decrement(ref ParallelsCount);
-            });
+            processXY(Combinations[index].x, Combinations[index].y);
         }
 
         if (isMatrixFilled && elements.Count >= MaxLength)
