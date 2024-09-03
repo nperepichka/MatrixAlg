@@ -21,11 +21,12 @@ public static class MatrixBuilder
 
         for (var i = 0; i < size; i++)
         {
+            var newI = size - 1 - i;
             for (var j = 0; j < size; ++j)
             {
                 if (matrix[i, j])
                 {
-                    res[j, size - i - 1] = true;
+                    res[j, newI] = true;
                     break;
                 }
             }

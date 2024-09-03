@@ -96,10 +96,10 @@ public static class MatrixСonjugationDetector
 
         for (var i = 0; i < size; i++)
         {
+            var newJ = size - 1 - i;
             for (var j = 0; j < size - i; j++)
             {
                 var newI = size - 1 - j;
-                var newJ = size - 1 - i;
                 res[i, j] = matrix[newI, newJ];
                 res[newI, newJ] = matrix[i, j];
             }
@@ -129,9 +129,10 @@ public static class MatrixСonjugationDetector
 
         for (var i = 0; i < size; i++)
         {
+            var newI = size - 1 - i;
             for (var j = 0; j < size; j++)
             {
-                res[i, j] = matrix[size - 1 - i, j];
+                res[i, j] = matrix[newI, j];
             }
         }
 

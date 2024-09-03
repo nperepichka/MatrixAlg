@@ -84,7 +84,8 @@ internal static class Program
     {
         var canProcess = true;
         var isMatrixFilled = true;
-        var (lastX, lastY) = Combinations[0];
+        byte lastX = 0;
+        byte lastY = 0;
         if (elements.Count != 0)
         {
             canProcess = false;
@@ -102,8 +103,10 @@ internal static class Program
                     var newMatrix = TryCloneMatrix(elements, matrix, x, y);
                     if (newMatrix != null)
                     {
-                        var newElements = elements.ToList();
-                        newElements.Add((x, y));
+                        var newElements = new List<(byte x, byte y)>(elements)
+                        {
+                            (x, y)
+                        };
                         Process(newElements, newMatrix);
                     }
                 }
@@ -134,37 +137,30 @@ internal static class Program
                 matrix[elements[i].x, elements[i].y] = true;
             }
 
-            var hash = matrix.GetHash(Size);
+            var minMatrix = matrix.MirrorMatrixD1(Size).GetMinMatrix(Size, matrix);
+            minMatrix = matrix.MirrorMatrixD2(Size).GetMinMatrix(Size, minMatrix);
+            minMatrix = matrix.MirrorMatrixH(Size).GetMinMatrix(Size, minMatrix);
+            minMatrix = matrix.MirrorMatrixV(Size).GetMinMatrix(Size, minMatrix);
+            matrix = RotateMatrix(matrix);
+            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
+            matrix = RotateMatrix(matrix);
+            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
+            matrix = RotateMatrix(matrix);
+            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
+
+            var hash = minMatrix.GetHash(Size);
 
             Monitor.Enter(Lock);
-            var isNew = Hashes.Add(hash);
-            Monitor.Exit(Lock);
-            if (isNew)
+            if (!Hashes.Add(hash))
             {
-                var hash1 = matrix.MirrorMatrixD1(Size).GetHash(Size);
-                var hash2 = matrix.MirrorMatrixD2(Size).GetHash(Size);
-                var hash3 = matrix.MirrorMatrixH(Size).GetHash(Size);
-                var hash4 = matrix.MirrorMatrixV(Size).GetHash(Size);
-                matrix = RotateMatrix(matrix);
-                var hash5 = matrix.GetHash(Size);
-                matrix = RotateMatrix(matrix);
-                var hash6 = matrix.GetHash(Size);
-                matrix = RotateMatrix(matrix);
-                var hash7 = matrix.GetHash(Size);
-
-                Monitor.Enter(Lock);
-                Results.Add(elements);
-                Hashes.Add(hash1);
-                Hashes.Add(hash2);
-                Hashes.Add(hash3);
-                Hashes.Add(hash4);
-                Hashes.Add(hash5);
-                Hashes.Add(hash6);
-                Hashes.Add(hash7);
                 Monitor.Exit(Lock);
-
-                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
+                return;
             }
+
+            Results.Add(elements);
+            Monitor.Exit(Lock);
+
+            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
         }
     }
 
@@ -202,9 +198,11 @@ internal static class Program
         var clone = new bool[Size, Size];
         for (byte x = 0; x < Size; x++)
         {
+            v1 = x - newX + newY;
+            v2 = newX + newY - x;
             for (byte y = 0; y < Size; y++)
             {
-                if (original[x, y] || x - y == v1 || x + y == v2)
+                if (original[x, y] || y == v1 || y == v2)
                 {
                     clone[x, y] = true;
                 }
