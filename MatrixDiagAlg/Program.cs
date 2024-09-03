@@ -11,8 +11,9 @@ internal static class Program
     private static readonly object Lock = new();
 
     private static int ParallelsCount = 0;
-    private static byte Size;
+    private static byte Size = 0;
     private static int MaxLength = 0;
+    private static int ParallelBeforeIndex = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
     private static readonly List<List<(byte x, byte y)>> Results = [];
@@ -40,6 +41,7 @@ internal static class Program
                 Combinations.Add((x, y));
             }
         }
+        ParallelBeforeIndex = Combinations.Count - 3;
 
         // Write to console that processing is started
         Console.WriteLine("Will search for diagonal 1-transversals.");
@@ -80,18 +82,23 @@ internal static class Program
 
     private static void Process(List<(byte x, byte y)> elements, bool[,] matrix)
     {
+        var canProcess = true;
         var isMatrixFilled = true;
-        var (lastX, lastY) = elements.Count != 0
-            ? elements[^1]
-            : Combinations[0];
+        var (lastX, lastY) = Combinations[0];
+        if (elements.Count != 0)
+        {
+            canProcess = false;
+            (lastX, lastY) = elements[^1];
+        }
 
         void processXY(byte x, byte y)
         {
             if (!matrix[x, y])
             {
                 isMatrixFilled = false;
-                if (x > lastX || x == lastX && y > lastY)
+                if (canProcess || x > lastX || x == lastX && y > lastY)
                 {
+                    canProcess = true;
                     var newMatrix = TryCloneMatrix(elements, matrix, x, y);
                     if (newMatrix != null)
                     {
@@ -105,7 +112,7 @@ internal static class Program
 
         for (var index = 0; index < Combinations.Count; index++)
         {
-            if (ParallelsCount <= ParallelDefinitions.ExpectedParallelsCount)
+            if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
             {
                 Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
                 {
@@ -130,10 +137,10 @@ internal static class Program
             var hash = matrix.GetHash(Size);
 
             Monitor.Enter(Lock);
-            if (Hashes.Add(hash))
+            var isNew = Hashes.Add(hash);
+            Monitor.Exit(Lock);
+            if (isNew)
             {
-                Monitor.Exit(Lock);
-
                 var hash1 = matrix.MirrorMatrixD1(Size).GetHash(Size);
                 var hash2 = matrix.MirrorMatrixD2(Size).GetHash(Size);
                 var hash3 = matrix.MirrorMatrixH(Size).GetHash(Size);
@@ -154,10 +161,10 @@ internal static class Program
                 Hashes.Add(hash5);
                 Hashes.Add(hash6);
                 Hashes.Add(hash7);
+                Monitor.Exit(Lock);
 
                 Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
             }
-            Monitor.Exit(Lock);
         }
     }
 
