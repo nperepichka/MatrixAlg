@@ -1,4 +1,5 @@
-﻿using MatrixShared.Analysers;
+﻿using MatrixDiagAlg.Enums;
+using MatrixShared.Analysers;
 using MatrixShared.Helpers;
 using MatrixShared.Models;
 using System.Diagnostics;
@@ -51,7 +52,7 @@ internal static class Program
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
 
-        Process(0, new byte[Size, Size], 0);
+        Process(0, new EnumType[Size, Size], 0);
 
         // Stop timer
         stopwatch.Stop();
@@ -95,7 +96,7 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static void Process(int startIndex, byte[,] matrix, int count)
+    private static void Process(int startIndex, EnumType[,] matrix, int count)
     {
         count++;
 
@@ -122,15 +123,15 @@ internal static class Program
         }
     }
 
-    private static void ProcessFilled(byte[,] matrix)
+    private static void ProcessFilled(EnumType[,] matrix)
     {
         // Build matrix
         var matrixB = new bool[Size, Size];
-        for (var i = 0; i < Size; i++)
+        for (byte i = 0; i < Size; i++)
         {
-            for (var j = 0; j < Size; ++j)
+            for (byte j = 0; j < Size; ++j)
             {
-                if (matrix[i, j] == 2)
+                if (matrix[i, j] == EnumType.Used)
                 {
                     matrixB[i, j] = true;
                 }
@@ -178,10 +179,10 @@ internal static class Program
         return res;
     }
 
-    private static void TryCloneAndProcess(byte[,] original, int count, int index)
+    private static void TryCloneAndProcess(EnumType[,] original, int count, int index)
     {
         var isMatrixFilled = true;
-        var clone = new byte[Size, Size];
+        var clone = new EnumType[Size, Size];
 
         for (byte x = 0; x < Size; x++)
         {
@@ -199,11 +200,11 @@ internal static class Program
                 }
                 else if (x == Combinations[index].x && y == Combinations[index].y)
                 {
-                    clone[x, y] = 2;
+                    clone[x, y] = EnumType.Used;
                 }
                 else if (y == v1 || y == v2)
                 {
-                    clone[x, y] = 1;
+                    clone[x, y] = EnumType.Covered;
                 }
                 else
                 {
