@@ -16,8 +16,7 @@ internal static class Program
     private static int ParallelBeforeIndex = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
-    //private static readonly List<List<(byte x, byte y)>> Results = [];
-    private static int R = 0;
+    private static readonly List<bool[,]> Results = [];
 
     private static void Main()
     {
@@ -58,7 +57,22 @@ internal static class Program
         stopwatch.Stop();
 
         Console.WriteLine();
-        /*var groupedResults = Results
+        var groupedResults = Results
+            .Select(r =>
+            {
+                var elements = new List<(byte x, byte y)>();
+                for (byte x = 0; x < Size; x++)
+                {
+                    for (byte y = 0; y < Size; ++y)
+                    {
+                        if (r[x, y])
+                        {
+                            elements.Add((x, y));
+                        }
+                    }
+                }
+                return elements;
+            })
             .GroupBy(r => r.Count)
             .OrderBy(r => r.Key);
         foreach (var groupedResult in groupedResults)
@@ -70,7 +84,7 @@ internal static class Program
                 Console.WriteLine(output);
             }
             Console.WriteLine($"{groupedResult.Key} -> {groupedResult.Count()}");
-        }*/
+        }
 
         // Write elapsed time to console
         Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
@@ -139,8 +153,8 @@ internal static class Program
         Monitor.Enter(Lock);
         if (Hashes.Add(hash))
         {
-            R++;
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {R}");
+            Results.Add(matrixB);
+            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
         }
         Monitor.Exit(Lock);
     }
