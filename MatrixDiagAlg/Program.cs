@@ -16,7 +16,8 @@ internal static class Program
     private static int ParallelBeforeIndex = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
-    private static readonly List<List<(byte x, byte y)>> Results = [];
+    //private static readonly List<List<(byte x, byte y)>> Results = [];
+    private static int R = 0;
 
     private static void Main()
     {
@@ -51,13 +52,13 @@ internal static class Program
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
 
-        Process([], new bool[Size, Size]);
+        Process(0, new byte[Size, Size], 0, false);
 
         // Stop timer
         stopwatch.Stop();
 
         Console.WriteLine();
-        var groupedResults = Results
+        /*var groupedResults = Results
             .GroupBy(r => r.Count)
             .OrderBy(r => r.Key);
         foreach (var groupedResult in groupedResults)
@@ -69,7 +70,7 @@ internal static class Program
                 Console.WriteLine(output);
             }
             Console.WriteLine($"{groupedResult.Key} -> {groupedResult.Count()}");
-        }
+        }*/
 
         // Write elapsed time to console
         Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
@@ -80,87 +81,69 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static void Process(List<(byte x, byte y)> elements, bool[,] matrix)
+    private static void Process(int startIndex, byte[,] matrix, int count, bool isMatrixFilled)
     {
-        var canProcess = true;
-        var isMatrixFilled = true;
-        byte lastX = 0;
-        byte lastY = 0;
-        if (elements.Count != 0)
+        if (!isMatrixFilled)
         {
-            canProcess = false;
-            (lastX, lastY) = elements[^1];
-        }
+            var nextCount = count + 1;
 
-        void processXY(byte x, byte y)
-        {
-            if (!matrix[x, y])
+            for (var index = startIndex; index < Combinations.Count; index++)
             {
-                isMatrixFilled = false;
-                if (canProcess || x > lastX || x == lastX && y > lastY)
+                if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
                 {
-                    canProcess = true;
-                    var newMatrix = TryCloneMatrix(elements, matrix, x, y);
-                    if (newMatrix != null)
+                    Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
                     {
-                        var newElements = new List<(byte x, byte y)>(elements)
+                        Interlocked.Increment(ref ParallelsCount);
+                        if (matrix[Combinations[i].x, Combinations[i].y] == 0)
                         {
-                            (x, y)
-                        };
-                        Process(newElements, newMatrix);
-                    }
+                            TryCloneAndProcess(matrix, nextCount, i);
+                        }
+                        Interlocked.Decrement(ref ParallelsCount);
+                    });
+                    break;
+                }
+
+                if (matrix[Combinations[index].x, Combinations[index].y] == 0)
+                {
+                    TryCloneAndProcess(matrix, nextCount, index);
                 }
             }
         }
-
-        for (var index = 0; index < Combinations.Count; index++)
-        {
-            if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
-            {
-                Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
-                {
-                    Interlocked.Increment(ref ParallelsCount);
-                    processXY(Combinations[i].x, Combinations[i].y);
-                    Interlocked.Decrement(ref ParallelsCount);
-                });
-                break;
-            }
-            processXY(Combinations[index].x, Combinations[index].y);
-        }
-
-        if (isMatrixFilled && elements.Count >= MaxLength)
+        else if (count >= MaxLength)
         {
             // Build matrix
-            matrix = new bool[Size, Size];
-            for (var i = 0; i < elements.Count; i++)
+            var matrixB = new bool[Size, Size];
+            for (var i = 0; i < Size; i++)
             {
-                matrix[elements[i].x, elements[i].y] = true;
+                for (var j = 0; j < Size; ++j)
+                {
+                    if (matrix[i, j] == 2)
+                    {
+                        matrixB[i, j] = true;
+                    }
+                }
             }
 
-            var minMatrix = matrix.MirrorMatrixD1(Size).GetMinMatrix(Size, matrix);
-            minMatrix = matrix.MirrorMatrixD2(Size).GetMinMatrix(Size, minMatrix);
-            minMatrix = matrix.MirrorMatrixH(Size).GetMinMatrix(Size, minMatrix);
-            minMatrix = matrix.MirrorMatrixV(Size).GetMinMatrix(Size, minMatrix);
-            matrix = RotateMatrix(matrix);
-            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
-            matrix = RotateMatrix(matrix);
-            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
-            matrix = RotateMatrix(matrix);
-            minMatrix = matrix.GetMinMatrix(Size, minMatrix);
+            var minMatrix = matrixB.MirrorMatrixD1(Size).GetMinMatrix(Size, matrixB);
+            minMatrix = matrixB.MirrorMatrixD2(Size).GetMinMatrix(Size, minMatrix);
+            minMatrix = matrixB.MirrorMatrixH(Size).GetMinMatrix(Size, minMatrix);
+            minMatrix = matrixB.MirrorMatrixV(Size).GetMinMatrix(Size, minMatrix);
+            matrixB = RotateMatrix(matrixB);
+            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
+            matrixB = RotateMatrix(matrixB);
+            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
+            matrixB = RotateMatrix(matrixB);
+            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
 
             var hash = minMatrix.GetHash(Size);
 
             Monitor.Enter(Lock);
-            if (!Hashes.Add(hash))
+            if (Hashes.Add(hash))
             {
-                Monitor.Exit(Lock);
-                return;
+                R++;
+                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {R}");
             }
-
-            Results.Add(elements);
             Monitor.Exit(Lock);
-
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
         }
     }
 
@@ -183,33 +166,39 @@ internal static class Program
         return res;
     }
 
-    private static bool[,]? TryCloneMatrix(List<(byte x, byte y)> elements, bool[,] original, byte newX, byte newY)
+    private static void TryCloneAndProcess(byte[,] original, int count, int index)
     {
-        var v1 = newX - newY;
-        var v2 = newX + newY;
-
-        for (var i = 0; i < elements.Count; i++)
-        {
-            if (elements[i].x - elements[i].y == v1 || elements[i].x + elements[i].y == v2)
-            {
-                return null;
-            }
-        }
-
-        var clone = new bool[Size, Size];
+        var isMatrixFilled = true;
+        var clone = new byte[Size, Size];
         for (byte x = 0; x < Size; x++)
         {
-            var v3 = x - v1;
-            var v4 = v2 - x;
+            var v1 = x - Combinations[index].x + Combinations[index].y;
+            var v2 = Combinations[index].x + Combinations[index].y - x;
             for (byte y = 0; y < Size; y++)
             {
-                if (original[x, y] || y == v3 || y == v4)
+                if (original[x, y] != 0)
                 {
-                    clone[x, y] = true;
+                    if (y == Combinations[index].y && x == Combinations[index].x)
+                    {
+                        return;
+                    }
+                    clone[x, y] = original[x, y];
+                }
+                else if (x == Combinations[index].x && y == Combinations[index].y)
+                {
+                    clone[x, y] = 2;
+                }
+                else if (y == v1 || y == v2)
+                {
+                    clone[x, y] = 1;
+                }
+                else
+                {
+                    isMatrixFilled = false;
                 }
             }
         }
 
-        return clone;
+        Process(index + 1, clone, count, isMatrixFilled);
     }
 }
