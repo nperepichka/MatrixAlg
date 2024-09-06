@@ -170,11 +170,12 @@ internal static class Program
 
         for (var i = 0; i < Size; i++)
         {
+            var ii = Size - i - 1;
             for (var j = 0; j < Size; ++j)
             {
                 if (matrix[i, j])
                 {
-                    res[j, Size - i - 1] = true;
+                    res[j, ii] = true;
                 }
             }
         }
@@ -198,11 +199,11 @@ internal static class Program
         var clone = new bool[Size, Size];
         for (byte x = 0; x < Size; x++)
         {
-            v1 = x - newX + newY;
-            v2 = newX + newY - x;
+            var v3 = x - v1;
+            var v4 = v2 - x;
             for (byte y = 0; y < Size; y++)
             {
-                if (original[x, y] || y == v1 || y == v2)
+                if (original[x, y] || y == v3 || y == v4)
                 {
                     clone[x, y] = true;
                 }
