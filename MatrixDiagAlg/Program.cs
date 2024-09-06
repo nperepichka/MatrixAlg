@@ -42,7 +42,7 @@ internal static class Program
                 Combinations.Add((x, y));
             }
         }
-        ParallelBeforeIndex = Combinations.Count - 3;
+        ParallelBeforeIndex = Combinations.Count - 2;
 
         // Write to console that processing is started
         Console.WriteLine("Will search for diagonal 1-transversals.");
@@ -52,7 +52,7 @@ internal static class Program
         // Start timer to measure running time
         var stopwatch = Stopwatch.StartNew();
 
-        Process(0, new byte[Size, Size], 0, false);
+        Process(0, new byte[Size, Size], 0);
 
         // Stop timer
         stopwatch.Stop();
@@ -81,70 +81,68 @@ internal static class Program
         Console.ReadLine();
     }
 
-    private static void Process(int startIndex, byte[,] matrix, int count, bool isMatrixFilled)
+    private static void Process(int startIndex, byte[,] matrix, int count)
     {
-        if (!isMatrixFilled)
-        {
-            var nextCount = count + 1;
+        count++;
 
-            for (var index = startIndex; index < Combinations.Count; index++)
-            {
-                if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
-                {
-                    Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
-                    {
-                        Interlocked.Increment(ref ParallelsCount);
-                        if (matrix[Combinations[i].x, Combinations[i].y] == 0)
-                        {
-                            TryCloneAndProcess(matrix, nextCount, i);
-                        }
-                        Interlocked.Decrement(ref ParallelsCount);
-                    });
-                    break;
-                }
-
-                if (matrix[Combinations[index].x, Combinations[index].y] == 0)
-                {
-                    TryCloneAndProcess(matrix, nextCount, index);
-                }
-            }
-        }
-        else if (count >= MaxLength)
+        for (var index = startIndex; index < Combinations.Count; index++)
         {
-            // Build matrix
-            var matrixB = new bool[Size, Size];
-            for (var i = 0; i < Size; i++)
+            if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
             {
-                for (var j = 0; j < Size; ++j)
+                Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
                 {
-                    if (matrix[i, j] == 2)
+                    Interlocked.Increment(ref ParallelsCount);
+                    if (matrix[Combinations[i].x, Combinations[i].y] == 0)
                     {
-                        matrixB[i, j] = true;
+                        TryCloneAndProcess(matrix, count, i);
                     }
+                    Interlocked.Decrement(ref ParallelsCount);
+                });
+                break;
+            }
+
+            if (matrix[Combinations[index].x, Combinations[index].y] == 0)
+            {
+                TryCloneAndProcess(matrix, count, index);
+            }
+        }
+    }
+
+    private static void ProcessFilled(byte[,] matrix)
+    {
+        // Build matrix
+        var matrixB = new bool[Size, Size];
+        for (var i = 0; i < Size; i++)
+        {
+            for (var j = 0; j < Size; ++j)
+            {
+                if (matrix[i, j] == 2)
+                {
+                    matrixB[i, j] = true;
                 }
             }
-
-            var minMatrix = matrixB.MirrorMatrixD1(Size).GetMinMatrix(Size, matrixB);
-            minMatrix = matrixB.MirrorMatrixD2(Size).GetMinMatrix(Size, minMatrix);
-            minMatrix = matrixB.MirrorMatrixH(Size).GetMinMatrix(Size, minMatrix);
-            minMatrix = matrixB.MirrorMatrixV(Size).GetMinMatrix(Size, minMatrix);
-            matrixB = RotateMatrix(matrixB);
-            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
-            matrixB = RotateMatrix(matrixB);
-            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
-            matrixB = RotateMatrix(matrixB);
-            minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
-
-            var hash = minMatrix.GetHash(Size);
-
-            Monitor.Enter(Lock);
-            if (Hashes.Add(hash))
-            {
-                R++;
-                Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {R}");
-            }
-            Monitor.Exit(Lock);
         }
+
+        var minMatrix = matrixB.MirrorMatrixD1(Size).GetMinMatrix(Size, matrixB);
+        minMatrix = matrixB.MirrorMatrixD2(Size).GetMinMatrix(Size, minMatrix);
+        minMatrix = matrixB.MirrorMatrixH(Size).GetMinMatrix(Size, minMatrix);
+        minMatrix = matrixB.MirrorMatrixV(Size).GetMinMatrix(Size, minMatrix);
+        matrixB = RotateMatrix(matrixB);
+        minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
+        matrixB = RotateMatrix(matrixB);
+        minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
+        matrixB = RotateMatrix(matrixB);
+        minMatrix = matrixB.GetMinMatrix(Size, minMatrix);
+
+        var hash = minMatrix.GetHash(Size);
+
+        Monitor.Enter(Lock);
+        if (Hashes.Add(hash))
+        {
+            R++;
+            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {R}");
+        }
+        Monitor.Exit(Lock);
     }
 
     private static bool[,] RotateMatrix(bool[,] matrix)
@@ -170,6 +168,7 @@ internal static class Program
     {
         var isMatrixFilled = true;
         var clone = new byte[Size, Size];
+
         for (byte x = 0; x < Size; x++)
         {
             var v1 = x - Combinations[index].x + Combinations[index].y;
@@ -199,6 +198,16 @@ internal static class Program
             }
         }
 
-        Process(index + 1, clone, count, isMatrixFilled);
+        if (isMatrixFilled)
+        {
+            if (count >= MaxLength)
+            {
+                ProcessFilled(clone);
+            }
+        }
+        else
+        {
+            Process(index + 1, clone, count);
+        }
     }
 }
