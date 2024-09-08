@@ -12,9 +12,8 @@ internal static class Program
     private static readonly object Lock = new();
 
     private static int ParallelsCount = 0;
-    private static byte Size = 0;
-    private static int MaxLength = 0;
     private static int ParallelBeforeIndex = 0;
+    private static byte Size = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
     private static readonly List<bool[,]> Results = [];
@@ -32,8 +31,6 @@ internal static class Program
             sizeString = Console.ReadLine();
         }
         Console.WriteLine();
-
-        MaxLength = Size + Size - 2;
 
         for (byte x = 0; x < Size; x++)
         {
@@ -57,7 +54,6 @@ internal static class Program
         // Stop timer
         stopwatch.Stop();
 
-        Console.WriteLine();
         var groupedResults = Results
             .Select(r =>
             {
@@ -78,13 +74,13 @@ internal static class Program
             .OrderBy(r => r.Key);
         foreach (var groupedResult in groupedResults)
         {
+            Console.WriteLine();
             Console.WriteLine($"Found {groupedResult.Count()} unique diagonal transversals of {groupedResult.Key} elements:");
             foreach (var res in groupedResult)
             {
                 var output = string.Join(" ", res.OrderBy(e => e.x).ThenBy(e => e.y).Select(r => $"{r}"));
                 Console.WriteLine(output);
             }
-            Console.WriteLine($"{groupedResult.Key} -> {groupedResult.Count()}");
         }
 
         // Write elapsed time to console
@@ -155,7 +151,7 @@ internal static class Program
         if (Hashes.Add(hash))
         {
             Results.Add(matrixB);
-            Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {MaxLength} -> {Results.Count}");
+            //Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {hash.Count(c => c == '1')} -> {Results.Count}");
         }
         Monitor.Exit(Lock);
     }
@@ -215,10 +211,7 @@ internal static class Program
 
         if (isMatrixFilled)
         {
-            if (count >= MaxLength)
-            {
-                ProcessFilled(clone);
-            }
+            ProcessFilled(clone);
         }
         else
         {
