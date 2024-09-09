@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 
-namespace MatrixShared.Helpers;
+namespace MatrixAlg.Helpers;
 
 /// <summary>
 /// Helper class, used to manage output

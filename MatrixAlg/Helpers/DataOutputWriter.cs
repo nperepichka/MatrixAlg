@@ -1,8 +1,9 @@
 ﻿using MatrixShared.Analysers;
+using MatrixShared.Helpers;
 using MatrixShared.Models;
 using System.Text;
 
-namespace MatrixShared.Helpers;
+namespace MatrixAlg.Helpers;
 
 /// <summary>
 /// Helper class, used to output data

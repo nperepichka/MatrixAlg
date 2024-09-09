@@ -1,4 +1,4 @@
-﻿namespace MatrixShared.Helpers;
+﻿namespace MatrixAlg.Helpers;
 
 /// <summary>
 /// Helper class, used to read input matrix from input.txt file
