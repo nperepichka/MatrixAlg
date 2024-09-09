@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CubeAlg", "CubeAlg\CubeAlg.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{C81654E4-53E2-480B-83F5-0C49722FC772}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -18,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MosaicAlg", "MosaicAlg\Mosa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatrixShared", "MatrixShared\MatrixShared.csproj", "{978CA395-497A-480C-BCA4-F9554EFCE0FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbsolutelySymmetricCubeAlg", "AbsolutelySymmetricCubeAlg\AbsolutelySymmetricCubeAlg.csproj", "{E58DB37C-7CE3-487A-8F73-7BF92734EE12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbsolutelySymmetricCubeAlg", "AbsolutelySymmetricCubeAlg\AbsolutelySymmetricCubeAlg.csproj", "{E58DB37C-7CE3-487A-8F73-7BF92734EE12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
