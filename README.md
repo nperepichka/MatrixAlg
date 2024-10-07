@@ -1,11 +1,11 @@
 # General
 
 > MatrixAlgs
-> - MatrixAlg
-> - CubeAlg
-> - MatrixDiagAlg
-> - MosaicAlg
-> - AbsolutelySymmetricCubeAlg
+> - **MatrixAlg** => build and analyze decompositions of transversals
+> - **CubeAlg** => build invariant cubes
+> - **MatrixDiagAlg** => build diagonal transversals
+> - **MosaicAlg** => build mosaic images
+> - **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
 
 ## About
 **Author**: N. V. Perepichka  
