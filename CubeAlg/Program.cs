@@ -1,6 +1,6 @@
 ﻿using CubeAlg.Helpers;
 using CubeAlg.Models;
-using MatrixShared.Models;
+using MatrixShared.Helpers;
 using System.Diagnostics;
 
 namespace CubeAlg;
@@ -11,7 +11,6 @@ internal static class Program
     private static readonly object Lock = new();
 
     //private static bool ProcessAltS = false;
-    private static int ParallelsCount = 0;
     private static byte Size = 0;
     private static byte N = 0;
 
@@ -61,22 +60,10 @@ internal static class Program
         {
             if (!cube[index].Y.HasValue)
             {
-                if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount)
+                ParallelsHelper.RunInParallel(Size, (byte y) =>
                 {
-                    for (byte y = 0; y < Size; y++)
-                    {
-                        ProcessItem(cube, index, y);
-                    }
-                }
-                else
-                {
-                    Parallel.For(0, Size, ParallelDefinitions.ParallelOptions, y =>
-                    {
-                        Interlocked.Increment(ref ParallelsCount);
-                        ProcessItem(cube, index, (byte)y);
-                        Interlocked.Decrement(ref ParallelsCount);
-                    });
-                }
+                    ProcessItem(cube, index, y);
+                });
 
                 return;
             }

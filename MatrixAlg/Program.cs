@@ -22,8 +22,6 @@ internal class Program
         OutputWriter.Clear();
         // Enable output queue monitoring
         OutputWriter.StartOutputQueueMonitoring();
-        // Initiate configuration
-        ApplicationConfiguration.Init();
 
         // Read input matrix
         var input = InputReader.Read();

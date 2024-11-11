@@ -1,4 +1,5 @@
 ﻿using MatrixAlg.Helpers;
+using MatrixShared.Helpers;
 
 namespace MatrixAlg.Processors;
 
@@ -6,9 +7,6 @@ internal class Decompositor(bool[,] Input, byte Transversal)
 {
     private readonly byte Size = (byte)Input.GetLength(0);
     private readonly List<byte[]> InputPositionsPerRow = [];
-    private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
-    private readonly int ExpectedParallelsCount = Environment.ProcessorCount / 4;
-    private int ParallelsCount = 0;
 
     /// <summary>
     /// Decomposition counter
@@ -155,21 +153,9 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     {
         // Build next row for 1st matrix
 
-        if (ParallelsCount >= ExpectedParallelsCount || row % 2 == 0)
+        ParallelsHelper.RunInParallel(Size, (byte i) =>
         {
-            for (byte i = 0; i < Size; i++)
-            {
-                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
-            }
-        }
-        else
-        {
-            Parallel.For(0, Size, ParallelOptions, i =>
-            {
-                Interlocked.Increment(ref ParallelsCount);
-                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
-                Interlocked.Decrement(ref ParallelsCount);
-            });
-        }
+            ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
+        });
     }
 }

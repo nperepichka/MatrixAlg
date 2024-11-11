@@ -2,7 +2,7 @@
 {
     public static class ParallelDefinitions
     {
-        public static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = -1 };
+        public static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = Environment.ProcessorCount };
         public static readonly int ExpectedParallelsCount = Environment.ProcessorCount;
     }
 }
