@@ -7,6 +7,12 @@
 > - **MosaicAlg** => build mosaic images
 > - **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
 
+## Recommended configuration
+`MaxParallels`
+- use amount of P-cores in **MatrixAlg**, **CubeAlg**, **MosaicAlg**
+- use amount of all cores **MatrixDiagAlg** 
+- ignored in **AbsolutelySymmetricCubeAlg**
+
 ## About
 **Author**: N. V. Perepichka  
 Implemented in scope of PhD study  

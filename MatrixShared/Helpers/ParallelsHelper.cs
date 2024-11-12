@@ -4,7 +4,7 @@ namespace MatrixShared.Helpers;
 
 public static class ParallelsHelper
 {
-    private static int MaxParallels = ParallelsConfiguration.MaxParallels;
+    private static readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
     private static int ParallelsCount = 0;
 
     public static void RunInParallel(byte size, Action<byte> action)

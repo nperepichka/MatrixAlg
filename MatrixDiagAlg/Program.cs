@@ -11,8 +11,9 @@ internal static class Program
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
 
-    private static int ParallelsCount = 0;
+    private static int MaxParallels = ParallelsConfiguration.MaxParallels;
     private static int ParallelBeforeIndex = 0;
+    private static int ParallelsCount = 0;
     private static byte Size = 0;
 
     private static readonly List<(byte x, byte y)> Combinations = [];
@@ -39,7 +40,12 @@ internal static class Program
                 Combinations.Add((x, y));
             }
         }
-        ParallelBeforeIndex = Combinations.Count - 2;
+
+        if (MaxParallels > Combinations.Count)
+        {
+            MaxParallels = Combinations.Count;
+        }
+        ParallelBeforeIndex = Combinations.Count - MaxParallels;
 
         // Write to console that processing is started
         Console.WriteLine("Will search for diagonal 1-transversals.");
@@ -79,7 +85,7 @@ internal static class Program
             foreach (var res in groupedResult)
             {
                 var output = string.Join(" ", res.OrderBy(e => e.x).ThenBy(e => e.y).Select(r => $"{r}"));
-                Console.WriteLine(output);
+                //Console.WriteLine(output);
             }
         }
 
@@ -98,9 +104,9 @@ internal static class Program
 
         for (var index = startIndex; index < Combinations.Count; index++)
         {
-            if (ParallelsCount < ParallelDefinitions.ExpectedParallelsCount && index < ParallelBeforeIndex)
+            if (ParallelsCount < MaxParallels && index < ParallelBeforeIndex)
             {
-                Parallel.For(index, Combinations.Count, ParallelDefinitions.ParallelOptions, i =>
+                Parallel.For(index, Combinations.Count, new() { MaxDegreeOfParallelism = MaxParallels }, i =>
                 {
                     Interlocked.Increment(ref ParallelsCount);
                     if (matrix[Combinations[i].x, Combinations[i].y] == 0)
@@ -151,7 +157,6 @@ internal static class Program
         if (Hashes.Add(hash))
         {
             Results.Add(matrixB);
-            //Console.WriteLine($"{DateTime.Now.ToLongTimeString()}: {hash.Count(c => c == '1')} -> {Results.Count}");
         }
         Monitor.Exit(Lock);
     }
