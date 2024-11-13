@@ -1,4 +1,4 @@
-﻿namespace MatrixShared.Models;
+﻿namespace MatrixAlg.Models;
 
 public static class ApplicationConfiguration
 {

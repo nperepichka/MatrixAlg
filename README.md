@@ -11,7 +11,7 @@
 `MaxParallels`
 - use amount of P-cores in **MatrixAlg**, **CubeAlg**
 - use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
-- ignored in **AbsolutelySymmetricCubeAlg**
+- not used in **AbsolutelySymmetricCubeAlg**
 
 ## About
 **Author**: N. V. Perepichka  

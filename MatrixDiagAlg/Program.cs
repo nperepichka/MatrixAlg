@@ -1,5 +1,5 @@
 ﻿using MatrixDiagAlg.Enums;
-using MatrixShared.Analysers;
+using MatrixDiagAlg.Helpers;
 using MatrixShared.Helpers;
 using MatrixShared.Models;
 using System.Diagnostics;

@@ -1,6 +1,5 @@
-﻿using MatrixShared.Analysers;
-using MatrixShared.Helpers;
-using MatrixShared.Models;
+﻿using MatrixAlg.Analysers;
+using MatrixAlg.Models;
 using System.Text;
 
 namespace MatrixAlg.Helpers;
@@ -43,7 +42,7 @@ public static class DataOutputWriter
 
         // Define a list with matrixes details
         var matrixesWithDetailes = decomposition
-            .Select((matrix, index) => new DecompositionMatrixDetails(matrix.BuildMatrix(), index))
+            .Select((matrix, index) => new DecompositionMatrixDetails(matrix, index))
             .ToArray();
 
         // Initiate string builder
