@@ -1,4 +1,5 @@
-﻿using MosaicAlg.Helpers;
+﻿using MatrixShared.Helpers;
+using MosaicAlg.Helpers;
 using MosaicAlg.Processors;
 using System.Diagnostics;
 
@@ -14,18 +15,7 @@ internal class Program
     /// </summary>
     private static void Main()
     {
-        byte size;
-        var sizeString = string.Empty;
-        while (!byte.TryParse(sizeString, out size) || size > 250 || size < 1)
-        {
-            if (!string.IsNullOrEmpty(sizeString))
-            {
-                Console.WriteLine("Invalid input.");
-            }
-            Console.Write("Size: ");
-            sizeString = Console.ReadLine();
-        }
-        Console.WriteLine();
+        var size = ConsoleInputReader.ReadSize();
 
         // Write to console that cleaning output is started
         Console.WriteLine("Cleaning output started.");

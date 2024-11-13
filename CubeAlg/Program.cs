@@ -1,5 +1,6 @@
 ﻿using CubeAlg.Helpers;
 using CubeAlg.Models;
+using MatrixShared.Helpers;
 using MatrixShared.Models;
 using System.Diagnostics;
 
@@ -22,17 +23,7 @@ internal static class Program
 
     private static void Main()
     {
-        var sizeString = string.Empty;
-        while (!byte.TryParse(sizeString, out Size) || Size > 250 || Size < 1)
-        {
-            if (!string.IsNullOrEmpty(sizeString))
-            {
-                Console.WriteLine("Invalid input.");
-            }
-            Console.Write("Size: ");
-            sizeString = Console.ReadLine();
-        }
-        Console.WriteLine();
+        Size = ConsoleInputReader.ReadSize();
 
         ParallelBeforeIndex = (byte)(Size - 1);
 

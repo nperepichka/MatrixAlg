@@ -22,17 +22,7 @@ internal static class Program
 
     private static void Main()
     {
-        var sizeString = string.Empty;
-        while (!byte.TryParse(sizeString, out Size) || Size > 250 || Size < 1)
-        {
-            if (!string.IsNullOrEmpty(sizeString))
-            {
-                Console.WriteLine("Invalid input.");
-            }
-            Console.Write("Size: ");
-            sizeString = Console.ReadLine();
-        }
-        Console.WriteLine();
+        Size = ConsoleInputReader.ReadSize();
 
         for (byte x = 0; x < Size; x++)
         {
