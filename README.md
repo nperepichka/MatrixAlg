@@ -9,8 +9,8 @@
 
 ## Recommended configuration
 `MaxParallels`
-- use amount of P-cores in **MatrixAlg**, **CubeAlg**, **MosaicAlg**
-- use amount of all cores **MatrixDiagAlg** 
+- use amount of P-cores in **MatrixAlg**, **CubeAlg**
+- use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
 - ignored in **AbsolutelySymmetricCubeAlg**
 
 ## About
@@ -19,7 +19,7 @@ Implemented in scope of PhD study
 
 ## Implementation
 * C#
-* .NET 8
+* .NET 9
 
 ## Build
 [![build](https://github.com/nperepichka/MatrixAlg/actions/workflows/build.yml/badge.svg)](https://github.com/nperepichka/MatrixAlg/actions/workflows/build.yml)

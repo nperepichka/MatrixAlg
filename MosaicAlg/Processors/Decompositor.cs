@@ -5,8 +5,13 @@ namespace MosaicAlg.Processors;
 
 internal class Decompositor(byte Size)
 {
-    private int ParallelsCount = 0;
     private readonly byte HalfSize = (byte)(Size / 2);
+    private readonly byte ParallelBeforeIndex = (byte)(Size - 1);
+
+    private readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
+    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ParallelsConfiguration.MaxParallels };
+    private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
+    private int ParallelsCount = 0;
 
     public void Decompose()
     {
@@ -31,7 +36,7 @@ internal class Decompositor(byte Size)
         {
             var canUse = true;
 
-            for (byte j = 0; j < Size; j++)
+            for (byte j = 0; j < HalfSize; j++)
             {
                 if (matrixIndex == j)
                 {
@@ -117,21 +122,30 @@ internal class Decompositor(byte Size)
     {
         // Build next row for 1st matrix
 
-        if (ParallelsCount >= ParallelsConfiguration.MaxParallels || row % 2 == 0)
+        if (ParallelsCount != 0)
         {
-            for (byte index = 0; index < Size; index++)
+            for (byte i1 = 0; i1 < Size; i1++)
             {
-                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, index);
+                if (ParallelsCount < MaxParallels && i1 < ParallelBeforeIndex)
+                {
+                    Interlocked.Increment(ref ParallelsCount);
+                    Parallel.For(i1, Size, ParallelOptions, i2 =>
+                    {
+                        ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, (byte)i2);
+                    });
+                    Interlocked.Decrement(ref ParallelsCount);
+                    return;
+                }
+
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, i1);
             }
         }
         else
         {
-            var parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount };
-
-            Parallel.For(0, Size, parallelOptions, index =>
+            Interlocked.Add(ref ParallelsCount, Size);
+            Parallel.For(0, Size, ParallelOptionsMax, i =>
             {
-                Interlocked.Increment(ref ParallelsCount);
-                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, (byte)index);
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, (byte)i);
                 Interlocked.Decrement(ref ParallelsCount);
             });
         }
