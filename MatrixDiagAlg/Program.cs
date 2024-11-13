@@ -12,6 +12,7 @@ internal static class Program
     private static readonly object Lock = new();
 
     private static int MaxParallels = ParallelsConfiguration.MaxParallels;
+    private static ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
     private static int ParallelBeforeIndex = 0;
     private static int ParallelsCount = 0;
     private static byte Size = 0;
@@ -44,6 +45,7 @@ internal static class Program
         if (MaxParallels > Combinations.Count)
         {
             MaxParallels = Combinations.Count;
+            ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
         }
         ParallelBeforeIndex = Combinations.Count - MaxParallels;
 
@@ -104,9 +106,9 @@ internal static class Program
 
         for (var index = startIndex; index < Combinations.Count; index++)
         {
-            if (ParallelsCount < MaxParallels && index < ParallelBeforeIndex)
+            if (index < ParallelBeforeIndex && ParallelsCount < MaxParallels)
             {
-                Parallel.For(index, Combinations.Count, new() { MaxDegreeOfParallelism = MaxParallels }, i =>
+                Parallel.For(index, Combinations.Count, ParallelOptionsMax, i =>
                 {
                     Interlocked.Increment(ref ParallelsCount);
                     if (matrix[Combinations[i].x, Combinations[i].y] == 0)
@@ -115,7 +117,7 @@ internal static class Program
                     }
                     Interlocked.Decrement(ref ParallelsCount);
                 });
-                break;
+                return;
             }
 
             if (matrix[Combinations[index].x, Combinations[index].y] == 0)

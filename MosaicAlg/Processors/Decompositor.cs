@@ -117,7 +117,7 @@ internal class Decompositor(byte Size)
     {
         // Build next row for 1st matrix
 
-        if (ParallelsCount >= ParallelDefinitions.ExpectedParallelsCount || row % 2 == 0)
+        if (ParallelsCount >= ParallelsConfiguration.MaxParallels || row % 2 == 0)
         {
             for (byte index = 0; index < Size; index++)
             {
@@ -126,7 +126,9 @@ internal class Decompositor(byte Size)
         }
         else
         {
-            Parallel.For(0, Size, ParallelDefinitions.ParallelOptions, index =>
+            var parallelOptions = new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount };
+
+            Parallel.For(0, Size, parallelOptions, index =>
             {
                 Interlocked.Increment(ref ParallelsCount);
                 ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, (byte)index);

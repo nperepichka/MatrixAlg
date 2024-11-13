@@ -1,6 +1,6 @@
 ﻿using CubeAlg.Helpers;
 using CubeAlg.Models;
-using MatrixShared.Helpers;
+using MatrixShared.Models;
 using System.Diagnostics;
 
 namespace CubeAlg;
@@ -10,9 +10,15 @@ internal static class Program
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
 
+    private static readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
+    private static readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
+    private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
+    private static int ParallelsCount = 0;
+
     //private static bool ProcessAltS = false;
     private static byte Size = 0;
     private static byte N = 0;
+    private static byte ParallelBeforeIndex = 0;
 
     private static void Main()
     {
@@ -27,6 +33,8 @@ internal static class Program
             sizeString = Console.ReadLine();
         }
         Console.WriteLine();
+
+        ParallelBeforeIndex = (byte)(Size - 1);
 
         //ProcessAltS = Size % 2 == 0;
 
@@ -60,11 +68,33 @@ internal static class Program
         {
             if (!cube[index].Y.HasValue)
             {
-                ParallelsHelper.RunInParallel(Size, (byte y) =>
+                if (ParallelsCount != 0)
                 {
-                    ProcessItem(cube, index, y);
-                });
+                    for (byte y1 = 0; y1 < Size; y1++)
+                    {
+                        if (ParallelsCount < MaxParallels && y1 < ParallelBeforeIndex)
+                        {
+                            Interlocked.Increment(ref ParallelsCount);
+                            Parallel.For(y1, Size, ParallelOptions, y2 =>
+                            {
+                                ProcessItem(cube, index, (byte)y2);
+                            });
+                            Interlocked.Decrement(ref ParallelsCount);
+                            return;
+                        }
 
+                        ProcessItem(cube, index, y1);
+                    }
+                }
+                else
+                {
+                    Interlocked.Add(ref ParallelsCount, Size);
+                    Parallel.For(0, Size, ParallelOptionsMax, y =>
+                    {
+                        ProcessItem(cube, index, (byte)y);
+                        Interlocked.Decrement(ref ParallelsCount);
+                    });
+                }
                 return;
             }
         }

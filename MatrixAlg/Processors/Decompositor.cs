@@ -1,12 +1,18 @@
 ﻿using MatrixAlg.Helpers;
-using MatrixShared.Helpers;
+using MatrixShared.Models;
 
 namespace MatrixAlg.Processors;
 
 internal class Decompositor(bool[,] Input, byte Transversal)
 {
     private readonly byte Size = (byte)Input.GetLength(0);
+    private readonly byte ParallelBeforeIndex = (byte)(Input.GetLength(0) - 1);
     private readonly List<byte[]> InputPositionsPerRow = [];
+
+    private readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
+    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ParallelsConfiguration.MaxParallels };
+    private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
+    private int ParallelsCount = 0;
 
     /// <summary>
     /// Decomposition counter
@@ -153,9 +159,32 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     {
         // Build next row for 1st matrix
 
-        ParallelsHelper.RunInParallel(Size, (byte i) =>
+        if (ParallelsCount != 0)
         {
-            ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
-        });
+            for (byte i1 = 0; i1 < Size; i1++)
+            {
+                if (ParallelsCount < MaxParallels && i1 < ParallelBeforeIndex)
+                {
+                    Interlocked.Increment(ref ParallelsCount);
+                    Parallel.For(i1, Size, ParallelOptions, i2 =>
+                    {
+                        ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i2]);
+                    });
+                    Interlocked.Decrement(ref ParallelsCount);
+                    return;
+                }
+
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i1]);
+            }
+        }
+        else
+        {
+            Interlocked.Add(ref ParallelsCount, Size);
+            Parallel.For(0, Size, ParallelOptionsMax, i =>
+            {
+                ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
+                Interlocked.Decrement(ref ParallelsCount);
+            });
+        }
     }
 }
