@@ -4,6 +4,25 @@ namespace CubeAlg.Helpers;
 
 internal static class CubeHelpers
 {
+    public static void PrintCubeView(this string cubeView, byte size)
+    {
+        if (string.IsNullOrEmpty(cubeView) || size <= 0)
+            return;
+
+        var s = size * size;
+
+        for (var i = 0; i < cubeView.Length; i += size)
+        {
+            if (i != 0 && i % s == 0)
+            {
+                Console.WriteLine();
+            }
+            var slice = cubeView.Substring(i, Math.Min(size, cubeView.Length - i));
+            Console.WriteLine(slice);
+        }
+        Console.WriteLine();
+    }
+
     public static void PrintCube(this Point[] cube)
     {
         var sortedCube = cube

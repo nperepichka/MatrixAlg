@@ -124,7 +124,8 @@ internal static class Program
         {
             N++;
             Console.WriteLine($"Cube found #{N}:");
-            cube.PrintCube();
+            //cube.PrintCube();
+            view.PrintCubeView(Size);
         }
         Monitor.Exit(Lock);
     }
