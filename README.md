@@ -19,7 +19,7 @@ Implemented in scope of PhD study
 
 ## Implementation
 * C#
-* .NET 9
+* .NET 8
 
 ## Build
 [![build](https://github.com/nperepichka/MatrixAlg/actions/workflows/build.yml/badge.svg)](https://github.com/nperepichka/MatrixAlg/actions/workflows/build.yml)
