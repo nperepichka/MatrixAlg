@@ -21,7 +21,8 @@ internal static class Program
             {
                 for (var j = 0; j < Size; j++)
                 {
-                    Console.Write(cube[s, i, j] ? " *" : " O");
+                    //Console.Write(cube[s, i, j] ? " *" : " O");
+                    Console.Write(cube[s, i, j] ? "1" : "0");
                 }
                 Console.WriteLine();
             }
