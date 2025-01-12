@@ -8,7 +8,7 @@
 > - **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
 
 ## Recommended configuration
-`MaxParallels`
+`MaxParallelization`
 - use amount of P-cores in **MatrixAlg**, **CubeAlg**
 - use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
 - not used in **AbsolutelySymmetricCubeAlg**

@@ -1,7 +1,7 @@
 ﻿using MatrixDiagAlg.Enums;
 using MatrixDiagAlg.Helpers;
+using MatrixDiagAlg.Models;
 using MatrixShared.Helpers;
-using MatrixShared.Models;
 using System.Diagnostics;
 
 namespace MatrixDiagAlg;
@@ -11,8 +11,7 @@ internal static class Program
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
 
-    private static int MaxParallels = ParallelsConfiguration.MaxParallels;
-    private static ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
+    private static ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private static int ParallelBeforeIndex = 0;
     private static int ParallelsCount = 0;
     private static byte Size = 0;
@@ -32,12 +31,12 @@ internal static class Program
             }
         }
 
-        if (MaxParallels > Combinations.Count)
+        if (ApplicationConfiguration.MaxParallelization > Combinations.Count)
         {
-            MaxParallels = Combinations.Count;
-            ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
+            ApplicationConfiguration.MaxParallelization = Combinations.Count;
+            ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
         }
-        ParallelBeforeIndex = Combinations.Count - MaxParallels;
+        ParallelBeforeIndex = Combinations.Count - ApplicationConfiguration.MaxParallelization;
 
         // Write to console that processing is started
         Console.WriteLine("Will search for diagonal 1-transversals.");
@@ -96,7 +95,7 @@ internal static class Program
 
         for (var index = startIndex; index < Combinations.Count; index++)
         {
-            if (index < ParallelBeforeIndex && ParallelsCount < MaxParallels)
+            if (index < ParallelBeforeIndex && ParallelsCount < ApplicationConfiguration.MaxParallelization)
             {
                 Parallel.For(index, Combinations.Count, ParallelOptionsMax, i =>
                 {

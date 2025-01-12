@@ -1,5 +1,5 @@
 ﻿using MatrixAlg.Helpers;
-using MatrixShared.Models;
+using MatrixAlg.Models;
 
 namespace MatrixAlg.Processors;
 
@@ -9,8 +9,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
     private readonly byte ParallelBeforeIndex = (byte)(Input.GetLength(0) - 1);
     private readonly List<byte[]> InputPositionsPerRow = [];
 
-    private readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
-    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ParallelsConfiguration.MaxParallels };
+    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
     private int ParallelsCount = 0;
 
@@ -163,7 +162,7 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         {
             for (byte i1 = 0; i1 < Size; i1++)
             {
-                if (ParallelsCount < MaxParallels && i1 < ParallelBeforeIndex)
+                if (ParallelsCount < ApplicationConfiguration.MaxParallelization && i1 < ParallelBeforeIndex)
                 {
                     Interlocked.Increment(ref ParallelsCount);
                     Parallel.For(i1, Size, ParallelOptions, i2 =>

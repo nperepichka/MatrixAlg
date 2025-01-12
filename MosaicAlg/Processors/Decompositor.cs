@@ -1,5 +1,5 @@
-﻿using MatrixShared.Models;
-using MosaicAlg.Helpers;
+﻿using MosaicAlg.Helpers;
+using MosaicAlg.Models;
 
 namespace MosaicAlg.Processors;
 
@@ -8,8 +8,7 @@ internal class Decompositor(byte Size)
     private readonly byte HalfSize = (byte)(Size / 2);
     private readonly byte ParallelBeforeIndex = (byte)(Size - 1);
 
-    private readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
-    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ParallelsConfiguration.MaxParallels };
+    private readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
     private int ParallelsCount = 0;
 
@@ -126,7 +125,7 @@ internal class Decompositor(byte Size)
         {
             for (byte i1 = 0; i1 < Size; i1++)
             {
-                if (ParallelsCount < MaxParallels && i1 < ParallelBeforeIndex)
+                if (ParallelsCount < ApplicationConfiguration.MaxParallelization && i1 < ParallelBeforeIndex)
                 {
                     Interlocked.Increment(ref ParallelsCount);
                     Parallel.For(i1, Size, ParallelOptions, i2 =>

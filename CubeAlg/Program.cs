@@ -1,7 +1,6 @@
 ﻿using CubeAlg.Helpers;
 using CubeAlg.Models;
 using MatrixShared.Helpers;
-using MatrixShared.Models;
 using System.Diagnostics;
 
 namespace CubeAlg;
@@ -11,8 +10,7 @@ internal static class Program
     private static readonly HashSet<string> Hashes = [];
     private static readonly object Lock = new();
 
-    private static readonly int MaxParallels = ParallelsConfiguration.MaxParallels;
-    private static readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = MaxParallels };
+    private static readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private static readonly ParallelOptions ParallelOptions = new() { MaxDegreeOfParallelism = 2 };
     private static int ParallelsCount = 0;
 
@@ -63,7 +61,7 @@ internal static class Program
                 {
                     for (byte y1 = 0; y1 < Size; y1++)
                     {
-                        if (ParallelsCount < MaxParallels && y1 < ParallelBeforeIndex)
+                        if (ParallelsCount < ApplicationConfiguration.MaxParallelization && y1 < ParallelBeforeIndex)
                         {
                             Interlocked.Increment(ref ParallelsCount);
                             Parallel.For(y1, Size, ParallelOptions, y2 =>

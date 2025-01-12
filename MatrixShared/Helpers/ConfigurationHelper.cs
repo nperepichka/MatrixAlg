@@ -2,7 +2,7 @@
 
 public static class ConfigurationHelper
 {
-    private static Dictionary<string, int> ConfigValues { get; set; } = InitConfigValues();
+    private static readonly Dictionary<string, int> ConfigValues = InitConfigValues();
 
     private static Dictionary<string, int> InitConfigValues()
     {
@@ -23,25 +23,15 @@ public static class ConfigurationHelper
 
     public static bool GetFlag(string valueName, bool dafalutValue)
     {
-        return GetFlag(valueName, dafalutValue, out _);
+        return ConfigValues.TryGetValue(valueName, out var value)
+            ? value != 0
+            : dafalutValue;
     }
 
-    private static bool GetFlag(string valueName, bool dafalutValue, out int configValue)
+    public static int GetValue(string valueName, int dafalutValue)
     {
-        try
-        {
-            if (ConfigValues.TryGetValue(valueName, out var value))
-            {
-                configValue = value;
-                return value != 0;
-            }
-            configValue = 0;
-            return false;
-        }
-        catch
-        {
-            configValue = 0;
-            return dafalutValue;
-        }
+        return ConfigValues.TryGetValue(valueName, out var value)
+            ? value
+            : dafalutValue;
     }
 }
