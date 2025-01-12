@@ -181,7 +181,7 @@ internal static class Program
             Process(nextCube, index);
         }
 
-        // maybe if ProcessAltS we can run this way
+        // maybe if ProcessAltS we can run this way (instead of lines after // ---)
         /*p2 = Size - y - 1;
         if (nextPoint.X != p2)
         {
