@@ -2,7 +2,7 @@
 
 internal class PartitionsHelper
 {
-    internal static List<byte[]> CalculatePartitions(byte n)
+    internal static List<byte[]> CalculatePartitions(byte size)
     {
         var result = new List<byte[]>();
         var currentPartition = new List<byte>();
@@ -29,7 +29,7 @@ internal class PartitionsHelper
             currentPartition.RemoveAt(lastIndex);
         }
 
-        GeneratePartitions(n);
+        GeneratePartitions(size);
         return result;
     }
 }

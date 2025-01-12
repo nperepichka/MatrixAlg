@@ -1,17 +1,18 @@
-# General
+# Readme
 
-> MatrixAlgs
-> - **MatrixAlg** => build and analyze decompositions of transversals
-> - **CubeAlg** => build invariant cubes
-> - **MatrixDiagAlg** => build diagonal transversals
-> - **MosaicAlg** => build mosaic images
-> - **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
+## Applications
+- **MatrixAlg** => build and analyze decompositions of transversals
+- **CubeAlg** => build invariant cubes
+- **MatrixDiagAlg** => build diagonal transversals
+- **MosaicAlg** => build mosaic images
+- **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
+-  **SemisymmetrantAlg** => calculate semisymmetrant of matrix
 
 ## Recommended configuration
 `MaxParallelization`
 - use amount of P-cores in **MatrixAlg**, **CubeAlg**
 - use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
-- not used in **AbsolutelySymmetricCubeAlg**
+- not used in **AbsolutelySymmetricCubeAlg**, **SemisymmetrantAlg**
 
 ## About
 **Author**: N. V. Perepichka  
