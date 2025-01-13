@@ -4,27 +4,24 @@ namespace SemisymmetrantAlg;
 
 internal class Program
 {
-    private static byte Size = 0;
-
     private static int[,] Matrix = new int[0, 0];
 
     private static void Main()
     {
         Matrix = InputReader.ReadMatrix();
-        Size = (byte)Matrix.GetLength(0);
-        Console.WriteLine($"Size: {Size}");
+        var size = (byte)Matrix.GetLength(0);
+        Console.WriteLine($"Size: {size}");
 
         var value = 0;
         Console.WriteLine();
         Console.WriteLine("Partitions:");
 
-        var partitions = PartitionsHelper.CalculatePartitions(Size);
+        var partitions = PartitionsHelper.CalculatePartitions(size);
         foreach (var partition in partitions)
         {
             Console.WriteLine(string.Join('+', partition));
-            var n = GetPartitionNumber(partition);
-            var coef = (Size - partition.Length) % 2 == 0 ? 1 : -1;
-            value += coef * n;
+            var coef = (size - partition.Length) % 2 == 0 ? 1 : -1;
+            value += coef * GetPartitionNumber(partition);
         }
 
         Console.WriteLine();
@@ -50,6 +47,4 @@ internal class Program
 
         return res;
     }
-
-
 }
