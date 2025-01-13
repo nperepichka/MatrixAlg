@@ -24,7 +24,6 @@ internal class Program
             Console.WriteLine(string.Join('+', partition));
             var n = GetPartitionNumber(partition);
             var coef = (Size - partition.Length) % 2 == 0 ? 1 : -1;
-            //Console.WriteLine(coef * n);
             value += coef * n;
         }
 
@@ -46,7 +45,6 @@ internal class Program
             {
                 x++;
                 res *= Matrix[x, i];
-                //Console.WriteLine(Matrix[x, i]);
             }
         }
 
