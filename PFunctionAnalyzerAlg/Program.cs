@@ -1,5 +1,6 @@
 ﻿using MatrixShared.Helpers;
 using PFunctionAnalyzerAlg.Helpers;
+using System;
 
 namespace PFunctionAnalyzerAlg;
 
@@ -38,7 +39,85 @@ internal class Program
         }
         else
         {
-            // TODO: implement
+            var pValMin = int.MaxValue;
+            var pValMax = int.MinValue;
+            var pPlusValMin = int.MaxValue;
+            var pPlusValMax = int.MinValue;
+            List<int[,]> pResMin = [];
+            List<int[,]> pResMax = [];
+            List<int[,]> pPlusResMin = [];
+            List<int[,]> pPlusResMax = [];
+
+            foreach (var combination in combinations)
+            {
+                var matrix = GetMatrix(combination);
+                var (pFunc, pPlusFunc) = PFunctionsHelper.CalculatePFunctions(matrix, partitions);
+
+                if (pFunc > pValMax)
+                {
+                    pValMax = pFunc;
+                    pResMax = [matrix];
+                }
+                else if (pFunc == pValMax)
+                {
+                    pResMax.Add(matrix);
+                }
+
+                if (pFunc < pValMin)
+                {
+                    pValMin = pFunc;
+                    pResMin = [matrix];
+                }
+                else if (pFunc == pValMin)
+                {
+                    pResMin.Add(matrix);
+                }
+
+                if (pPlusFunc > pPlusValMax)
+                {
+                    pPlusValMax = pPlusFunc;
+                    pPlusResMax = [matrix];
+                }
+                else if (pPlusFunc == pPlusValMax)
+                {
+                    pPlusResMax.Add(matrix);
+                }
+
+                if (pPlusFunc < pPlusValMin)
+                {
+                    pPlusValMin = pPlusFunc;
+                    pPlusResMin = [matrix];
+                }
+                else if (pPlusFunc == pPlusValMin)
+                {
+                    pPlusResMin.Add(matrix);
+                }
+            }
+
+            Console.WriteLine($"p min: {pValMin}");
+            foreach (var matrix in pResMin)
+            {
+                PrintMatrix(matrix);
+                Console.WriteLine();
+            }
+            Console.WriteLine($"p max: {pValMax}");
+            foreach (var matrix in pResMax)
+            {
+                PrintMatrix(matrix);
+                Console.WriteLine();
+            }
+            Console.WriteLine($"p+ min: {pPlusValMin}");
+            foreach (var matrix in pPlusResMin)
+            {
+                PrintMatrix(matrix);
+                Console.WriteLine();
+            }
+            Console.WriteLine($"p+ max: {pPlusValMax}");
+            foreach (var matrix in pPlusResMax)
+            {
+                PrintMatrix(matrix);
+                Console.WriteLine();
+            }
         }
     }
 
