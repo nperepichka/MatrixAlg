@@ -1,4 +1,4 @@
-﻿namespace MatrixAlg.Analysers;
+﻿namespace MatrixAlg.Analyzers;
 
 internal static class MatrixTransversalDetector
 {

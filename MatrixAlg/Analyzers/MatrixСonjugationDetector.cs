@@ -1,7 +1,7 @@
 ﻿using MatrixAlg.Helpers;
 using MatrixShared.Helpers;
 
-namespace MatrixAlg.Analysers;
+namespace MatrixAlg.Analyzers;
 
 public static class MatrixСonjugationDetector
 {

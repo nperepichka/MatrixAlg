@@ -15,6 +15,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\MatrixShared\MatrixShared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="input.txt">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

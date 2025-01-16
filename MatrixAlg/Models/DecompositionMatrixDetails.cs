@@ -1,4 +1,4 @@
-﻿using MatrixShared.Analysers;
+﻿using MatrixShared.Analyzers;
 
 namespace MatrixAlg.Models;
 

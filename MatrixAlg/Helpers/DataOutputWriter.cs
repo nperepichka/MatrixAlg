@@ -1,4 +1,4 @@
-﻿using MatrixAlg.Analysers;
+﻿using MatrixAlg.Analyzers;
 using MatrixAlg.Models;
 using System.Text;
 
@@ -86,7 +86,7 @@ public static class DataOutputWriter
                     // Append message that matrix is not conjugate to other matrix to string builder
                     outputStringBuilder.AppendLine("Matrix is not symetric, not self conjugate and not conjugate to other matrix.");
 
-                    // TODO: test combined matrix (pending more details)
+                    // Note: test combined matrix (pending more details)
                 }
             }
         }

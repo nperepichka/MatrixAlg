@@ -15,7 +15,7 @@ internal class Program
     /// </summary>
     private static void Main()
     {
-        var size = ConsoleInputReader.ReadSize();
+        var size = ConsoleInputReader.ReadValue();
 
         // Write to console that cleaning output is started
         Console.WriteLine("Cleaning output started.");

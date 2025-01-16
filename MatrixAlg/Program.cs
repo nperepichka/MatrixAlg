@@ -1,8 +1,8 @@
-﻿using MatrixAlg.Analysers;
+﻿using MatrixAlg.Analyzers;
 using MatrixAlg.Helpers;
 using MatrixAlg.Models;
 using MatrixAlg.Processors;
-using MatrixShared.Analysers;
+using MatrixShared.Analyzers;
 using System.Diagnostics;
 using System.Text;
 

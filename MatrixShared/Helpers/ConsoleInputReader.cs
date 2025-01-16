@@ -2,17 +2,17 @@
 
 public static class ConsoleInputReader
 {
-    public static byte ReadSize()
+    public static byte ReadValue(string name = "Size", byte max = 250)
     {
         byte size;
         var sizeString = string.Empty;
-        while (!byte.TryParse(sizeString, out size) || size > 250 || size < 1)
+        while (!byte.TryParse(sizeString, out size) || size > max || size < 1)
         {
             if (!string.IsNullOrEmpty(sizeString))
             {
                 Console.WriteLine("Invalid input.");
             }
-            Console.Write("Size: ");
+            Console.Write($"{name}: ");
             sizeString = Console.ReadLine();
         }
         Console.WriteLine();

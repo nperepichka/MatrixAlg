@@ -1,4 +1,4 @@
-﻿namespace MatrixShared.Analysers;
+﻿namespace MatrixShared.Analyzers;
 
 public static class MatrixSymetricDetector
 {

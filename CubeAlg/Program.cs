@@ -21,7 +21,7 @@ internal static class Program
 
     private static void Main()
     {
-        Size = ConsoleInputReader.ReadSize();
+        Size = ConsoleInputReader.ReadValue();
 
         ParallelBeforeIndex = (byte)(Size - 1);
 
