@@ -1,0 +1,82 @@
+﻿namespace MatrixShared.Helpers;
+
+public class PFunctionsHelper
+{
+    public static List<byte[]> CalculatePartitions(byte size, bool outputResult = false)
+    {
+        var result = new List<byte[]>();
+        var currentPartition = new List<byte>();
+
+        void GeneratePartitions(byte remaining)
+        {
+            currentPartition.Add(0);
+            var lastIndex = currentPartition.Count - 1;
+
+            for (byte i = 1; i <= remaining; i++)
+            {
+                currentPartition[lastIndex] = i;
+
+                if (remaining == i)
+                {
+                    result.Add([.. currentPartition]);
+                }
+                else
+                {
+                    GeneratePartitions((byte)(remaining - i));
+                }
+            }
+
+            currentPartition.RemoveAt(lastIndex);
+        }
+
+        GeneratePartitions(size);
+
+        if (outputResult)
+        {
+            Console.WriteLine("Partitions:");
+            foreach (var partition in result)
+            {
+                Console.WriteLine(string.Join('+', partition));
+            }
+        }
+
+        return result;
+    }
+
+    public static (int pFunc, int pPlusFunc) CalculatePFunctions(int[,] matrix, List<byte[]> partitions)
+    {
+        var size = matrix.GetLength(0);
+        var pFunc = 0;
+        var pPlusFunc = 0;
+
+        foreach (var partition in partitions)
+        {
+            var part = GetPartitionNumber(matrix, partition);
+            var coef = (size - partition.Length) % 2 == 0 ? 1 : -1;
+            pFunc += coef * part;
+            pPlusFunc += part;
+        }
+
+        return (pFunc, pPlusFunc);
+    }
+
+    private static int GetPartitionNumber(int[,] matrix, byte[] partition)
+    {
+        var res = 1;
+        var x = -1;
+        var y = -1;
+
+        foreach (var p in partition)
+        {
+            var oldY = y;
+            y += p;
+            for (var i = y; i > oldY; i--)
+            {
+                x++;
+                res *= matrix[x, i];
+            }
+        }
+
+        return res;
+    }
+}
