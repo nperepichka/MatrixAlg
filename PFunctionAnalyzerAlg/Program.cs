@@ -1,6 +1,5 @@
 ﻿using MatrixShared.Helpers;
 using PFunctionAnalyzerAlg.Helpers;
-using System;
 
 namespace PFunctionAnalyzerAlg;
 
@@ -31,11 +30,11 @@ internal class Program
             }
 
             Console.WriteLine("Gravity matrix (p):");
-            PrintMatrix(pRes);
+            PrintMatrix(pRes, true);
 
             Console.WriteLine();
             Console.WriteLine("Gravity matrix (p+):");
-            PrintMatrix(pPlusRes);
+            PrintMatrix(pPlusRes, true);
         }
         else
         {
@@ -141,13 +140,20 @@ internal class Program
         return res;
     }
 
-    private static void PrintMatrix(int[,] matrix)
+    private static void PrintMatrix(int[,] matrix, bool withPaddings = false)
     {
         for (byte i = 0; i < Size; i++)
         {
             for (byte j = 0; j < Size; j++)
             {
-                Console.Write($" {matrix[i, j]}".PadLeft(3));
+                if (withPaddings)
+                {
+                    Console.Write($" {matrix[i, j]}".PadLeft(3));
+                }
+                else
+                {
+                    Console.Write(matrix[i, j]);
+                }
             }
             Console.WriteLine();
         }
