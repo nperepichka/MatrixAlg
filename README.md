@@ -6,7 +6,8 @@
 - **MatrixDiagAlg** => build diagonal transversals
 - **MosaicAlg** => build mosaic images
 - **AbsolutelySymmetricCubeAlg** => build symmetric cube by adding points
--  **PFunctionAlg** => calculate p and p+ functions of matrix
+- **PFunctionAlg** => calculate p and p+ functions of matrix
+- **PFunctionAnalyzerAlg** => analyze p and p+ functions of matrix
 
 ### To be implemented
 - Semisymmetrant
@@ -15,7 +16,7 @@
 `MaxParallelization`
 - use amount of P-cores in **MatrixAlg**, **CubeAlg**
 - use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
-- not used in **AbsolutelySymmetricCubeAlg**, **PFunctionAlg**
+- not used in **AbsolutelySymmetricCubeAlg**, **PFunctionAlg**, **PFunctionAnalyzerAlg**
 
 ## About
 **Author**: N. V. Perepichka  

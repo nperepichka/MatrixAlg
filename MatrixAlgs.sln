@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbsolutelySymmetricCubeAlg"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFunctionAlg", "PFunctionAlg\PFunctionAlg.csproj", "{02EF302A-5D3E-484F-B7DF-08E0C159C128}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFunctionAnalyzerAlg", "PFunctionAnalyzerAlg\PFunctionAnalyzerAlg.csproj", "{10F9CE03-29A7-4DB7-A1CF-543A50F0BBFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{02EF302A-5D3E-484F-B7DF-08E0C159C128}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02EF302A-5D3E-484F-B7DF-08E0C159C128}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02EF302A-5D3E-484F-B7DF-08E0C159C128}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10F9CE03-29A7-4DB7-A1CF-543A50F0BBFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10F9CE03-29A7-4DB7-A1CF-543A50F0BBFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10F9CE03-29A7-4DB7-A1CF-543A50F0BBFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10F9CE03-29A7-4DB7-A1CF-543A50F0BBFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

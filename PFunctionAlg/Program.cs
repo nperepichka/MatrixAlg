@@ -28,8 +28,8 @@ internal class Program
         }
 
         Console.WriteLine();
-        Console.WriteLine($"p  = {pFunc}");
-        Console.WriteLine($"p+ = {pFuncPlus}");
+        Console.WriteLine($"p : {pFunc}");
+        Console.WriteLine($"p+: {pFuncPlus}");
     }
 
     private static int GetPartitionNumber(byte[] partition)
