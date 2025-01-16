@@ -1,6 +1,6 @@
-﻿using SemisymmetrantAlg.Helpers;
+﻿using PFunctionAlg.Helpers;
 
-namespace SemisymmetrantAlg;
+namespace PFunctionAlg;
 
 internal class Program
 {
@@ -12,7 +12,8 @@ internal class Program
         var size = (byte)Matrix.GetLength(0);
         Console.WriteLine($"Size: {size}");
 
-        var value = 0;
+        var pFunc = 0;
+        var pFuncPlus = 0;
         Console.WriteLine();
         Console.WriteLine("Partitions:");
 
@@ -20,12 +21,15 @@ internal class Program
         foreach (var partition in partitions)
         {
             Console.WriteLine(string.Join('+', partition));
+            var part = GetPartitionNumber(partition);
             var coef = (size - partition.Length) % 2 == 0 ? 1 : -1;
-            value += coef * GetPartitionNumber(partition);
+            pFunc += coef * part;
+            pFuncPlus += part;
         }
 
         Console.WriteLine();
-        Console.WriteLine($"Semisymmetrant: {value}");
+        Console.WriteLine($"p  = {pFunc}");
+        Console.WriteLine($"p+ = {pFuncPlus}");
     }
 
     private static int GetPartitionNumber(byte[] partition)

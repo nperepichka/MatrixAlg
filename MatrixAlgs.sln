@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatrixShared", "MatrixShare
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbsolutelySymmetricCubeAlg", "AbsolutelySymmetricCubeAlg\AbsolutelySymmetricCubeAlg.csproj", "{E58DB37C-7CE3-487A-8F73-7BF92734EE12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemisymmetrantAlg", "SemisymmetrantAlg\SemisymmetrantAlg.csproj", "{02EF302A-5D3E-484F-B7DF-08E0C159C128}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PFunctionAlg", "PFunctionAlg\PFunctionAlg.csproj", "{02EF302A-5D3E-484F-B7DF-08E0C159C128}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

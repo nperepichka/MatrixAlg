@@ -1,4 +1,4 @@
-﻿namespace SemisymmetrantAlg.Helpers;
+﻿namespace PFunctionAlg.Helpers;
 
 /// <summary>
 /// Helper class, used to read input matrix from input.txt file

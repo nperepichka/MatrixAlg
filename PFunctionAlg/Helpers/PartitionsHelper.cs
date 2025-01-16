@@ -1,4 +1,4 @@
-﻿namespace SemisymmetrantAlg.Helpers;
+﻿namespace PFunctionAlg.Helpers;
 
 internal class PartitionsHelper
 {
