@@ -18,4 +18,10 @@
 	  <ProjectReference Include="..\MatrixShared\MatrixShared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="config.ini">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

@@ -1,5 +1,6 @@
 ﻿using MatrixShared.Helpers;
 using PFunctionAnalyzerAlg.Helpers;
+using PFunctionAnalyzerAlg.Models;
 
 namespace PFunctionAnalyzerAlg;
 
@@ -55,9 +56,12 @@ internal class Program
                 if (pFunc > pValMax)
                 {
                     pValMax = pFunc;
-                    pResMax = [matrix];
+                    if (ApplicationConfiguration.OutputMatrixes)
+                    {
+                        pResMax = [matrix];
+                    }
                 }
-                else if (pFunc == pValMax)
+                else if (pFunc == pValMax && ApplicationConfiguration.OutputMatrixes)
                 {
                     pResMax.Add(matrix);
                 }
@@ -65,9 +69,12 @@ internal class Program
                 if (pFunc < pValMin)
                 {
                     pValMin = pFunc;
-                    pResMin = [matrix];
+                    if (ApplicationConfiguration.OutputMatrixes)
+                    {
+                        pResMin = [matrix];
+                    }
                 }
-                else if (pFunc == pValMin)
+                else if (pFunc == pValMin && ApplicationConfiguration.OutputMatrixes)
                 {
                     pResMin.Add(matrix);
                 }
@@ -75,9 +82,12 @@ internal class Program
                 if (pPlusFunc > pPlusValMax)
                 {
                     pPlusValMax = pPlusFunc;
-                    pPlusResMax = [matrix];
+                    if (ApplicationConfiguration.OutputMatrixes)
+                    {
+                        pPlusResMax = [matrix];
+                    }
                 }
-                else if (pPlusFunc == pPlusValMax)
+                else if (pPlusFunc == pPlusValMax && ApplicationConfiguration.OutputMatrixes)
                 {
                     pPlusResMax.Add(matrix);
                 }
@@ -85,37 +95,54 @@ internal class Program
                 if (pPlusFunc < pPlusValMin)
                 {
                     pPlusValMin = pPlusFunc;
-                    pPlusResMin = [matrix];
+                    if (ApplicationConfiguration.OutputMatrixes)
+                    {
+                        pPlusResMin = [matrix];
+                    }
                 }
-                else if (pPlusFunc == pPlusValMin)
+                else if (pPlusFunc == pPlusValMin && ApplicationConfiguration.OutputMatrixes)
                 {
                     pPlusResMin.Add(matrix);
                 }
             }
 
+            // TODO: some refactoring required for matrix related code
+
             Console.WriteLine($"p min: {pValMin}");
-            foreach (var matrix in pResMin)
+            if (ApplicationConfiguration.OutputMatrixes)
             {
-                PrintMatrix(matrix);
-                Console.WriteLine();
+                foreach (var matrix in pResMin)
+                {
+                    PrintMatrix(matrix);
+                    Console.WriteLine();
+                }
             }
             Console.WriteLine($"p max: {pValMax}");
-            foreach (var matrix in pResMax)
+            if (ApplicationConfiguration.OutputMatrixes)
             {
-                PrintMatrix(matrix);
-                Console.WriteLine();
+                foreach (var matrix in pResMax)
+                {
+                    PrintMatrix(matrix);
+                    Console.WriteLine();
+                }
             }
             Console.WriteLine($"p+ min: {pPlusValMin}");
-            foreach (var matrix in pPlusResMin)
+            if (ApplicationConfiguration.OutputMatrixes)
             {
-                PrintMatrix(matrix);
-                Console.WriteLine();
+                foreach (var matrix in pPlusResMin)
+                {
+                    PrintMatrix(matrix);
+                    Console.WriteLine();
+                }
             }
             Console.WriteLine($"p+ max: {pPlusValMax}");
-            foreach (var matrix in pPlusResMax)
+            if (ApplicationConfiguration.OutputMatrixes)
             {
-                PrintMatrix(matrix);
-                Console.WriteLine();
+                foreach (var matrix in pPlusResMax)
+                {
+                    PrintMatrix(matrix);
+                    Console.WriteLine();
+                }
             }
         }
     }
