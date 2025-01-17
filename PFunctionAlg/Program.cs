@@ -19,6 +19,4 @@ internal class Program
         Console.WriteLine($"p : {pFunc}");
         Console.WriteLine($"p+: {pPlusFunc}");
     }
-
-
 }

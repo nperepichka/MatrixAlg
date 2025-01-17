@@ -56,94 +56,55 @@ internal class Program
                 if (pFunc > pValMax)
                 {
                     pValMax = pFunc;
-                    if (ApplicationConfiguration.OutputMatrixes)
-                    {
-                        pResMax = [matrix];
-                    }
+                    AddResultMatrix(ref pResMax, matrix, true);
                 }
-                else if (pFunc == pValMax && ApplicationConfiguration.OutputMatrixes)
+                else if (pFunc == pValMax)
                 {
-                    pResMax.Add(matrix);
+                    AddResultMatrix(ref pResMax, matrix);
                 }
 
                 if (pFunc < pValMin)
                 {
                     pValMin = pFunc;
-                    if (ApplicationConfiguration.OutputMatrixes)
-                    {
-                        pResMin = [matrix];
-                    }
+                    AddResultMatrix(ref pResMin, matrix, true);
                 }
-                else if (pFunc == pValMin && ApplicationConfiguration.OutputMatrixes)
+                else if (pFunc == pValMin)
                 {
-                    pResMin.Add(matrix);
+                    AddResultMatrix(ref pResMin, matrix);
                 }
 
                 if (pPlusFunc > pPlusValMax)
                 {
                     pPlusValMax = pPlusFunc;
-                    if (ApplicationConfiguration.OutputMatrixes)
-                    {
-                        pPlusResMax = [matrix];
-                    }
+                    AddResultMatrix(ref pPlusResMax, matrix, true);
                 }
-                else if (pPlusFunc == pPlusValMax && ApplicationConfiguration.OutputMatrixes)
+                else if (pPlusFunc == pPlusValMax)
                 {
-                    pPlusResMax.Add(matrix);
+                    AddResultMatrix(ref pPlusResMax, matrix);
                 }
 
                 if (pPlusFunc < pPlusValMin)
                 {
                     pPlusValMin = pPlusFunc;
-                    if (ApplicationConfiguration.OutputMatrixes)
-                    {
-                        pPlusResMin = [matrix];
-                    }
+                    AddResultMatrix(ref pPlusResMin, matrix, true);
                 }
-                else if (pPlusFunc == pPlusValMin && ApplicationConfiguration.OutputMatrixes)
+                else if (pPlusFunc == pPlusValMin)
                 {
-                    pPlusResMin.Add(matrix);
+                    AddResultMatrix(ref pPlusResMin, matrix);
                 }
             }
-
-            // TODO: some refactoring required for matrix related code
 
             Console.WriteLine($"p min: {pValMin}");
-            if (ApplicationConfiguration.OutputMatrixes)
-            {
-                foreach (var matrix in pResMin)
-                {
-                    PrintMatrix(matrix);
-                    Console.WriteLine();
-                }
-            }
+            PrintResultMatrixes(pResMin);
+
             Console.WriteLine($"p max: {pValMax}");
-            if (ApplicationConfiguration.OutputMatrixes)
-            {
-                foreach (var matrix in pResMax)
-                {
-                    PrintMatrix(matrix);
-                    Console.WriteLine();
-                }
-            }
+            PrintResultMatrixes(pResMax);
+
             Console.WriteLine($"p+ min: {pPlusValMin}");
-            if (ApplicationConfiguration.OutputMatrixes)
-            {
-                foreach (var matrix in pPlusResMin)
-                {
-                    PrintMatrix(matrix);
-                    Console.WriteLine();
-                }
-            }
+            PrintResultMatrixes(pPlusResMin);
+
             Console.WriteLine($"p+ max: {pPlusValMax}");
-            if (ApplicationConfiguration.OutputMatrixes)
-            {
-                foreach (var matrix in pPlusResMax)
-                {
-                    PrintMatrix(matrix);
-                    Console.WriteLine();
-                }
-            }
+            PrintResultMatrixes(pPlusResMax);
         }
     }
 
@@ -167,6 +128,30 @@ internal class Program
         return res;
     }
 
+    private static void AddResultMatrix(ref List<int[,]> res, int[,] matrix, bool clear = false)
+    {
+        if (ApplicationConfiguration.OutputMatrixes)
+        {
+            if (clear)
+            {
+                res.Clear();
+            }
+            res.Add(matrix);
+        }
+    }
+
+    private static void PrintResultMatrixes(List<int[,]> matrixes)
+    {
+        if (ApplicationConfiguration.OutputMatrixes)
+        {
+            foreach (var matrix in matrixes)
+            {
+                PrintMatrix(matrix);
+                Console.WriteLine();
+            }
+        }
+    }
+
     private static void PrintMatrix(int[,] matrix, bool widePaddings = false)
     {
         for (byte i = 0; i < Size; i++)
@@ -181,5 +166,4 @@ internal class Program
             Console.WriteLine();
         }
     }
-
 }
