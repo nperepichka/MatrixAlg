@@ -140,20 +140,16 @@ internal class Program
         return res;
     }
 
-    private static void PrintMatrix(int[,] matrix, bool withPaddings = false)
+    private static void PrintMatrix(int[,] matrix, bool widePaddings = false)
     {
         for (byte i = 0; i < Size; i++)
         {
             for (byte j = 0; j < Size; j++)
             {
-                if (withPaddings)
-                {
-                    Console.Write($" {matrix[i, j]}".PadLeft(3));
-                }
-                else
-                {
-                    Console.Write(matrix[i, j]);
-                }
+                var output = widePaddings
+                    ? $" {matrix[i, j]}".PadLeft(3)
+                    : $" {matrix[i, j]}";
+                Console.Write(output);
             }
             Console.WriteLine();
         }
