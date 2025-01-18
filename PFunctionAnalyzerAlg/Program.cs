@@ -23,7 +23,7 @@ internal class Program
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
         var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, Zeros);
 
-        Console.WriteLine("Debug: combinations found");
+        Console.WriteLine($"Combinations found: {combinations.Count}");
 
         if (Zeros == 1)
         {
