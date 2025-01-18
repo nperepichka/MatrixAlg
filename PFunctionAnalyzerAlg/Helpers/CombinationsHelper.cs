@@ -4,39 +4,35 @@ internal static class CombinationsHelper
 {
     public static List<(byte x, byte y)[]> GetAllPossibleCombinations(byte size, byte elements)
     {
-        var allPositions = new List<(byte x, byte y)>();
+        var allPositions = new (byte x, byte y)[size * size];
+        int index = 0;
         for (byte x = 0; x < size; x++)
         {
             for (byte y = 0; y < size; y++)
             {
-                allPositions.Add((x, y));
+                allPositions[index++] = (x, y);
             }
         }
 
-        var combinations = GetCombinations(allPositions, elements);
-        return combinations.Select(c => c.ToArray()).ToList();
+        var result = new List<(byte x, byte y)[]>();
+        GenerateCombinations(allPositions, elements, 0, 0, new (byte x, byte y)[elements], result);
+        return result;
     }
 
-    private static IEnumerable<IEnumerable<T>> GetCombinations<T>(IEnumerable<T> items, byte count)
+    private static void GenerateCombinations((byte x, byte y)[] items, byte count, int startIndex, int depth, (byte x, byte y)[] combination, List<(byte x, byte y)[]> result)
     {
-        if (count == 0)
+        if (depth == count)
         {
-            yield return Enumerable.Empty<T>();
-            yield break;
+            var res = new (byte x, byte y)[combination.Length];
+            Array.Copy(combination, res, combination.Length);
+            result.Add(res);
+            return;
         }
 
-        var itemsList = items.ToList();
-        var nextCount = (byte)(count - 1);
-
-        for (byte i = 0; i < itemsList.Count; i++)
+        for (var i = startIndex; i <= items.Length - (count - depth); i++)
         {
-            var current = itemsList[i];
-            var remaining = itemsList.Skip(i + 1);
-
-            foreach (var combination in GetCombinations(remaining, nextCount))
-            {
-                yield return new[] { current }.Concat(combination);
-            }
+            combination[depth] = items[i];
+            GenerateCombinations(items, count, i + 1, depth + 1, combination, result);
         }
     }
 }
