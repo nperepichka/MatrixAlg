@@ -16,7 +16,8 @@ internal class Program
     private static void Main()
     {
         Size = ConsoleInputReader.ReadValue();
-        Zeros = ConsoleInputReader.ReadValue(nameof(Zeros), Size);
+        var maxZeros = Math.Min(255, Size * Size);
+        Zeros = ConsoleInputReader.ReadValue(nameof(Zeros), (byte)maxZeros);
 
         var stopwatch = Stopwatch.StartNew();
 
