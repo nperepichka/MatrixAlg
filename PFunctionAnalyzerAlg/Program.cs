@@ -28,7 +28,7 @@ internal class Program
             foreach (var combination in combinations)
             {
                 var matrix = GetMatrix(combination);
-                var (pFunc, pPlusFunc) = PFunctionsHelper.CalculatePFunctions(matrix, partitions);
+                var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
                 pRes[combination[0].x, combination[0].y] = pFunc;
                 pPlusRes[combination[0].x, combination[0].y] = pPlusFunc;
             }
@@ -54,7 +54,7 @@ internal class Program
             foreach (var combination in combinations)
             {
                 var matrix = GetMatrix(combination);
-                var (pFunc, pPlusFunc) = PFunctionsHelper.CalculatePFunctions(matrix, partitions);
+                var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
 
                 if (pFunc > pValMax)
                 {

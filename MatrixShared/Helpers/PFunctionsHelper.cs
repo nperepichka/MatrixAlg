@@ -1,6 +1,6 @@
 ﻿namespace MatrixShared.Helpers;
 
-public class PFunctionsHelper
+public static class PFunctionsHelper
 {
     public static List<byte[]> CalculatePartitions(byte size, bool outputResult = false)
     {
@@ -43,15 +43,14 @@ public class PFunctionsHelper
         return result;
     }
 
-    public static (int pFunc, int pPlusFunc) CalculatePFunctions(int[,] matrix, List<byte[]> partitions)
+    public static (int pFunc, int pPlusFunc) CalculatePFunctions(this int[,] matrix, List<byte[]> partitions, byte size)
     {
-        var size = matrix.GetLength(0);
         var pFunc = 0;
         var pPlusFunc = 0;
 
         foreach (var partition in partitions)
         {
-            var part = GetPartitionNumber(matrix, partition);
+            var part = matrix.GetPartitionNumber(partition);
             var coef = (size - partition.Length) % 2 == 0 ? 1 : -1;
             pFunc += coef * part;
             pPlusFunc += part;
@@ -60,7 +59,7 @@ public class PFunctionsHelper
         return (pFunc, pPlusFunc);
     }
 
-    private static int GetPartitionNumber(int[,] matrix, byte[] partition)
+    private static int GetPartitionNumber(this int[,] matrix, byte[] partition)
     {
         var res = 1;
         var x = -1;

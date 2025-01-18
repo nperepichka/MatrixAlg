@@ -13,7 +13,7 @@ internal class Program
         Console.WriteLine();
 
         var partitions = PFunctionsHelper.CalculatePartitions(size, true);
-        var (pFunc, pPlusFunc) = PFunctionsHelper.CalculatePFunctions(matrix, partitions);
+        var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, size);
 
         Console.WriteLine();
         Console.WriteLine($"p : {pFunc}");
