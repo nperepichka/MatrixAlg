@@ -10,7 +10,8 @@ internal static class CombinationsHelper
         {
             for (byte y = 0; y < size; y++)
             {
-                allPositions[index++] = (x, y);
+                allPositions[index] = (x, y);
+                index++;
             }
         }
 

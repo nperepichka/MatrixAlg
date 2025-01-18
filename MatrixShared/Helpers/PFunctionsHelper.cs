@@ -51,9 +51,18 @@ public static class PFunctionsHelper
         foreach (var partition in partitions)
         {
             var part = matrix.GetPartitionNumber(partition);
-            var coef = (size - partition.Length) % 2 == 0 ? 1 : -1;
-            pFunc += coef * part;
-            pPlusFunc += part;
+            if (part != 0)
+            {
+                if ((size - partition.Length) % 2 == 0)
+                {
+                    pFunc += part;
+                }
+                else
+                {
+                    pFunc -= part;
+                }
+                pPlusFunc += part;
+            }
         }
 
         return (pFunc, pPlusFunc);
@@ -62,7 +71,7 @@ public static class PFunctionsHelper
     private static int GetPartitionNumber(this int[,] matrix, byte[] partition)
     {
         var res = 1;
-        var x = -1;
+        var x = 0;
         var y = -1;
 
         foreach (var p in partition)
@@ -71,8 +80,13 @@ public static class PFunctionsHelper
             y += p;
             for (var i = y; i > oldY; i--)
             {
+                var e = matrix[x, i];
+                if (e == 0)
+                {
+                    return 0;
+                }
+                res *= e;
                 x++;
-                res *= matrix[x, i];
             }
         }
 
