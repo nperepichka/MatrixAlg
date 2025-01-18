@@ -24,6 +24,11 @@ internal class Program
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
         var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, Zeros);
 
+        /*foreach (var combination in combinations)
+        {
+            Console.WriteLine(string.Join(" ", combination.Select(c => $"{c.x},{c.y}")));
+        }*/
+
         if (Zeros == 1)
         {
             var pRes = GetMatrix([]);
@@ -46,6 +51,24 @@ internal class Program
         }
         else
         {
+            /*
+            var zero = true;
+
+            Parallel.ForEach(combinations, ParallelOptionsMax, (combination, state) =>
+            {
+                var matrix = GetMatrix(combination);
+                var isZero = matrix.IsZero(partitions);
+
+                if (!isZero)
+                {
+                    zero = false;
+                    state.Break();
+                }
+            });
+
+            Console.WriteLine(zero ? $"p max is 0" : $"p max is not 0");
+            */
+
             var pValMin = int.MaxValue;
             var pValMax = int.MinValue;
             var pPlusValMin = int.MaxValue;

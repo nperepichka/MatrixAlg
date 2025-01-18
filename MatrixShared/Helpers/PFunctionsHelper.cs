@@ -92,4 +92,39 @@ public static class PFunctionsHelper
 
         return res;
     }
+    /*
+    public static bool IsZero(this int[,] matrix, List<byte[]> partitions)
+    {
+        foreach (var partition in partitions)
+        {
+            if (!matrix.IsPartitionNumberZero(partition))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static bool IsPartitionNumberZero(this int[,] matrix, byte[] partition)
+    {
+        var x = 0;
+        var y = -1;
+
+        foreach (var p in partition)
+        {
+            var oldY = y;
+            y += p;
+            for (var i = y; i > oldY; i--)
+            {
+                if (matrix[x, i] == 0)
+                {
+                    return true;
+                }
+                x++;
+            }
+        }
+
+        return false;
+    }
+    */
 }
