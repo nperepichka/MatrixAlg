@@ -93,19 +93,7 @@ public static class PFunctionsHelper
         return res;
     }
     /*
-    public static bool IsZero(this bool[,] matrix, List<byte[]> partitions)
-    {
-        foreach (var partition in partitions)
-        {
-            if (!matrix.IsPartitionNumberZero(partition))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static bool IsPartitionNumberZero(this bool[,] matrix, byte[] partition)
+    public static bool IsPartitionNumberZero(this bool[,] matrix, byte[] partition)
     {
         var x = 0;
         var y = -1;
