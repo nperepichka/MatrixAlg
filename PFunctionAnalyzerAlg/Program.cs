@@ -23,16 +23,13 @@ internal class Program
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
         var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, Zeros);
 
-        Console.WriteLine($"Combinations found: {combinations.Count}");
-
         if (Zeros == 1)
         {
             var pRes = GetMatrix([]);
             var pPlusRes = GetMatrix([]);
 
-            Parallel.For(0, combinations.Count, ParallelOptionsMax, i =>
+            Parallel.ForEach(combinations, ParallelOptionsMax, combination =>
             {
-                var combination = combinations[i];
                 var matrix = GetMatrix(combination);
                 var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
                 pRes[combination[0].x, combination[0].y] = pFunc;
@@ -57,9 +54,8 @@ internal class Program
             List<int[,]> pPlusResMin = [];
             List<int[,]> pPlusResMax = [];
 
-            Parallel.For(0, combinations.Count, ParallelOptionsMax, i =>
+            Parallel.ForEach(combinations, ParallelOptionsMax, combination =>
             {
-                var combination = combinations[i];
                 var matrix = GetMatrix(combination);
                 var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
 

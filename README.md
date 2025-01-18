@@ -14,8 +14,8 @@
 
 ## Recommended configuration
 `MaxParallelization`
-- use amount of P-cores in **MatrixAlg**, **CubeAlg**
-- use amount of all cores **MatrixDiagAlg**, **MosaicAlg**, **PFunctionAnalyzerAlg**
+- use amount of P-cores in **MatrixAlg**, **CubeAlg**, **PFunctionAnalyzerAlg**
+- use amount of all cores **MatrixDiagAlg**, **MosaicAlg**
 - not used in **AbsolutelySymmetricCubeAlg**, **PFunctionAlg**
 
 ## About

@@ -2,7 +2,7 @@
 
 internal static class CombinationsHelper
 {
-    public static List<(byte x, byte y)[]> GetAllPossibleCombinations(byte size, byte elements)
+    public static IEnumerable<(byte x, byte y)[]> GetAllPossibleCombinations(byte size, byte elements)
     {
         var totalPositions = size * size;
         var allPositions = new (byte x, byte y)[totalPositions];
@@ -16,10 +16,9 @@ internal static class CombinationsHelper
         }
 
         var maxIndexBase = totalPositions - elements;
-        var result = new List<(byte x, byte y)[]>(totalPositions);
         var combination = new (byte x, byte y)[elements];
 
-        void GenerateCombinations(int startIndex, int depth)
+        IEnumerable<(byte x, byte y)[]> GenerateCombinations(int startIndex, int depth)
         {
             var nextDepth = depth + 1;
             var maxIndex = maxIndexBase + nextDepth;
@@ -30,7 +29,7 @@ internal static class CombinationsHelper
                     combination[depth] = allPositions[i];
                     var res = new (byte x, byte y)[elements];
                     Array.Copy(combination, res, elements);
-                    result.Add(res);
+                    yield return res;
                 }
             }
             else
@@ -38,12 +37,14 @@ internal static class CombinationsHelper
                 for (var i = startIndex; i < maxIndex; i++)
                 {
                     combination[depth] = allPositions[i];
-                    GenerateCombinations(i + 1, nextDepth);
+                    foreach (var subCombination in GenerateCombinations(i + 1, nextDepth))
+                    {
+                        yield return subCombination;
+                    }
                 }
             }
         }
 
-        GenerateCombinations(0, 0);
-        return result;
+        return GenerateCombinations(0, 0);
     }
 }
