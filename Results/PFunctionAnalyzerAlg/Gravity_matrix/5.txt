@@ -1,0 +1,19 @@
+Size: 5
+
+Zeros: 1
+
+Gravity matrix (p):
+  0  0  0  1 -1
+  0  0  1 -2  1
+  0  1 -2  1  0
+  1 -2  1  0  0
+ -1  1  0  0  0
+
+Gravity matrix (p+):
+  8 12 14 15 15
+ 12 10 13 14 15
+ 14 13 10 13 14
+ 15 14 13 10 12
+ 15 15 14 12  8
+
+Processing elapsed in 0,01s
