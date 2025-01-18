@@ -56,7 +56,7 @@ internal class Program
 
             Parallel.ForEach(combinations, ParallelOptionsMax, (combination, state) =>
             {
-                var matrix = GetMatrix(combination);
+                var matrix = GetMatrixB(combination);
                 var isZero = matrix.IsZero(partitions);
 
                 if (!isZero)
@@ -145,6 +145,18 @@ internal class Program
         Console.WriteLine();
         Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
     }
+
+    /*private static bool[,] GetMatrixB((byte x, byte y)[] zeros)
+    {
+        var res = new bool[Size, Size];
+
+        foreach (var (x, y) in zeros)
+        {
+            res[x, y] = true;
+        }
+
+        return res;
+    }*/
 
     private static int[,] GetMatrix((byte x, byte y)[] zeros)
     {

@@ -93,7 +93,7 @@ public static class PFunctionsHelper
         return res;
     }
     /*
-    public static bool IsZero(this int[,] matrix, List<byte[]> partitions)
+    public static bool IsZero(this bool[,] matrix, List<byte[]> partitions)
     {
         foreach (var partition in partitions)
         {
@@ -105,7 +105,7 @@ public static class PFunctionsHelper
         return true;
     }
 
-    private static bool IsPartitionNumberZero(this int[,] matrix, byte[] partition)
+    private static bool IsPartitionNumberZero(this bool[,] matrix, byte[] partition)
     {
         var x = 0;
         var y = -1;
@@ -116,7 +116,7 @@ public static class PFunctionsHelper
             y += p;
             for (var i = y; i > oldY; i--)
             {
-                if (matrix[x, i] == 0)
+                if (matrix[x, i])
                 {
                     return true;
                 }
