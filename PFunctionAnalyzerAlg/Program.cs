@@ -8,7 +8,8 @@ namespace PFunctionAnalyzerAlg;
 internal class Program
 {
     private static byte Size = 0;
-    private static byte Zeros = 0;
+    private static byte MaxAmpuntOfZero = 0;
+    private static byte MaxAmountOfMinusOne = 0;
 
     private static readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private static readonly object Lock = new();
@@ -16,15 +17,16 @@ internal class Program
     private static void Main()
     {
         Size = ConsoleInputReader.ReadValue();
-        var maxZeros = Math.Min(255, Size * Size);
-        Zeros = ConsoleInputReader.ReadValue(nameof(Zeros), (byte)maxZeros);
+        var max = Math.Min(255, Size * Size);
+        MaxAmpuntOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmpuntOfZero), (byte)max);
+        //MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)max, true);
 
         var stopwatch = Stopwatch.StartNew();
 
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
-        var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, Zeros);
+        var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, MaxAmpuntOfZero);
 
-        if (Zeros == 1)
+        if (MaxAmpuntOfZero == 1 && MaxAmountOfMinusOne == 0)
         {
             var pRes = GetMatrix([]);
             var pPlusRes = GetMatrix([]);

@@ -4,16 +4,15 @@ internal static class CombinationsHelper
 {
     public static IEnumerable<(byte x, byte y)[]> GetAllPossibleCombinations(byte size, byte elements)
     {
-        // TODO: fix required, for size=17 or more result has some wrong values (looks like only 256 (aka byte) values will be filled)
-
         var totalPositions = size * size;
         var allPositions = new (byte x, byte y)[totalPositions];
-        for (byte x = 0, index = 0; x < size; x++)
+
+        var index = 0;
+        for (byte x = 0; x < size; x++)
         {
             for (byte y = 0; y < size; y++)
             {
-                allPositions[index] = (x, y);
-                index++;
+                allPositions[index++] = (x, y);
             }
         }
 
