@@ -11,6 +11,11 @@ internal class Program
     private static byte MaxAmpuntOfZero = 0;
     private static byte MaxAmountOfMinusOne = 0;
 
+    private static int PrimayElement = 0;
+    private static int SecondaryElement = -1;
+    private static byte PrimayMax = 0;
+    private static byte SecondaryMax = 0;
+
     private static readonly ParallelOptions ParallelOptionsMax = new() { MaxDegreeOfParallelism = ApplicationConfiguration.MaxParallelization };
     private static readonly object Lock = new();
 
@@ -18,25 +23,48 @@ internal class Program
     {
         Size = ConsoleInputReader.ReadValue();
         var max = Math.Min(255, Size * Size);
-        MaxAmpuntOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmpuntOfZero), (byte)max);
-        //MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)max, true);
+        MaxAmpuntOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmpuntOfZero), (byte)max, true);
+        MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)max, true);
+
+        if (MaxAmpuntOfZero == 0 && MaxAmountOfMinusOne == 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Nothing to process. Press <Enter> to exit...");
+            Console.ReadLine();
+            return;
+        }
+
+        if (MaxAmountOfMinusOne > MaxAmpuntOfZero)
+        {
+            PrimayElement = -1;
+            SecondaryElement = 0;
+            PrimayMax = MaxAmountOfMinusOne;
+            SecondaryMax = MaxAmpuntOfZero;
+        }
+        else
+        {
+            PrimayMax = MaxAmpuntOfZero;
+            SecondaryMax = MaxAmountOfMinusOne;
+        }
 
         var stopwatch = Stopwatch.StartNew();
 
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
-        var combinations = CombinationsHelper.GetAllPossibleCombinations(Size, MaxAmpuntOfZero);
+        var primaryCombinations = CombinationsHelper.GetAllPossibleCombinations(Size, PrimayMax, []);
 
         if (MaxAmpuntOfZero == 1 && MaxAmountOfMinusOne == 0)
         {
-            var pRes = GetMatrix([]);
-            var pPlusRes = GetMatrix([]);
+            // Only calculate gravity matrix
 
-            Parallel.ForEach(combinations, ParallelOptionsMax, combination =>
+            var pRes = GetMatrix([], []);
+            var pPlusRes = GetMatrix([], []);
+
+            Parallel.ForEach(primaryCombinations, ParallelOptionsMax, combination =>
             {
-                var matrix = GetMatrix(combination);
+                var matrix = GetMatrix(combination, []);
                 var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
-                pRes[combination[0].x, combination[0].y] = pFunc;
-                pPlusRes[combination[0].x, combination[0].y] = pPlusFunc;
+                pRes[combination[0].X, combination[0].Y] = pFunc;
+                pPlusRes[combination[0].X, combination[0].Y] = pPlusFunc;
             });
 
             Console.WriteLine("Gravity matrix (p):");
@@ -57,54 +85,61 @@ internal class Program
             List<int[,]> pPlusResMin = [];
             List<int[,]> pPlusResMax = [];
 
-            Parallel.ForEach(combinations, ParallelOptionsMax, combination =>
+            Parallel.ForEach(primaryCombinations, ParallelOptionsMax, pCombination =>
             {
-                var matrix = GetMatrix(combination);
-                var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
+                var secondaryCombinations = SecondaryMax != 0
+                    ? CombinationsHelper.GetAllPossibleCombinations(Size, SecondaryMax, pCombination)
+                    : [[]];
 
-                Monitor.Enter(Lock);
+                foreach (var sCombination in secondaryCombinations)
+                {
+                    var matrix = GetMatrix(pCombination, sCombination);
+                    var (pFunc, pPlusFunc) = matrix.CalculatePFunctions(partitions, Size);
 
-                if (pFunc > pValMax)
-                {
-                    pValMax = pFunc;
-                    AddResultMatrix(pResMax, matrix, true);
-                }
-                else if (pFunc == pValMax)
-                {
-                    AddResultMatrix(pResMax, matrix);
-                }
+                    Monitor.Enter(Lock);
 
-                if (pFunc < pValMin)
-                {
-                    pValMin = pFunc;
-                    AddResultMatrix(pResMin, matrix, true);
-                }
-                else if (pFunc == pValMin)
-                {
-                    AddResultMatrix(pResMin, matrix);
-                }
+                    if (pFunc > pValMax)
+                    {
+                        pValMax = pFunc;
+                        AddResultMatrix(pResMax, matrix, true);
+                    }
+                    else if (pFunc == pValMax)
+                    {
+                        AddResultMatrix(pResMax, matrix);
+                    }
 
-                if (pPlusFunc > pPlusValMax)
-                {
-                    pPlusValMax = pPlusFunc;
-                    AddResultMatrix(pPlusResMax, matrix, true);
-                }
-                else if (pPlusFunc == pPlusValMax)
-                {
-                    AddResultMatrix(pPlusResMax, matrix);
-                }
+                    if (pFunc < pValMin)
+                    {
+                        pValMin = pFunc;
+                        AddResultMatrix(pResMin, matrix, true);
+                    }
+                    else if (pFunc == pValMin)
+                    {
+                        AddResultMatrix(pResMin, matrix);
+                    }
 
-                if (pPlusFunc < pPlusValMin)
-                {
-                    pPlusValMin = pPlusFunc;
-                    AddResultMatrix(pPlusResMin, matrix, true);
-                }
-                else if (pPlusFunc == pPlusValMin)
-                {
-                    AddResultMatrix(pPlusResMin, matrix);
-                }
+                    if (pPlusFunc > pPlusValMax)
+                    {
+                        pPlusValMax = pPlusFunc;
+                        AddResultMatrix(pPlusResMax, matrix, true);
+                    }
+                    else if (pPlusFunc == pPlusValMax)
+                    {
+                        AddResultMatrix(pPlusResMax, matrix);
+                    }
 
-                Monitor.Exit(Lock);
+                    if (pPlusFunc < pPlusValMin)
+                    {
+                        pPlusValMin = pPlusFunc;
+                        AddResultMatrix(pPlusResMin, matrix, true);
+                    }
+                    else if (pPlusFunc == pPlusValMin)
+                    {
+                        AddResultMatrix(pPlusResMin, matrix);
+                    }
+
+                    Monitor.Exit(Lock);
+                }
             });
 
             Console.WriteLine($"p min: {pValMin}");
@@ -123,9 +158,11 @@ internal class Program
         stopwatch.Stop();
         Console.WriteLine();
         Console.WriteLine($"Processing elapsed in {stopwatch.ElapsedMilliseconds * 0.001:0.00}s");
+        Console.WriteLine("Done. Press <Enter> to exit...");
+        Console.ReadLine();
     }
 
-    private static int[,] GetMatrix((byte x, byte y)[] zeros)
+    private static int[,] GetMatrix(Element[] primaryElements, Element[] secondaryElements)
     {
         var res = new int[Size, Size];
 
@@ -137,9 +174,13 @@ internal class Program
             }
         }
 
-        foreach (var (x, y) in zeros)
+        foreach (var element in primaryElements)
         {
-            res[x, y] = 0;
+            res[element.X, element.Y] = PrimayElement;
+        }
+        foreach (var element in secondaryElements)
+        {
+            res[element.X, element.Y] = SecondaryElement;
         }
 
         return res;

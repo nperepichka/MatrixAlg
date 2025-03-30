@@ -12,7 +12,7 @@ internal static class Program
         Size = (byte)cube.GetLength(0);
         Console.WriteLine($"Size: {Size}");
 
-        while (UpdateCube(cube)) { };
+        while (UpdateCube(cube)) { }
 
         Console.WriteLine();
         for (var s = 0; s < Size; s++)
