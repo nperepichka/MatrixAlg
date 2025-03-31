@@ -24,7 +24,7 @@ internal class Program
         Size = ConsoleInputReader.ReadValue();
         var max = Math.Min(255, Size * Size);
         MaxAmpuntOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmpuntOfZero), (byte)max, true);
-        MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)max, true);
+        MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)(max - MaxAmpuntOfZero), true);
 
         if (MaxAmpuntOfZero == 0 && MaxAmountOfMinusOne == 0)
         {
