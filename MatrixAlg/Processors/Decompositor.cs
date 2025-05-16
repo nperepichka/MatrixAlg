@@ -60,11 +60,11 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         var nextRow = row;
         nextRow++;
 
-        for (byte i = 0; i < Size; i++)
+        for (byte i = 0; i < Transversal; i++)
         {
             var canUse = true;
 
-            for (byte j = 0; j < Size; j++)
+            for (byte j = 0; j < Transversal; j++)
             {
                 if (matrixIndex == j)
                 {
@@ -160,12 +160,12 @@ internal class Decompositor(bool[,] Input, byte Transversal)
 
         if (ParallelsCount != 0)
         {
-            for (byte i1 = 0; i1 < Size; i1++)
+            for (byte i1 = 0; i1 < Transversal; i1++)
             {
                 if (ParallelsCount < ApplicationConfiguration.MaxParallelization && i1 < ParallelBeforeIndex)
                 {
                     Interlocked.Increment(ref ParallelsCount);
-                    Parallel.For(i1, Size, ParallelOptions, i2 =>
+                    Parallel.For(i1, Transversal, ParallelOptions, i2 =>
                     {
                         ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i2]);
                     });
@@ -178,8 +178,8 @@ internal class Decompositor(bool[,] Input, byte Transversal)
         }
         else
         {
-            Interlocked.Add(ref ParallelsCount, Size);
-            Parallel.For(0, Size, ParallelOptionsMax, i =>
+            Interlocked.Add(ref ParallelsCount, Transversal);
+            Parallel.For(0, Transversal, ParallelOptionsMax, i =>
             {
                 ValidateAndGenerateDecompositionMatrixNextRowVariants(row, decomposition, InputPositionsPerRow[row][i]);
                 Interlocked.Decrement(ref ParallelsCount);

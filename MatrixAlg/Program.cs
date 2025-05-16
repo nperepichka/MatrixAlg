@@ -113,4 +113,92 @@ internal class Program
         // Wait for "Enter" key
         Console.ReadLine();
     }
+
+    // Alternative used to find P(m,n) - amount of ways to decompose m-transversal
+    /*private static void Alternative()
+    {
+        OutputWriter.Clear();
+
+        var m = 2;
+        var n = 4;
+
+        var res = new Dictionary<ulong, int>();
+        var matrices = MatrixBuilder.GenerateAllMatrices(n, m);
+        foreach (var matrix in matrices)
+        {
+            var d = ProcessAlternative(matrix);
+            if (res.ContainsKey(d))
+            {
+                res[d]++;
+            }
+            else
+            {
+                res[d] = 1;
+            }
+            Console.WriteLine();
+        }
+
+        foreach (var r in res)
+        {
+            Console.WriteLine($"{r.Value}x{r.Key}");
+        }
+
+        Console.WriteLine();
+        Console.WriteLine("Done. Press <Enter> to exit...");
+        Console.ReadLine();
+    }
+
+    private static ulong ProcessAlternative(bool[,] input)
+    {
+        // Enable output queue monitoring
+        OutputWriter.StartOutputQueueMonitoring();
+
+        OutputWriter.WriteLine("----------");
+
+        // Initiate string builder
+        var outputStringBuilder = new StringBuilder(string.Empty);
+        // Write input matrix to string builder
+        input.WriteMatrix(outputStringBuilder);
+        // Write string builder value
+        OutputWriter.WriteLine("Matrix:");
+        OutputWriter.WriteLine(outputStringBuilder.ToString());
+
+        // If input matrix is symetric
+        if (input.IsSymetric())
+        {
+            // Write that input matrix is symetric
+            OutputWriter.WriteLine("Input matrix is symetric.");
+        }
+        // Else, if input matrix is self conjugate
+        else if (input.IsSelfConjugate())
+        {
+            // Write that input matrix is self conjugate
+            OutputWriter.WriteLine("Input matrix is self conjugate.");
+        }
+        // Else, if input matrix is not symetric and is not self conjugate
+        else
+        {
+            // Write that input matrix is not symetric and is not self conjugate
+            OutputWriter.WriteLine("Input matrix is not symetric and is not self conjugate.");
+        }
+
+        // Find transversal size in input matrix
+        var transversal = input.FindTransversal();
+
+        // Write empty line
+        OutputWriter.WriteLine();
+
+        // Initiate decompositor object
+        var decompositor = new Decompositor(input, transversal);
+        // Process input matrix decomposition on 1-transversals
+        decompositor.Decompose();
+
+        // Output total decompositions count
+        OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
+
+        // Stop output queue monitoring
+        OutputWriter.StopOutputQueueMonitoring();
+
+        return decompositor.DecomposesCount;
+    }*/
 }
