@@ -8,7 +8,7 @@ namespace PFunctionAnalyzerAlg;
 internal class Program
 {
     private static byte Size = 0;
-    private static byte MaxAmpuntOfZero = 0;
+    private static byte MaxAmountOfZero = 0;
     private static byte MaxAmountOfMinusOne = 0;
 
     private static int PrimayElement = 0;
@@ -23,10 +23,10 @@ internal class Program
     {
         Size = ConsoleInputReader.ReadValue();
         var max = Math.Min(255, Size * Size);
-        MaxAmpuntOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmpuntOfZero), (byte)max, true);
-        MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)(max - MaxAmpuntOfZero), true);
+        MaxAmountOfZero = ConsoleInputReader.ReadValue(nameof(MaxAmountOfZero), (byte)max, true);
+        MaxAmountOfMinusOne = ConsoleInputReader.ReadValue(nameof(MaxAmountOfMinusOne), (byte)(max - MaxAmountOfZero), true);
 
-        if (MaxAmpuntOfZero == 0 && MaxAmountOfMinusOne == 0)
+        if (MaxAmountOfZero == 0 && MaxAmountOfMinusOne == 0)
         {
             Console.WriteLine();
             Console.WriteLine("Nothing to process. Press <Enter> to exit...");
@@ -34,16 +34,16 @@ internal class Program
             return;
         }
 
-        if (MaxAmountOfMinusOne > MaxAmpuntOfZero)
+        if (MaxAmountOfMinusOne > MaxAmountOfZero)
         {
             PrimayElement = -1;
             SecondaryElement = 0;
             PrimayMax = MaxAmountOfMinusOne;
-            SecondaryMax = MaxAmpuntOfZero;
+            SecondaryMax = MaxAmountOfZero;
         }
         else
         {
-            PrimayMax = MaxAmpuntOfZero;
+            PrimayMax = MaxAmountOfZero;
             SecondaryMax = MaxAmountOfMinusOne;
         }
 
@@ -52,7 +52,7 @@ internal class Program
         var partitions = PFunctionsHelper.CalculatePartitions(Size);
         var primaryCombinations = CombinationsHelper.GetAllPossibleCombinations(Size, PrimayMax, []);
 
-        if (MaxAmpuntOfZero == 1 && MaxAmountOfMinusOne == 0)
+        if (MaxAmountOfZero == 1 && MaxAmountOfMinusOne == 0)
         {
             // Only calculate gravity matrix
 
