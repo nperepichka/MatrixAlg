@@ -119,11 +119,15 @@ internal class Program
     {
         OutputWriter.Clear();
 
-        var m = 2;
-        var n = 5;
+        var m = 4;
+        var n = 6;
 
         var res = new Dictionary<ulong, int>();
         var matrices = MatrixBuilder.GenerateAllMatrices(n, m);
+
+        // Enable output queue monitoring
+        OutputWriter.StartOutputQueueMonitoring();
+
         foreach (var matrix in matrices)
         {
             var d = ProcessAlternative(matrix);
@@ -135,24 +139,22 @@ internal class Program
             {
                 res[d] = 1;
             }
-            Console.WriteLine();
+            OutputWriter.WriteLine();
         }
 
         foreach (var r in res)
         {
-            Console.WriteLine($"{r.Value}x{r.Key}");
+            OutputWriter.WriteLine($"{r.Value}x{r.Key}");
         }
 
-        Console.WriteLine();
-        //Console.WriteLine("Done. Press <Enter> to exit...");
-        //Console.ReadLine();
+        OutputWriter.WriteLine();
+
+        // Stop output queue monitoring
+        OutputWriter.StopOutputQueueMonitoring();
     }
 
     private static ulong ProcessAlternative(bool[,] input)
     {
-        // Enable output queue monitoring
-        OutputWriter.StartOutputQueueMonitoring();
-
         OutputWriter.WriteLine("----------");
 
         // Initiate string builder
@@ -192,9 +194,6 @@ internal class Program
         var decompositor = new Decompositor(input, transversal);
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
-
-        // Stop output queue monitoring
-        OutputWriter.StopOutputQueueMonitoring();
 
         // Output total decompositions count
         OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
