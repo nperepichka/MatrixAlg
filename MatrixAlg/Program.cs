@@ -115,12 +115,12 @@ internal class Program
     }
 
     // Alternative used to find P(m,n) - amount of ways to decompose m-transversal
-    /*private static void Alternative()
+    /*private static void Main()
     {
         OutputWriter.Clear();
 
         var m = 2;
-        var n = 4;
+        var n = 5;
 
         var res = new Dictionary<ulong, int>();
         var matrices = MatrixBuilder.GenerateAllMatrices(n, m);
@@ -144,8 +144,8 @@ internal class Program
         }
 
         Console.WriteLine();
-        Console.WriteLine("Done. Press <Enter> to exit...");
-        Console.ReadLine();
+        //Console.WriteLine("Done. Press <Enter> to exit...");
+        //Console.ReadLine();
     }
 
     private static ulong ProcessAlternative(bool[,] input)
@@ -193,11 +193,11 @@ internal class Program
         // Process input matrix decomposition on 1-transversals
         decompositor.Decompose();
 
-        // Output total decompositions count
-        OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
-
         // Stop output queue monitoring
         OutputWriter.StopOutputQueueMonitoring();
+
+        // Output total decompositions count
+        OutputWriter.WriteLine($"Decompositions count: {decompositor.DecomposesCount}");
 
         return decompositor.DecomposesCount;
     }*/
