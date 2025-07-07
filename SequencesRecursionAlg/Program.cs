@@ -1,16 +1,18 @@
-﻿internal class Program
+﻿using System.Numerics;
+
+internal class Program
 {
     /*private static void Main()
     {
         Console.Write("Sequence: ");
         var sequenceStr = Console.ReadLine()!;
-        int[] sequence = [];
+        BigInteger[] sequence = [];
 
         try
         {
             sequence = sequenceStr
                 .Split([',', ' '], StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
+                .Select(BigInteger.Parse)
                 .ToArray();
         }
         catch { }
@@ -58,13 +60,14 @@
     {
         Console.Write("Sequence: ");
         var sequenceStr = Console.ReadLine()!;
-        int[] sequence = [];
+        BigInteger[] sequence = [];
 
         try
         {
             sequence = sequenceStr
                 .Split([',', ' '], StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
+                .Select(BigInteger.Parse)
+                .Take(20)
                 .ToArray();
         }
         catch { }
@@ -76,9 +79,11 @@
             return;
         }
 
+        Console.WriteLine($"Length: {sequence.Length}");
+
         sequenceStr = GetSequenceString(sequence);
-        var dres = new List<int[]>();
-        var adres = new List<int[]>();
+        var dres = new List<BigInteger[]>();
+        var adres = new List<BigInteger[]>();
 
         var t = sequence.ToArray();
         for (var i = 0; i < 10; i++)
@@ -111,17 +116,17 @@
         Console.ReadLine();
     }
 
-    private static string GetSequenceString(int[] sequence) =>
+    private static string GetSequenceString(BigInteger[] sequence) =>
         string.Join(", ", sequence);
 
-    private static int[] CalculateDerivative(int[] sequence)
+    private static BigInteger[] CalculateDerivative(BigInteger[] sequence)
     {
         var len = sequence.Length;
-        var res = new int[len];
+        var res = new BigInteger[len];
 
         for (var n = 0; n < len; n++)
         {
-            var sum = 0;
+            BigInteger sum = 0;
             for (var i = 0; i <= n; i++)
             {
                 var idx = n - i - 1;
@@ -133,14 +138,14 @@
         return res;
     }
 
-    private static int[] CalculateAntiderivative(int[] sequence)
+    private static BigInteger[] CalculateAntiderivative(BigInteger[] sequence)
     {
         var len = sequence.Length;
-        var res = new int[len];
+        var res = new BigInteger[len];
 
         for (var n = 0; n < len; n++)
         {
-            var sum = 0;
+            BigInteger sum = 0;
             for (var i = 0; i <= n; i++)
             {
                 var idx = n - i - 1;
