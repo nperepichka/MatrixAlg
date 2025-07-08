@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using SequencesRecursionAlg.Models;
+using System.Numerics;
+using System.Text.Json;
 
 internal class Program
 {
@@ -67,7 +69,7 @@ internal class Program
             sequence = sequenceStr
                 .Split([',', ' '], StringSplitOptions.RemoveEmptyEntries)
                 .Select(BigInteger.Parse)
-                .Take(20)
+                .Take(ApplicationConfiguration.SequenceLength)
                 .ToArray();
         }
         catch { }
@@ -86,14 +88,14 @@ internal class Program
         var adres = new List<BigInteger[]>();
 
         var t = sequence.ToArray();
-        for (var i = 0; i < 10; i++)
+        for (var i = 0; i < ApplicationConfiguration.FindSequences; i++)
         {
             t = CalculateDerivative(t);
             dres.Add(t);
         }
 
         t = sequence.ToArray();
-        for (var i = 0; i < 10; i++)
+        for (var i = 0; i < ApplicationConfiguration.FindSequences; i++)
         {
             t = CalculateAntiderivative(t);
             adres.Add(t);
@@ -101,14 +103,20 @@ internal class Program
 
         Console.WriteLine();
 
-        for (var i = 9; i >=0; i--)
+        for (var i = ApplicationConfiguration.FindSequences - 1; i >= 0; i--)
         {
-            Console.WriteLine(GetSequenceString(dres[i]));
+            var s = GetSequenceString(dres[i]);
+            var oeis = GetOeisName(s);
+            Console.WriteLine($"{oeis}{s}");
         }
-        Console.WriteLine(sequenceStr);
-        for (var i = 0; i < 10; i++)
+
+        Console.WriteLine($"{GetOeisName(sequenceStr)}{sequenceStr}");
+
+        for (var i = 0; i < ApplicationConfiguration.FindSequences; i++)
         {
-            Console.WriteLine(GetSequenceString(adres[i]));
+            var s = GetSequenceString(adres[i]);
+            var oeis = GetOeisName(s);
+            Console.WriteLine($"{oeis}{s}");
         }
 
         Console.WriteLine();
@@ -155,5 +163,29 @@ internal class Program
         }
 
         return res;
+    }
+
+    private static string GetOeisName(string s)
+    {
+        if (!ApplicationConfiguration.SearchOeis)
+            return string.Empty;
+
+        var url = $"https://oeis.org/search?q={Uri.EscapeDataString(s)}&fmt=json";
+
+        using var client = new HttpClient();
+        try
+        {
+            var response = client.GetStringAsync(url).Result;
+
+            var jsonDoc = JsonDocument.Parse(response);
+            var result = jsonDoc.RootElement.EnumerateArray().First();
+
+            var number = result.GetProperty("number").ToString();
+            return $"A{number.ToString().PadLeft(6, '0')}: ";
+        }
+        catch
+        {
+            return "???????: ";
+        }
     }
 }
